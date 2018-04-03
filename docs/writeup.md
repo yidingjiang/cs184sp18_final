@@ -10,12 +10,12 @@ In this project, we plan to implement the **[position based fluids](http://mmack
 
 **Problem Description**
 
-Fluid simulation is an interesting topic that has many important applications in computer graphics. We are interested in producing photo realistic simulation of water and understanding the underlying physics of water; therefore, we think particle based simulation is an ideal candidate. It is important to have physically realistic simulation of water because many engineering appplications require accurate simulations that reflect the actual physical interaction. The main challenges of this task are: 
+Fluid simulation is an interesting topic that has many important applications in computer graphics. We are interested in producing photo realistic simulation of water and understanding the underlying physics of water; therefore, we think particle based simulation is an ideal candidate. It is important to have physically realistic simulation of water because many engineering applications require accurate simulations that reflect the actual physical interaction. The main challenges of this task are: 
 
 1. The algorithm is mathematically involved
 2. The simulation requires efficient data strucutre for neighbor finding
-3. The simulation must be numerially stable
-4. Machine learning would be novelly hard if we do use it
+3. The simulation must be numerically stable
+4. Machine learning would be interesting and potentially challenging if we do use it
 
 We will first try to replicate the paper and then build on top of the paper if we have sufficient time.
 
@@ -25,7 +25,7 @@ We will first try to replicate the paper and then build on top of the paper if w
 
 ![oa](goal.png)
 
-This is out goal for replicating the paper. The bottom shows the particle simulation and the top shows the surfacing result plus or minus the bunny. We plan to measure the quality of the simulation by visually inspecting the realism of the simulation and also comparing the result to the paper. Then, we plan to measure the performance of the system by measuring the runtime as a function of the number of particles. We also want to explore different parameters for both simlation and surfacing.
+This effect is our goal for replicating the paper. The bottom shows the particle simulation and the top shows the surfacing result plus or minus the bunny. We plan to measure the quality of the simulation by visually inspecting the realism of the simulation and also comparing the result to the paper. Then, we plan to measure the performance of the system by measuring the runtime as a function of the number of particles. We also want to explore different parameters for both simlation and surfacing.
 
 We want to explore the tradeoff curve for number of particles vs. runtime vs. render quality. We are also interested in how to better parametrize the system for machine learning.
 
