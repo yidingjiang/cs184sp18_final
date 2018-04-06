@@ -1,92 +1,200 @@
-# CMake entry point
-cmake_minimum_required (VERSION 3.0)
-project (Tutorials)
+cmake_minimum_required(VERSION 2.8)
+project(ClothSim)
 
+#-------------------------------------------------------------------------------
+# Build options
+#-------------------------------------------------------------------------------
+option(BUILD_LIBCGL    "Build with libCGL"            ON)
+option(BUILD_DEBUG     "Build with debug settings"    ON)
+option(BUILD_DOCS      "Build documentation"          OFF)
+option(ENABLE_TESTS    "Enable testing"               OFF)
+
+#-------------------------------------------------------------------------------
+# Platform-specific settings
+#-------------------------------------------------------------------------------
+
+###################
+# Building on OSX #
+###################
+if(APPLE)
+
+  # OSX Framework dependencies
+  if(NOT BUILD_LIBCGL)
+    include_directories( "/System/Library/Frameworks" )
+    find_library (COCOA_LIBRARIES Cocoa)
+    find_library (IOKIT_LIBRARIES IOkit)
+    find_library (COREVIDEO_LIBRARIES CoreVideo)
+  endif()
+
+  # Clang configuration
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+
+    set(CLANG_CXX_FLAGS "-std=c++11 -m64")
+
+    if(BUILD_DEBUG)
+      set(CMAKE_BUILD_TYPE Debug)
+      set(CLANG_CXX_FLAGS "${CLANG_CXX_FLAGS} -g")
+    else(BUILD_DEBUG)
+      set(CLANG_CXX_FLAGS "${CLANG_CXX_FLAGS} -O3")
+      set(CLANG_CXX_FLAGS "${CLANG_CXX_FLAGS} -funroll-loops")
+      set(CLANG_CXX_FLAGS "${CLANG_CXX_FLAGS} -Wno-narrowing")
+      set(CLANG_CXX_FLAGS "${CLANG_CXX_FLAGS} -Wno-deprecated-register")
+    endif(BUILD_DEBUG)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_CXX_FLAGS}")
+
+  endif()
+
+  # GCC configuration
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+
+    set(GCC_CXX_FLAGS "-std=gnu++11 -m64")
+
+    if(BUILD_DEBUG)
+      set(CMAKE_BUILD_TYPE Debug)
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -g")
+    else(BUILD_DEBUG)
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -O3")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -fopenmp")
+    endif(BUILD_DEBUG)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CXX_FLAGS}")
+
+  endif()
+
+endif(APPLE)
+
+##################
+# Build on Linux #
+##################
+set(LINUX UNIX AND NOT APPLE)
+if(LINUX)
+
+  # GCC only
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+
+    set(GCC_CXX_FLAGS "-std=gnu++11 -m64")
+    set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -Wno-deprecated-declarations")
+    set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -Wno-misleading-indentation")
+
+    # X11 Dependencies
+    if(NOT BUILD_LIBCGL)
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lXi")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lXxf86vm")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lXinerama")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lXcursor")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lXfixes")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lXrandr")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lXext")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lXrender")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lX11")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lpthread")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lxcb")
+      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -lXau")
+    endif()
+
+    # Debug configuration
+    if(BUILD_DEBUG)
+        set(CMAKE_BUILD_TYPE Debug)
+        set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -g")
+    else(BUILD_DEBUG)
+        set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -O3")
+        set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -fopenmp")
+    endif(BUILD_DEBUG)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CXX_FLAGS}")
+
+  endif()
+
+endif(LINUX)
+
+####################
+# Build on Windows #
+####################
+if(WIN32)
+
+  if(MSVC)
+
+    set(MSVC_CXX_FLAGS "-std=gnu++11")
+
+    if(BUILD_DEBUG)
+        set(CMAKE_BUILD_TYPE Debug)
+    else(BUILD_DEBUG)
+    endif(BUILD_DEBUG)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_CXX_FLAGS}")
+
+  endif(MSVC)
+
+  if(MINGW)
+
+    set(MSVC_CXX_FLAGS "-std=gnu++11")
+
+    if(BUILD_DEBUG)
+        set(CMAKE_BUILD_TYPE Debug)
+    else(BUILD_DEBUG)
+    endif(BUILD_DEBUG)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_CXX_FLAGS}")
+
+  endif(MINGW)
+
+endif(WIN32)
+
+#-------------------------------------------------------------------------------
+# nanogui configuration and compilation
+#-------------------------------------------------------------------------------
+
+# Disable building extras we won't need (pure C++ project)
+set(NANOGUI_BUILD_EXAMPLE OFF CACHE BOOL " " FORCE)
+set(NANOGUI_BUILD_PYTHON  OFF CACHE BOOL " " FORCE)
+set(NANOGUI_INSTALL       OFF CACHE BOOL " " FORCE)
+set(NANOGUI_USE_GLAD      ON  CACHE BOOL " " FORCE)
+
+# Add the configurations from nanogui
+add_subdirectory(ext/nanogui)
+include_directories(ext/nanogui/include)
+
+# For reliability of parallel build, make the NanoGUI targets dependencies
+set_property(TARGET glfw glfw_objects nanogui PROPERTY FOLDER "dependencies")
+
+#-------------------------------------------------------------------------------
+# Find dependencies
+#-------------------------------------------------------------------------------
+
+# Required packages
 find_package(OpenGL REQUIRED)
+find_package(Threads REQUIRED)
+find_package(Freetype REQUIRED)
 
+# CGL
+if(BUILD_LIBCGL)
+  add_subdirectory(CGL)
+  include_directories(CGL/include)
+else(BUILD_LIBCGL)
+  find_package(CGL REQUIRED)
+endif(BUILD_LIBCGL)
 
-if( CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR )
-    message( FATAL_ERROR "Please select another Build Directory ! (and give it a clever name, like bin_Visual2012_64bits/)" )
+#-------------------------------------------------------------------------------
+# Add subdirectories
+#-------------------------------------------------------------------------------
+add_subdirectory(src)
+
+# build documentation
+if(BUILD_DOCS)
+  find_package(DOXYGEN)
+  if(DOXYGEN_FOUND AND BUILD_DOCS)
+    add_subdirectory(docs)
+  endif()
 endif()
-if( CMAKE_SOURCE_DIR MATCHES " " )
-	message( "Your Source Directory contains spaces. If you experience problems when compiling, this can be the cause." )
+
+# Install settings
+set(CMAKE_INSTALL_PREFIX "${ClothSim_SOURCE_DIR}/")
+
+# Test settings
+
+if(ENABLE_TESTS)
+  include_directories(${CATCH_INCLUDE_DIR} ${COMMON_INCLUDES})
+  enable_testing(true)
+  add_subdirectory(test)
 endif()
-if( CMAKE_BINARY_DIR MATCHES " " )
-	message( "Your Build Directory contains spaces. If you experience problems when compiling, this can be the cause." )
-endif()
-
-
-
-# Compile external dependencies 
-add_subdirectory (external)
-
-# On Visual 2005 and above, this module can set the debug working directory
-cmake_policy(SET CMP0026 OLD)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/rpavlik-cmake-modules-fe2273")
-include(CreateLaunchers)
-include(MSVCMultipleProcessCompile) # /MP
-
-if(INCLUDE_DISTRIB)
-	add_subdirectory(distrib)
-endif(INCLUDE_DISTRIB)
-
-
-
-include_directories(
-	external/AntTweakBar-1.16/include/
-	external/glfw-3.1.2/include/
-	external/glm-0.9.7.1/
-	external/glew-1.13.0/include/
-	external/assimp-3.0.1270/include/
-	external/bullet-2.81-rev2613/src/
-	.
-)
-
-set(ALL_LIBS
-	${OPENGL_LIBRARY}
-	glfw
-	GLEW_1130
-)
-
-add_definitions(
-	-DTW_STATIC
-	-DTW_NO_LIB_PRAGMA
-	-DTW_NO_DIRECT3D
-	-DGLEW_STATIC
-	-D_CRT_SECURE_NO_WARNINGS
-)
-
-add_executable(tutorial18_particles
-	tutorial18_billboards_and_particles/tutorial18_particles.cpp
-	common/shader.cpp
-	common/shader.hpp
-	common/texture.cpp
-	common/texture.hpp
-	common/controls.cpp
-	common/controls.hpp
-	tutorial18_billboards_and_particles/Particle.fragmentshader
-	tutorial18_billboards_and_particles/Particle.vertexshader
-)
-
-target_link_libraries(tutorial18_particles
-	${ALL_LIBS}
-)
-
-# Xcode and Visual working directories
-set_target_properties(tutorial18_particles PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial18_billboards_and_particles/")
-create_target_launcher(tutorial18_particles WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tutorial18_billboards_and_particles/")
-
-SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
-SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*/.*shader$" )
-
-
-if (NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
-add_custom_command(
-   TARGET tutorial18_particles POST_BUILD
-   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/tutorial18_particles${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/tutorial18_billboards_and_particles/"
-)
-
-elseif (${CMAKE_GENERATOR} MATCHES "Xcode" )
-
-endif (NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
-
