@@ -8,7 +8,6 @@
 #include "CGL/CGL.h"
 #include "CGL/misc.h"
 #include "collision/collisionObject.h"
-#include "spring.h"
 
 using namespace CGL;
 using namespace std;

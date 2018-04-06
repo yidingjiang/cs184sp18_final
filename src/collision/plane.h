@@ -3,7 +3,6 @@
 
 #include <nanogui/nanogui.h>
 
-#include "../clothMesh.h"
 #include "collisionObject.h"
 
 using namespace nanogui;
@@ -16,7 +15,7 @@ public:
       : point(point), normal(normal.unit()), friction(friction) {}
 
   void render(GLShader &shader);
-  void collide(PointMass &pm);
+  void collide_particle(Particle &pm);
 
   Vector3D point;
   Vector3D normal;

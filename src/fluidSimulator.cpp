@@ -23,7 +23,7 @@ FluidSimulator::FluidSimulator(Screen *screen) {
   particleShader.initFromFiles("Paritcle", "../shaders/camera.vert",
                                "../shaders/particle.frag");
 
-  shaders.push_back(particleShader)
+  shaders.push_back(particleShader);
 
   glEnable(GL_PROGRAM_POINT_SIZE);
   glEnable(GL_DEPTH_TEST);
@@ -64,13 +64,13 @@ void FluidSimulator::init() {
 
   // Try to intelligently figure out the camera target
 
-  Vector3D avg_pm_position(0, 0, 0);
+  Vector3D avg_p_position(0, 0, 0);
 
-  for (auto &p : fluid->partilces) {
-    avg_p_position += p.position;
+  for (auto &p : fluid->particles) {
+    avg_p_position += p.origin;
   }
 
-  avg_p_position /= fluid->partilces.size();
+  avg_p_position /= fluid->particles.size();
 
   CGL::Vector3D target(avg_p_position.x, avg_p_position.y / 2,
                        avg_p_position.z);
@@ -139,10 +139,10 @@ void FluidSimulator::drawContents() {
 }
 
 void FluidSimulator::drawParticle(GLShader &shader) {
-  int num_particles = fluid->partilces.size();
+  int num_particles = fluid->particles.size();
 
   for (int i = 0; i < num_particles; i++) {
-    Paritcle *p = fluid->partilces[i];
+    Particle *p = &fluid->particles[i];
     p->render(shader);
   }
 

@@ -1,6 +1,5 @@
 #include <nanogui/nanogui.h>
 
-#include "../clothMesh.h"
 #include "../misc/sphere_drawing.h"
 #include "particle.h"
 
@@ -13,8 +12,8 @@ void Particle::collide_particle(Particle &pm) {
 	if (d.norm() <= radius + pm.radius) {
 		Vector3D d_normal = d / d.norm();
 		Vector3D tangent_p = origin + radius * d_normal;
-		Vector3D correction_vec = tangent_p - pm.last_position;
-		pm.position = pm.last_position + (1.-friction)*correction_vec;
+		Vector3D correction_vec = tangent_p - pm.last_origin;
+		pm.origin = pm.last_origin + (1.-friction)*correction_vec;
 	}
 }
 

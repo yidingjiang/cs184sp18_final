@@ -1,23 +1,28 @@
 #ifndef COLLISIONOBJECT_PARTICLE_H
 #define COLLISIONOBJECT_PARTICLE_H
 
-#include "../clothMesh.h"
-#include "collisionObject.h"
+#include "CGL/CGL.h"
+#include "CGL/misc.h"
+#include "CGL/vector3D.h"
 
 using namespace CGL;
 using namespace std;
 
-struct Particle : public CollisionObject {
+struct Particle {
 public:
   Particle(const Vector3D &origin, double radius, double friction)
-      : origin(origin), radius(radius), radius2(radius * radius),
+      : origin(origin), last_origin(origin), start_origin(origin),
+      	radius(radius), radius2(radius * radius),
         friction(friction) {}
 
-  void render(GLShader &shader);
+  void render(nanogui::GLShader &shader);
   void collide_particle(Particle &pm);
 
-private:
   Vector3D origin;
+  Vector3D last_origin;
+  Vector3D start_origin;
+  Vector3D forces;
+
   double radius;
   double radius2;
 

@@ -1,20 +1,19 @@
 #include <nanogui/nanogui.h>
 
-#include "../clothMesh.h"
 #include "../misc/sphere_drawing.h"
 #include "sphere.h"
 
 using namespace nanogui;
 using namespace CGL;
 
-void Sphere::collide(PointMass &pm) {
+void Sphere::collide(Particle &pm) {
   // TODO (Part 3.1): Handle collisions with spheres.
-	Vector3D d = pm.position - origin;
+	Vector3D d = pm.origin - origin;
 	if (d.norm() <= radius) {
 		Vector3D d_normal = d / d.norm();
 		Vector3D tangent_p = origin + radius * d_normal;
-		Vector3D correction_vec = tangent_p - pm.last_position;
-		pm.position = pm.last_position + (1.-friction)*correction_vec;
+		Vector3D correction_vec = tangent_p - pm.last_origin;
+		pm.origin = pm.last_origin + (1.-friction)*correction_vec;
 	}
 }
 

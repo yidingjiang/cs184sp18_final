@@ -9,8 +9,9 @@
 
 using namespace std;
 
-Fluid::Fluid(double width, double height, int num_width_points,
-             int num_height_points) {
+Fluid::Fluid(double width, double length, double height, double particle_radius,
+             int num_particles, int num_height_points, 
+             int num_width_points, int num_length_points) {
   this->width = width;
   this->height = height;
   this->num_width_points = num_width_points;
@@ -32,7 +33,7 @@ void Fluid::buildGrid() {
     for (int j = 0; j < num_length_points; j++) {
       for (int k = 0; k < num_height_points; k++) {
         Vector3D pos = Vector3D(i * w_offset, j * l_offset, k * h_offset);
-        Particle p = Particle(pos, radius, 0.0);
+        Particle p = Particle(pos, 1., 0.0);
         particles.emplace_back(p);
       }
     }
@@ -58,13 +59,11 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     }
   }
 
-  // TODO (Part 2.2): Use Verlet integration to compute new point mass positions
-  for (auto &m : point_masses) {
-    if (!m.pinned) {
-      Vector3D temp = m.position;
-      m.position += (1.-cp->damping/100.) * (m.position - m.last_position) + pow(delta_t, 2) * m.forces/mass;
-      m.last_position = temp;
-    }
+  // TODO (Part 2.2): Use Verlet integration to compute new point mass origins
+  for (auto &m : particles) {
+    Vector3D temp = m.origin;
+    m.origin += (1.-fp->damping/100.) * (m.origin - m.last_origin) + pow(delta_t, 2) * m.forces/mass;
+    m.last_origin = temp;
   }
 
   // This won't do anything until you complete Part 4.
@@ -87,9 +86,9 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
 
 void Fluid::reset() {
   Particle *pm = &particles[0];
-  for (int i = 0; i < point_masses.size(); i++) {
-    pm->position = pm->start_position;
-    pm->last_position = pm->start_position;
+  for (int i = 0; i < particles.size(); i++) {
+    pm->origin = pm->start_origin;
+    pm->last_origin = pm->start_origin;
     pm++;
   }
 }

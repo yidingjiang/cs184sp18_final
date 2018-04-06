@@ -2,8 +2,7 @@
 #define COLLISIONOBJECT
 
 #include <nanogui/nanogui.h>
-
-#include "../clothMesh.h"
+#include "particle.h"
 
 using namespace CGL;
 using namespace std;

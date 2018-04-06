@@ -10,8 +10,8 @@
 #include "CGL/CGL.h"
 #include "collision/plane.h"
 #include "collision/sphere.h"
-#include "cloth.h"
-#include "clothSimulator.h"
+#include "fluid.h"
+#include "fluidSimulator.h"
 #include "json.hpp"
 
 typedef uint32_t gid_t;
@@ -21,11 +21,11 @@ using namespace nanogui;
 
 using json = nlohmann::json;
 
-#define msg(s) cerr << "[ClothSim] " << s << endl;
+#define msg(s) cerr << "[FluidSim] " << s << endl;
 
 const string SPHERE = "sphere";
 const string PLANE = "plane";
-const string PARTICLE = "particle"
+const string PARTICLE = "particle";
 
 const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, PARTICLE};
 
@@ -145,7 +145,7 @@ void incompleteObjectError(const char *object, const char *attribute) {
   exit(-1);
 }
 
-void loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vector<CollisionObject *>* objects) {
+void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vector<CollisionObject *>* objects) {
   // Read JSON from file
   ifstream i(filename);
   json j;
@@ -165,7 +165,7 @@ void loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vec
     // Retrieve object
     json object = it.value();
 
-    // Parse object depending on type (cloth, sphere, or plane)
+    // Parse object depending on type (fluid, sphere, or plane)
 
     if (key == PARTICLE) {
       Vector3D origin;
@@ -193,8 +193,8 @@ void loadObjectsFromFile(string filename, Cloth *cloth, ClothParameters *cp, vec
         incompleteObjectError("particle", "friction");
       }
 
-      Particle *p = new Particle(origin, radius, friction);
-      objects->push_back(p);
+      // Particle *p = new Particle(origin, radius, friction);
+      // objects->push_back(p);
     } else { // PLANE
       Vector3D point, normal;
       double friction;
@@ -236,15 +236,15 @@ int main(int argc, char **argv) {
   vector<CollisionObject *> objects;
 
   if (argc == 1) { // No arguments, default initialization
-    string default_file_name = "../scene/pinned2.json";
-    loadObjectsFromFile(default_file_name, &fluid, &fp, &objects);
+    // string default_file_name = "../scene/pinned2.json";
+    // loadObjectsFromFile(default_file_name, &fluid, &fp, &objects);
   } else {
     int c;
 
     while ((c = getopt (argc, argv, "f:")) != -1) {
       switch (c) {
         case 'f':
-          loadObjectsFromFile(optarg, &cloth, &cp, &objects);
+          loadObjectsFromFile(optarg, &fluid, &fp, &objects);
           break;
         default:
           usageError(argv[0]);
@@ -256,10 +256,10 @@ int main(int argc, char **argv) {
 
   createGLContexts();
 
-  // Initialize the Cloth object
+  // Initialize the Fluid object
   fluid.buildGrid();
 
-  // Initialize the ClothSimulator object
+  // Initialize the FluidSimulator object
   app = new FluidSimulator(screen);
   app->loadFluid(&fluid);
   app->loadFluidParameters(&fp);
