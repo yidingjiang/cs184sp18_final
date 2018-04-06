@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Cloth simulation source
-set(CLOTHSIM_VIEWER_SOURCE
-    # Cloth simulation objects
-    cloth.cpp
-    clothMesh.cpp
+set(FLUIDSIM_VIEWER_SOURCE
+    # Fluid simulation objects
+    fluid.cpp
 
     # Collision objects
     collision/sphere.cpp
     collision/plane.cpp
+    collison/particle.cpp
 
     # Application
     main.cpp
-    clothSimulator.cpp
+    fluidSimulator.cpp
 
     # Miscellaneous
     # png.cpp
@@ -57,7 +57,7 @@ link_directories(
 #-------------------------------------------------------------------------------
 # Add executable
 #-------------------------------------------------------------------------------
-add_executable(clothsim ${CLOTHSIM_VIEWER_SOURCE})
+add_executable(fluidsim ${CLOTHSIM_VIEWER_SOURCE})
 
 target_link_libraries(clothsim
     CGL ${CGL_LIBRARIES}
@@ -78,4 +78,4 @@ endif(APPLE)
 set(EXECUTABLE_OUTPUT_PATH ..)
 
 # Install to project root
-install(TARGETS clothsim DESTINATION ${ClothSim_SOURCE_DIR})
+install(TARGETS fluidsim DESTINATION ${ClothSim_SOURCE_DIR})

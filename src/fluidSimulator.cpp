@@ -46,7 +46,7 @@ void FluidSimulator::loadFluidParameters(FluidParameters *fp) { this->fp = fp; }
 void FluidSimulator::loadCollisionObjects(vector<CollisionObject *> *objects) { this->collision_objects = objects; }
 
 /**
- * Initializes the cloth simulation and spawns a new thread to separate
+ * Initializes the fluid simulation and spawns a new thread to separate
  * rendering from simulation.
  */
 void FluidSimulator::init() {
@@ -294,7 +294,7 @@ bool FluidSimulator::keyCallbackEvent(int key, int scancode, int action,
       break;
     case 'r':
     case 'R':
-      cloth->reset();
+      fluid->reset();
       break;
     case ' ':
       resetCamera();

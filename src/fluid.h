@@ -45,11 +45,6 @@ struct Fluid {
                 vector<CollisionObject *> *collision_objects);
 
   void reset();
-  void buildFluidMesh();
-
-  void build_spatial_map();
-  void self_collide(PointMass &pm, double simulation_steps);
-  float hash_position(Vector3D pos);
 
   // Fluid properties
   double width;
@@ -62,9 +57,6 @@ struct Fluid {
 
   // Fluid components
   vector<Particle> particles;
-
-  // Spatial hashing
-  unordered_map<float, vector<Particle *> *> map;
 };
 
 #endif /* FLUID_H */
