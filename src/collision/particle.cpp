@@ -10,8 +10,8 @@ void Particle::collide_particle(Particle &pm) {
   // TODO (Part 3.1): Handle collisions with spheres.
 	Vector3D d = pm.origin - origin;
 	if (d.norm() <= radius + pm.radius) {
-		Vector3D d_normal = d / d.norm();
-		Vector3D tangent_p = origin + radius * d_normal;
+		Vector3D d_normal = d.unit();
+		Vector3D tangent_p = origin + (radius+pm.radius+RADIUS_OFFSET) * d_normal;
 		Vector3D correction_vec = tangent_p - pm.last_origin;
 		pm.origin = pm.last_origin + (1.-friction)*correction_vec;
 	}

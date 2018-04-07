@@ -9,6 +9,8 @@
 using namespace CGL;
 using namespace std;
 
+#define RADIUS_OFFSET 1e-8
+
 struct Particle : public CollisionObject {
 public:
   Particle(const Vector3D &origin, double radius, double friction)

@@ -114,6 +114,9 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     for (CollisionObject *co : *collision_objects) {
       co->collide_particle(m);
     }
+    for (auto &p : this->particles) {
+      if ((p.origin-m.origin).norm() > 1e-10) p.collide_particle(m);
+    }
   }
 }
 
