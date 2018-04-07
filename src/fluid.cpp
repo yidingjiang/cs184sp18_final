@@ -33,7 +33,9 @@ void Fluid::buildGrid() {
   for (int i = 0; i < num_width_points; i++) {
     for (int j = 0; j < num_length_points; j++) {
       for (int k = 0; k < num_height_points; k++) {
-        Vector3D pos = Vector3D(i * w_offset, j * l_offset, k * h_offset);
+        Vector3D pos = Vector3D(i * w_offset + ((double)(rand()%10 - 5))/100.,
+                                j * l_offset + ((double)(rand()%10 - 5))/100., 
+                                k * h_offset + ((double)(rand()%10 - 5))/100.);
         Particle p = Particle(pos, radius, friction);
         particles.emplace_back(p);
       }
@@ -73,7 +75,7 @@ float Fluid::hash_position(Vector3D pos) {
 void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                      vector<Vector3D> external_accelerations,
                      vector<CollisionObject *> *collision_objects) {
-  double mass = 0.1;
+  double mass = 0.01;
   double delta_t = 1.0f / frames_per_sec / simulation_steps;
 
   // TODO (Part 2.1): Compute total force acting on each point mass.
@@ -90,7 +92,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   
   for (auto &m : this->particles) {
     Vector3D temp = m.origin;
-    m.origin += m.origin-m.last_origin + pow(delta_t, 2) * m.forces/mass;
+    m.origin += 1.0 * (m.origin-m.last_origin) + pow(delta_t, 2) * m.forces/mass;
     m.last_origin = temp;
   }
 
