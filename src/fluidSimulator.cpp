@@ -21,7 +21,7 @@ FluidSimulator::FluidSimulator(Screen *screen) {
   // Initialize OpenGL buffers and shaders
 
   phongShader.initFromFiles("Phong", "../shaders/camera.vert",
-                            "../shaders/phong.frag");
+                            "../shaders/normal.frag");
 
   shaders.push_back(phongShader);
 
@@ -71,11 +71,13 @@ void FluidSimulator::init() {
   }
 
   avg_p_position /= fluid->particles.size();
-
-  CGL::Vector3D target(avg_p_position.x, avg_p_position.y / 2,
-                       avg_p_position.z);
+  std::cout << fluid->width << std::endl;
+  // CGL::Vector3D target(avg_p_position.x, avg_p_position.y / 2,
+  //                      avg_p_position.z);
+  CGL::Vector3D target(0.5, 0.2, 0.5);
   CGL::Vector3D c_dir(0., 0., 0.);
-  canonical_view_distance = max(fluid->width, fluid->height) * 0.9;
+  // canonical_view_distance = max(fluid->width, fluid->height) * 0.9;
+  canonical_view_distance = 0.9;
   scroll_rate = canonical_view_distance / 10;
 
   view_distance = canonical_view_distance * 2;
