@@ -34,7 +34,7 @@ void Fluid::buildGrid() {
     for (int j = 0; j < num_length_points; j++) {
       for (int k = 0; k < num_height_points; k++) {
         Vector3D pos = Vector3D(i * w_offset, j * l_offset, k * h_offset);
-        Particle p = Particle(pos, 1., 0.0);
+        Particle p = Particle(pos, 0.05, 0.3);
         particles.emplace_back(p);
       }
     }
@@ -45,7 +45,7 @@ void Fluid::buildGrid() {
 void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                      vector<Vector3D> external_accelerations,
                      vector<CollisionObject *> *collision_objects) {
-  double mass = width * height * fp->density / num_width_points / num_height_points;
+  /*double mass = width * height * fp->density / num_width_points / num_height_points;
   double delta_t = 1.0f / frames_per_sec / simulation_steps;
 
   // TODO (Part 2.1): Compute total force acting on each point mass.
@@ -65,7 +65,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     Vector3D temp = m.origin;
     m.origin += (1.-fp->damping/100.) * (m.origin - m.last_origin) + pow(delta_t, 2) * m.forces/mass;
     m.last_origin = temp;
-  }
+  }*/
 
   // This won't do anything until you complete Part 4.
   // build_spatial_map();
