@@ -2,6 +2,7 @@
 #define COLLISIONOBJECT_SPHERE_H
 
 #include "collisionObject.h"
+#include "particle.h"
 
 using namespace CGL;
 using namespace std;

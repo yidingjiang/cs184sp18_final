@@ -131,7 +131,7 @@ void FluidSimulator::drawContents() {
   case PARTICLE:
     drawParticle(shader);
     break;
-  }
+  } 
 
   for (CollisionObject *co : *collision_objects) {
     co->render(shader);

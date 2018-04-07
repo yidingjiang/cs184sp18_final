@@ -4,11 +4,12 @@
 #include "CGL/CGL.h"
 #include "CGL/misc.h"
 #include "CGL/vector3D.h"
+#include "collisionObject.h"
 
 using namespace CGL;
 using namespace std;
 
-struct Particle {
+struct Particle : public CollisionObject {
 public:
   Particle(const Vector3D &origin, double radius, double friction)
       : origin(origin), last_origin(origin), start_origin(origin),

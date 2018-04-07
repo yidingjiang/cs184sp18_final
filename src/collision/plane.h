@@ -4,6 +4,7 @@
 #include <nanogui/nanogui.h>
 
 #include "collisionObject.h"
+#include "particle.h"
 
 using namespace nanogui;
 using namespace CGL;

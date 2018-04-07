@@ -8,6 +8,7 @@
 #include "CGL/CGL.h"
 #include "CGL/misc.h"
 #include "collision/collisionObject.h"
+#include "collision/particle.h"
 
 using namespace CGL;
 using namespace std;
