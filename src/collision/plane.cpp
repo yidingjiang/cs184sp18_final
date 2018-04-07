@@ -22,7 +22,7 @@ void Plane::collide_particle(Particle &pm) {
 }
 
 void Plane::render(GLShader &shader) {
-  nanogui::Color color(0.7f, 0.7f, 0.7f, 1.0f);
+  /*nanogui::Color color(0.7f, 0.7f, 0.7f, 1.0f);
 
   Vector3f sPoint(point.x, point.y, point.z);
   Vector3f sNormal(normal.x, normal.y, normal.z);
@@ -50,5 +50,5 @@ void Plane::render(GLShader &shader) {
   shader.uploadAttrib("in_position", positions);
   shader.uploadAttrib("in_normal", normals);
 
-  shader.drawArray(GL_TRIANGLE_STRIP, 0, 4);
+  shader.drawArray(GL_TRIANGLE_STRIP, 0, 4);*/
 }
