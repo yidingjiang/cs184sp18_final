@@ -200,34 +200,36 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       fluid->radius = radius;
       fluid->friction = friction;
     } else if (key == PLANE) { // PLANE
-      Vector3D point, normal;
-      double friction;
+      for (auto plane : object){
+        Vector3D point, normal;
+        double friction;
 
-      auto it_point = object.find("point");
-      if (it_point != object.end()) {
-        vector<double> vec_point = *it_point;
-        point = Vector3D(vec_point[0], vec_point[1], vec_point[2]);
-      } else {
-        incompleteObjectError("plane", "point");
+        auto it_point = plane.find("point");
+        if (it_point != plane.end()) {
+          vector<double> vec_point = *it_point;
+          point = Vector3D(vec_point[0], vec_point[1], vec_point[2]);
+        } else {
+          incompleteObjectError("plane", "point");
+        }
+
+        auto it_normal = plane.find("normal");
+        if (it_normal != plane.end()) {
+          vector<double> vec_normal = *it_normal;
+          normal = Vector3D(vec_normal[0], vec_normal[1], vec_normal[2]);
+        } else {
+          incompleteObjectError("plane", "normal");
+        }
+
+        auto it_friction = plane.find("friction");
+        if (it_friction != plane.end()) {
+          friction = *it_friction;
+        } else {
+          incompleteObjectError("plane", "friction");
+        }
+
+        Plane *p = new Plane(point, normal, friction);
+        objects->push_back(p);
       }
-
-      auto it_normal = object.find("normal");
-      if (it_normal != object.end()) {
-        vector<double> vec_normal = *it_normal;
-        normal = Vector3D(vec_normal[0], vec_normal[1], vec_normal[2]);
-      } else {
-        incompleteObjectError("plane", "normal");
-      }
-
-      auto it_friction = object.find("friction");
-      if (it_friction != object.end()) {
-        friction = *it_friction;
-      } else {
-        incompleteObjectError("plane", "friction");
-      }
-
-      Plane *p = new Plane(point, normal, friction);
-      objects->push_back(p);
     } else if (key == FLUID){
       int num_width_points, num_height_points, num_length_points;
       double width, height, length;
