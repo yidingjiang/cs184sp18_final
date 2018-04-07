@@ -20,7 +20,7 @@ FluidSimulator::FluidSimulator(Screen *screen) {
 
   // Initialize OpenGL buffers and shaders
 
-  particleShader.initFromFiles("Paritcle", "../shaders/camera.vert",
+  particleShader.initFromFiles("Particle", "../shaders/camera.vert",
                                "../shaders/particle.frag");
 
   shaders.push_back(particleShader);
