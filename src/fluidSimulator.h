@@ -33,10 +33,10 @@ public:
 
 private:
   virtual void initGUI(Screen *screen);
-  void drawParticle(GLShader &shader);
+  // void drawParticle(GLShader &shader);
   // void drawWireframe(GLShader &shader);
   // void drawNormals(GLShader &shader);
-  // void drawPhong(GLShader &shader);
+  void drawPhong(GLShader &shader);
 
   // Camera methods
 
@@ -58,12 +58,12 @@ private:
 
   // OpenGL attributes
 
-  enum e_shader { PARTICLE = 0 };
-  e_shader activeShader = PARTICLE;
+  enum e_shader { PHONG = 0 };
+  e_shader activeShader = PHONG;
 
   vector<GLShader> shaders;
 
-  GLShader particleShader;
+  GLShader phongShader;
 
   // Camera attributes
 

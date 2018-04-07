@@ -20,10 +20,10 @@ FluidSimulator::FluidSimulator(Screen *screen) {
 
   // Initialize OpenGL buffers and shaders
 
-  particleShader.initFromFiles("Particle", "../shaders/camera.vert",
-                               "../shaders/particle.frag");
+  phongShader.initFromFiles("Phong", "../shaders/camera.vert",
+                            "../shaders/phong.frag");
 
-  shaders.push_back(particleShader);
+  shaders.push_back(phongShader);
 
   glEnable(GL_PROGRAM_POINT_SIZE);
   glEnable(GL_DEPTH_TEST);
@@ -127,30 +127,9 @@ void FluidSimulator::drawContents() {
   shader.setUniform("model", model);
   shader.setUniform("viewProjection", viewProjection);
 
-  switch (activeShader) {
-  case PARTICLE:
-    drawParticle(shader);
-    break;
-  } 
-
   for (CollisionObject *co : *collision_objects) {
     co->render(shader);
   }
-}
-
-void FluidSimulator::drawParticle(GLShader &shader) {
-  int num_particles = fluid->particles.size();
-
-  for (int i = 0; i < num_particles; i++) {
-    Particle *p = &fluid->particles[i];
-    p->render(shader);
-  }
-
-  // Instancing
-  // shader.uploadAttrib("in_position", positions);
-  // shader.uploadAttrib("in_normal", normals);
-
-  // shader.drawArray(GL_TRIANGLES, 0, num_tris * 3);
 }
 
 
