@@ -45,11 +45,11 @@ void Fluid::buildGrid() {
 void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                      vector<Vector3D> external_accelerations,
                      vector<CollisionObject *> *collision_objects) {
-  /*double mass = width * height * fp->density / num_width_points / num_height_points;
+  double mass = 0.1;
   double delta_t = 1.0f / frames_per_sec / simulation_steps;
 
   // TODO (Part 2.1): Compute total force acting on each point mass.
-  for (auto &p : particles) {
+  for (auto &p : this->particles) {
     // reseting all forces
     p.forces = Vector3D(0,0,0);
   }
@@ -59,9 +59,15 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
       p.forces += mass * ea;
     }
   }
+  
+  for (auto &m : this->particles) {
+    Vector3D temp = m.origin;
+    m.origin += pow(delta_t, 2) * m.forces/mass;
+    m.last_origin = temp;
+  }
 
   // TODO (Part 2.2): Use Verlet integration to compute new point mass origins
-  for (auto &m : particles) {
+  /*for (auto &m : particles) {
     Vector3D temp = m.origin;
     m.origin += (1.-fp->damping/100.) * (m.origin - m.last_origin) + pow(delta_t, 2) * m.forces/mass;
     m.last_origin = temp;
