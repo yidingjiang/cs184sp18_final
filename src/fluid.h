@@ -60,6 +60,12 @@ struct Fluid {
 
   // Fluid components
   vector<Particle> particles;
+  
+  // Spatial hashing
+  unordered_map<float, vector<Particle *> *> map;
+  
+  void build_spatial_map();
+  float hash_position(Vector3D pos);
 };
 
 #endif /* FLUID_H */

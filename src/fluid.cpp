@@ -42,6 +42,34 @@ void Fluid::buildGrid() {
 
 }
 
+void Fluid::build_spatial_map() {
+  for (const auto &entry : map) {
+    delete(entry.second);
+  }
+  map.clear();
+
+  for (Particle &particle : this->particles){
+    float key = hash_position(particle.origin);
+    if (map.find(key) == map.end()){
+      map[key] = new std::vector<Particle *>();
+    }
+    map[key]->push_back(&particle);
+  }
+}
+
+float Fluid::hash_position(Vector3D pos) {
+  // TODO (Part 4.1): Hash a 3D position into a unique float identifier that represents
+  // membership in some uniquely identified 3D box volume.
+  double w = 3 * width / num_width_points;
+  double h = 3 * height / num_height_points;
+  double t = max(w,h);
+  float xVol = pos.x - fmod(pos.x, w);
+  float yVol = pos.y - fmod(pos.y, h);
+  float zVol = pos.z - fmod(pos.z, t);
+  
+  return (xVol * 31 + yVol) * 31 + zVol;
+}
+
 void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                      vector<Vector3D> external_accelerations,
                      vector<CollisionObject *> *collision_objects) {
@@ -78,6 +106,8 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   // for (Particle &pm : point_masses) {
   //   self_collide(pm, simulation_steps);
   // }
+  
+  build_spatial_map();
 
   // This won't do anything until you complete Part 3.
   for (auto &m : this->particles) {
