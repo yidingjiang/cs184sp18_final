@@ -26,8 +26,9 @@ using json = nlohmann::json;
 const string SPHERE = "sphere";
 const string PLANE = "plane";
 const string PARTICLE = "particle";
+const string FLUID = "fluid";
 
-const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, PARTICLE};
+const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, PARTICLE, FLUID};
 
 FluidSimulator *app = nullptr;
 GLFWwindow *window = nullptr;
@@ -195,7 +196,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
 
       Particle *p = new Particle(origin, radius, friction);
       objects->push_back(p);
-    } else { // PLANE
+    } else if (key == PLANE) { // PLANE
       Vector3D point, normal;
       double friction;
 
@@ -224,6 +225,33 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
 
       Plane *p = new Plane(point, normal, friction);
       objects->push_back(p);
+    } else if (key == FLUID){
+      int num_width_points, num_height_points, num_length_points;
+      
+      auto it_num_width_points = object.find("num_width_points");
+      if (it_num_width_points != object.end()) {
+        num_width_points = *it_num_width_points;
+      } else {
+        incompleteObjectError("fluid", "num_width_points");
+      }
+
+      auto it_num_height_points = object.find("num_height_points");
+      if (it_num_height_points != object.end()) {
+        num_height_points = *it_num_height_points;
+      } else {
+        incompleteObjectError("fluid", "num_height_points");
+      }
+      
+      auto it_num_length_points = object.find("num_length_points");
+      if (it_num_length_points != object.end()) {
+        num_length_points = *it_num_length_points;
+      } else {
+        incompleteObjectError("fluid", "num_length_points");
+      }
+      
+      fluid->num_width_points = num_width_points;
+      fluid->num_height_points = num_height_points;
+      fluid->num_length_points = num_length_points;
     }
   }
 

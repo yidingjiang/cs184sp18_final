@@ -1,6 +1,6 @@
 {
   "particle": {
-    "origin": [0.5, 0.2, 0.5],
+    "origin": [1.0, 0.2, 0.5],
     "radius": 0.05,
     "friction": 0.3
   },
@@ -8,5 +8,10 @@
     "point": [0, 0, 0],
     "normal": [0, 1, 0],
     "friction": 0.5
+  },
+  "fluid": {
+    "num_width_points": 50,
+    "num_height_points": 50,
+    "num_length_points": 50
   }
 }
