@@ -80,11 +80,11 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   // }
 
   // This won't do anything until you complete Part 3.
-  // for (Particle &pm : point_masses) {
-  //   for (CollisionObject *co : *collision_objects) {
-  //     co->collide(pm);
-  //   }
-  // }
+  for (auto &m : this->particles) {
+    for (CollisionObject *co : *collision_objects) {
+      co->collide_particle(m);
+    }
+  }
 }
 
 ///////////////////////////////////////////////////////
