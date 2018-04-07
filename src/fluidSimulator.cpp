@@ -21,7 +21,7 @@ FluidSimulator::FluidSimulator(Screen *screen) {
   // Initialize OpenGL buffers and shaders
 
   phongShader.initFromFiles("Phong", "../shaders/camera.vert",
-                            "../shaders/normal.frag");
+                            "../shaders/phong.frag");
 
   shaders.push_back(phongShader);
 
@@ -128,6 +128,8 @@ void FluidSimulator::drawContents() {
 
   shader.setUniform("model", model);
   shader.setUniform("viewProjection", viewProjection);
+  shader.setUniform("light", Vector3f(0.5, 2, 2));
+  shader.setUniform("in_color", color);
 
   for (CollisionObject *co : *collision_objects) {
     co->render(shader);
