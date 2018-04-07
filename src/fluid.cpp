@@ -29,6 +29,7 @@ void Fluid::buildGrid() {
   double w_offset = width / ((double) num_width_points);
   double l_offset = length / ((double) num_length_points);
   double h_offset = height / ((double) num_height_points);
+  
   for (int i = 0; i < num_width_points; i++) {
     for (int j = 0; j < num_length_points; j++) {
       for (int k = 0; k < num_height_points; k++) {
