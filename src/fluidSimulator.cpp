@@ -134,6 +134,9 @@ void FluidSimulator::drawContents() {
   for (CollisionObject *co : *collision_objects) {
     co->render(shader);
   }
+  for (Particle p : fluid->particles) {
+    p.render(shader);
+  }
 }
 
 
