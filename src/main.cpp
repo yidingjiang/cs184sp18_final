@@ -194,8 +194,8 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
         incompleteObjectError("particle", "friction");
       }
 
-      Particle *p = new Particle(origin, radius, friction);
-      objects->push_back(p);
+      /*Particle *p = new Particle(origin, radius, friction);
+      objects->push_back(p);*/
       
       fluid->radius = radius;
       fluid->friction = friction;

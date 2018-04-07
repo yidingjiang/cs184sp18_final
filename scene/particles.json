@@ -5,7 +5,7 @@
     "friction": 0.3
   },
   "plane": {
-    "point": [0, 0, 0],
+    "point": [0, -0.1, 0],
     "normal": [0, 1, 0],
     "friction": 0.5
   },
