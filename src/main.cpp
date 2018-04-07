@@ -196,6 +196,9 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
 
       Particle *p = new Particle(origin, radius, friction);
       objects->push_back(p);
+      
+      fluid->radius = radius;
+      fluid->friction = friction;
     } else if (key == PLANE) { // PLANE
       Vector3D point, normal;
       double friction;

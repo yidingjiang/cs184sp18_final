@@ -54,6 +54,9 @@ struct Fluid {
   int num_width_points;
   int num_length_points;
   int num_height_points;
+  
+  double radius;
+  double friction;
 
   // Fluid components
   vector<Particle> particles;

@@ -34,7 +34,7 @@ void Fluid::buildGrid() {
     for (int j = 0; j < num_length_points; j++) {
       for (int k = 0; k < num_height_points; k++) {
         Vector3D pos = Vector3D(i * w_offset, j * l_offset, k * h_offset);
-        Particle p = Particle(pos, 0.05, 0.3);
+        Particle p = Particle(pos, radius, friction);
         particles.emplace_back(p);
       }
     }

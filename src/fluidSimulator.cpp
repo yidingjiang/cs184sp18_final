@@ -135,6 +135,7 @@ void FluidSimulator::drawContents() {
     co->render(shader);
   }
   
+  shader.setUniform("in_color", color);
   for (Particle p : fluid->particles) {
     p.render(shader);
   }
