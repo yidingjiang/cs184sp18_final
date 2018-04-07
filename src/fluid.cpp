@@ -62,7 +62,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   
   for (auto &m : this->particles) {
     Vector3D temp = m.origin;
-    m.origin += pow(delta_t, 2) * m.forces/mass;
+    m.origin += m.origin-m.last_origin + pow(delta_t, 2) * m.forces/mass;
     m.last_origin = temp;
   }
 
