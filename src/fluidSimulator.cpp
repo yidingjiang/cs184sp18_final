@@ -11,6 +11,7 @@
 #include "collision/plane.h"
 #include "collision/particle.h"
 #include "misc/camera_info.h"
+#include "shader.hpp"
 
 using namespace nanogui;
 using namespace std;
@@ -39,7 +40,46 @@ FluidSimulator::~FluidSimulator() {
   if (collision_objects) delete collision_objects;
 }
 
-void FluidSimulator::loadFluid(Fluid *fluid) { this->fluid = fluid; }
+void FluidSimulator::loadFluid(Fluid *fluid) { 
+  this->fluid = fluid;
+
+  g_vertex_buffer_data = fluid->getBuffer();
+  glGenVertexArrays(1, &positionsVAO);
+  glGenBuffers(1, &positionsVBO);
+
+  glBindVertexArray(positionsVAO);
+  // Get a handle (ID) to the vertex buffer object (VBO), a buffer that holds the data that will be transferred to the GPU.
+  // We bind the VBO to the global GL_ARRAY_BUFFER, and store our particles into the buffer. GL_STREAM_DRAW is selected
+  // since we expect to update the vertex positions every frame.
+  glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
+  
+  // Enable gl_PointSize in the vertex shader to specify the size of a point
+  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+  glVertexAttribPointer(
+    0,                  // vertex positions attribute specified at location 0 in the vertex shader.
+    3,                  // position is a vec3
+    GL_FLOAT,           // type
+    GL_FALSE,           // do not normalize
+    7 * sizeof(GLfloat),// Position is 3 floats, then color is 4 floats
+    (GLvoid*)0          // first vector value starts at index 0 -> offset = 0
+  );
+  glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(
+    1,
+    4,
+    GL_FLOAT,
+    GL_FALSE,
+    7 * sizeof(GLfloat),
+    (GLvoid*)(3* sizeof(GLfloat))
+  );
+  glEnableVertexAttribArray(1);
+
+  // Unbind the VAO
+  glBindVertexArray(0);
+  programID = LoadShaders( "../shaders/SimpleVertexShader.vertexshader", "../shaders/SimpleFragmentShader.fragmentshader" );
+}
 
 void FluidSimulator::loadFluidParameters(FluidParameters *fp) { this->fp = fp; }
 
@@ -112,6 +152,8 @@ void FluidSimulator::drawContents() {
   }
 
   // Bind the active shader
+  GLint particleSizeLocation = glGetUniformLocation(programID, "particle_size");
+  glUniform1i(particleSizeLocation, 3*((float) camera.r)*5/45.0f);
 
   GLShader shader = shaders[activeShader];
   shader.bind();
@@ -131,14 +173,19 @@ void FluidSimulator::drawContents() {
   shader.setUniform("light", Vector3f(0.5, 2, 2));
   shader.setUniform("in_color", color);
 
-  for (CollisionObject *co : *collision_objects) {
-    co->render(shader);
-  }
-  
-  shader.setUniform("in_color", color);
-  for (Particle p : fluid->particles) {
-    p.render(shader);
-  }
+  // for (CollisionObject *co : *collision_objects) {
+  //   co->render(shader);
+  // }
+  // for (Particle p : fluid->particles) {
+  //   p.render(shader);
+  // }
+
+  glBindVertexArray(positionsVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
+  g_vertex_buffer_data = fluid->getBuffer();
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
+  glDrawArrays(GL_POINTS, 0, fluid->particles.size());
+  glBindVertexArray(0);
 }
 
 

@@ -72,6 +72,8 @@ public:
   virtual void dump_settings(std::string filename);
   virtual void load_settings(std::string filename);
 
+  double r;
+
 private:
   // Computes pos, screenXDir, screenYDir from target, r, phi, theta.
   void compute_position();
@@ -83,7 +85,7 @@ private:
   Vector3D pos, targetPos;
 
   // Orientation relative to target, and min & max distance from the target.
-  double phi, theta, r, minR, maxR;
+  double phi, theta, minR, maxR;
 
   // camera-to-world rotation matrix (note: also need to translate a
   // camera-space point by 'pos' to perform a full camera-to-world

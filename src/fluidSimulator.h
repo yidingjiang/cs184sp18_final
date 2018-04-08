@@ -57,6 +57,10 @@ private:
   vector<CollisionObject *> *collision_objects;
 
   // OpenGL attributes
+  GLuint programID;
+  GLfloat* g_vertex_buffer_data;
+  GLuint positionsVAO;
+  GLuint positionsVBO;
 
   enum e_shader { PHONG = 0 };
   e_shader activeShader = PHONG;

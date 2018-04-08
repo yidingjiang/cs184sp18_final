@@ -13,6 +13,7 @@
 #include "fluid.h"
 #include "fluidSimulator.h"
 #include "json.hpp"
+#include "shader.hpp"
 
 typedef uint32_t gid_t;
 

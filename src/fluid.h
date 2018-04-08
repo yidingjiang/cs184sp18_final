@@ -39,7 +39,7 @@ struct Fluid {
   ~Fluid();
 
   void buildGrid();
-
+  GLfloat* getBuffer();
   void simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                 vector<Vector3D> external_accelerations,
                 vector<CollisionObject *> *collision_objects);
@@ -59,7 +59,7 @@ struct Fluid {
   double friction;
   
   // Used to find neighboring particles
-  double R;
+  double R=0.1;
 
   // Fluid components
   vector<Particle> particles;
