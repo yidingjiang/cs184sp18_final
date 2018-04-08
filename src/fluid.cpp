@@ -78,6 +78,7 @@ float Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) 
 
 std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
   std::vector<Particle *> neighbors = std::vector<Particle *>();
+  // Get the location of all neighboring cells in the hashmap.
   std::vector<float> neighborCellsHashes = std::vector<float>();
   neighborCellsHashes.push_back(hash_position(pos));
   neighborCellsHashes.push_back(hash_position(pos, 1, 0, 0));
@@ -87,6 +88,7 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
   neighborCellsHashes.push_back(hash_position(pos, 0, 0, 1));
   neighborCellsHashes.push_back(hash_position(pos, 0, 0, -1));
   
+  // Iterate through the neighbor cell and check if within R distance. 
   for (float neighborCellsHash : neighborCellsHashes){
     if (map.find(neighborCellsHash) == map.end()){
       vector<Particle *> currCell = *map[neighborCellsHash];
