@@ -39,7 +39,6 @@ struct Fluid {
   ~Fluid();
 
   void buildGrid();
-
   void simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                 vector<Vector3D> external_accelerations,
                 vector<CollisionObject *> *collision_objects);
@@ -59,7 +58,9 @@ struct Fluid {
   double friction;
   
   // Used to find neighboring particles
-  double R;
+  double R=0.1;
+  double W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
+  double W_DEL_CONSTANT = 45.0/(PI*pow(R,6));
 
   // Fluid components
   vector<Particle> particles;
@@ -71,6 +72,19 @@ struct Fluid {
   float hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
   
   std::vector<Particle *> getNeighbors(Vector3D pos);
+
+  double W(Vector3D r);
+  Vector3D del_W(Vector3D r);
+  double rho_i(Particle p);
+  double C_i(Particle p);
+  void update_lambdas();
+  void update_density();
+  double del_ci_pk_sq_norm(Particle i, Particle k);
+  Vector3D delta_p(Particle p);
+  Vector3D f_vorticity(Particle p);
+  void apply_viscosity(Particle p);
+  void update_omega();
+
 };
 
 #endif /* FLUID_H */
