@@ -2,7 +2,7 @@
   "particle": {
     "origin": [1.0, 0.2, 0.5],
     "radius": 0.05,
-    "friction": 0.3
+    "friction": 0.01
   },
   "plane": [{
               "point": [0, -0.1, 0],
@@ -35,8 +35,8 @@
     "num_width_points": 3,
     "num_height_points": 3,
     "num_length_points": 3,
-    "width": 1,
-    "height": 1,
-    "length": 1
+    "width": 0.5,
+    "height": 0.5,
+    "length": 0.5
   }
 }
