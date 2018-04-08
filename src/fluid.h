@@ -60,6 +60,8 @@ struct Fluid {
   
   // Used to find neighboring particles
   double R=0.1;
+  double W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
+  double W_DEL_CONSTANT = 45.0/(PI*pow(R,6));
 
   // Fluid components
   vector<Particle> particles;
@@ -82,7 +84,6 @@ struct Fluid {
   Vector3D delta_p(Particle p);
   Vector3D f_vorticity(Particle p);
   void apply_viscosity(Particle p);
-  void update_delta_p();
   void update_omega();
 
 };

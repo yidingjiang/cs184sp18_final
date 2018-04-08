@@ -9,11 +9,8 @@
 
 using namespace std;
 
-#define H 0.1
-#define W_CONSTANT 315.0/(64.0*PI*pow(H,9))
-#define W_DEL_CONSTANT 45.0/(PI*pow(H,6))
-#define mass 0.01
-#define RHO_O 1
+double RHO_O = 1; //TODO in future, this should be the density function evaluated at t=0
+double mass = 0.01;
 #define EPSILON 1e-6
 
 Fluid::Fluid(double width, double length, double height, double particle_radius,
@@ -52,7 +49,7 @@ void Fluid::buildGrid() {
 }
 
 GLfloat* Fluid::getBuffer() {
-    GLfloat* data = (GLfloat*) malloc(sizeof(GLfloat)*particles.size()*7);
+    GLfloat* data = (GLfloat*) malloc(sizeof(GLfloat)*this->particles.size()*7);
     int count = 0;
     for (auto particle : particles) {
         data[count * 7] = particle.origin.x;
@@ -247,14 +244,14 @@ void Fluid::reset() {
 
 double Fluid::W(Vector3D r) { //density kernel
   double r_norm = r.norm();
-  if ((r_norm < 0) || (r_norm > H)) return 0;
-  return pow(H*H-r_norm*r_norm, 3.0)*W_CONSTANT;
+  if ((r_norm < 0) || (r_norm > R)) return 0;
+  return pow(R*R-r_norm*r_norm, 3.0)*W_CONSTANT;
 }
 
 Vector3D Fluid::del_W(Vector3D r) { // gradient of density kernel
   double r_norm = r.norm();
-  if ((r_norm < 1e-5) || (r_norm > H)) return 0;
-  return r.unit()*pow(H-r_norm,2.0)*W_DEL_CONSTANT;
+  if ((r_norm < 1e-5) || (r_norm > R)) return 0;
+  return r.unit()*pow(R-r_norm,2.0)*W_DEL_CONSTANT;
 }
 
 
@@ -267,7 +264,7 @@ double Fluid::del_ci_pk_sq_norm(Particle i, Particle k){
   Vector3D pi = i.origin;
   Vector3D pk = k.origin;
   Vector3D diff = pi - pk;
-  if (diff.norm() > H) return 0;
+  if (diff.norm() > R) return 0;
   if (diff.norm() > 1e-9) {
     Vector3D v = del_W(diff)/RHO_O;
     return CGL::dot(v,v);
