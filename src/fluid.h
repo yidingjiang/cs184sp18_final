@@ -74,18 +74,6 @@ struct Fluid {
   
   std::vector<Particle *> getNeighbors(Vector3D pos);
 
-  double W(Vector3D r);
-  Vector3D del_W(Vector3D r);
-  double rho_i(Particle p);
-  double C_i(Particle p);
-  void update_lambdas();
-  void update_density();
-  double del_ci_pk_sq_norm(Particle i, Particle k);
-  Vector3D delta_p(Particle p);
-  Vector3D f_vorticity(Particle p);
-  void apply_viscosity(Particle p);
-  void update_omega();
-
 };
 
 #endif /* FLUID_H */
