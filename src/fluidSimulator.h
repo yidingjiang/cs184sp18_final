@@ -20,7 +20,7 @@ public:
   void loadFluidParameters(FluidParameters *fp);
   void loadCollisionObjects(vector<CollisionObject *> *objects);
   virtual bool isAlive();
-  virtual void drawContents();
+  virtual void drawContents(GLint particleSizeLocation);
 
   // Screen events
 
@@ -57,6 +57,9 @@ private:
   vector<CollisionObject *> *collision_objects;
 
   // OpenGL attributes
+  GLfloat* g_vertex_buffer_data;
+  GLuint positionsVAO;
+  GLuint positionsVBO;
 
   enum e_shader { PHONG = 0 };
   e_shader activeShader = PHONG;

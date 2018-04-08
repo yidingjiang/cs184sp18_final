@@ -44,6 +44,26 @@ void Fluid::buildGrid() {
 
 }
 
+GLfloat* Fluid::getBuffer() {
+    GLfloat* data = (GLfloat*) malloc(sizeof(GLfloat)*particles.size()*7);
+    int count = 0;
+    for (auto particle : particles) {
+        data[count * 7] = particle.origin.x;
+        data[count * 7+1] = particle.origin.y;
+        data[count * 7+2] = particle.origin.z;
+        // data[count * 7+3] = particle.color[0];
+        // data[count * 7+4] = particle.color[1];
+        // data[count * 7+5] = particle.color[2];
+        // data[count * 7+6] = particle.color[3];
+        data[count * 7+3] = 1.0f;
+        data[count * 7+4] = 0.0f;
+        data[count * 7+5] = 1.0f;
+        data[count * 7+6] = 1.0f;
+        count += 1;
+    }
+    return data;
+}
+
 void Fluid::build_spatial_map() {
   for (const auto &entry : map) {
     delete(entry.second);
@@ -126,19 +146,6 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     m.origin += 1.0 * (m.origin-m.last_origin) + pow(delta_t, 2) * m.forces/mass;
     m.last_origin = temp;
   }
-
-  // TODO (Part 2.2): Use Verlet integration to compute new point mass origins
-  /*for (auto &m : particles) {
-    Vector3D temp = m.origin;
-    m.origin += (1.-fp->damping/100.) * (m.origin - m.last_origin) + pow(delta_t, 2) * m.forces/mass;
-    m.last_origin = temp;
-  }*/
-
-  // This won't do anything until you complete Part 4.
-  // build_spatial_map();
-  // for (Particle &pm : point_masses) {
-  //   self_collide(pm, simulation_steps);
-  // }
   
   build_spatial_map();
 

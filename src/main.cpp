@@ -13,6 +13,7 @@
 #include "fluid.h"
 #include "fluidSimulator.h"
 #include "json.hpp"
+#include "shader.hpp"
 
 typedef uint32_t gid_t;
 
@@ -324,6 +325,7 @@ int main(int argc, char **argv) {
   app->loadFluidParameters(&fp);
   app->loadCollisionObjects(&objects);
   app->init();
+  GLuint programID = LoadShaders( "../shaders/SimpleVertexShader.vertexshader", "../shaders/SimpleFragmentShader.fragmentshader" );
 
   // Call this after all the widgets have been defined
 
@@ -340,7 +342,9 @@ int main(int argc, char **argv) {
     glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    app->drawContents();
+    GLint particleSizeLocation = glGetUniformLocation(programID, "particle_size");
+
+    app->drawContents(particleSizeLocation);
 
     // Draw nanogui
     screen->drawContents();
