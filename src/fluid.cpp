@@ -93,7 +93,9 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
     if (map.find(neighborCellsHash) == map.end()){
       vector<Particle *> currCell = *map[neighborCellsHash];
       for (Particle* particle : currCell){
-        neighbors.push_back(particle);
+        if ((pos-particle->origin).norm() < R){
+          neighbors.push_back(particle);
+        }
       }
     }
   }
