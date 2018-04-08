@@ -57,6 +57,9 @@ struct Fluid {
   
   double radius;
   double friction;
+  
+  // Used to find neighboring particles
+  double R;
 
   // Fluid components
   vector<Particle> particles;

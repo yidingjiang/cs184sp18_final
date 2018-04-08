@@ -82,37 +82,65 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
   
   if (map.find(hash_position(pos)) == map.end()){
     vector<Particle *> currCell = *map[hash_position(pos)];
-    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+    for (Particle* particle : currCell){
+      if ((pos-particle->origin).norm() < R){
+        neighbors.push_back(particle);
+      }
+    }
   }
   
   if (map.find(hash_position(pos, 1, 0, 0)) == map.end()){
     vector<Particle *> currCell = *map[hash_position(pos, 1, 0, 0)];
-    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+    for (Particle* particle : currCell){
+      if ((pos-particle->origin).norm() < R){
+        neighbors.push_back(particle);
+      }
+    }
   }
   
   if (map.find(hash_position(pos, -1, 0, 0)) == map.end()){
     vector<Particle *> currCell = *map[hash_position(pos, -1, 0, 0)];
-    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+    for (Particle* particle : currCell){
+      if ((pos-particle->origin).norm() < R){
+        neighbors.push_back(particle);
+      }
+    }
   }
   
   if (map.find(hash_position(pos, 0, 1, 0)) == map.end()){
     vector<Particle *> currCell = *map[hash_position(pos, 0, 1, 0)];
-    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+    for (Particle* particle : currCell){
+      if ((pos-particle->origin).norm() < R){
+        neighbors.push_back(particle);
+      }
+    }
   }
   
   if (map.find(hash_position(pos, 0, -1, 0)) == map.end()){
     vector<Particle *> currCell = *map[hash_position(pos, 0, -1, 0)];
-    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+    for (Particle* particle : currCell){
+      if ((pos-particle->origin).norm() < R){
+        neighbors.push_back(particle);
+      }
+    }
   }
   
   if (map.find(hash_position(pos, 0, 0, 1)) == map.end()){
     vector<Particle *> currCell = *map[hash_position(pos, 0, 0, 1)];
-    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+    for (Particle* particle : currCell){
+      if ((pos-particle->origin).norm() < R){
+        neighbors.push_back(particle);
+      }
+    }
   }
   
   if (map.find(hash_position(pos, 0, 0, -1)) == map.end()){
     vector<Particle *> currCell = *map[hash_position(pos, 0, 0, -1)];
-    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+    for (Particle* particle : currCell){
+      if ((pos-particle->origin).norm() < R){
+        neighbors.push_back(particle);
+      }
+    }
   }
   
   return neighbors;
