@@ -20,7 +20,7 @@ public:
   void loadFluidParameters(FluidParameters *fp);
   void loadCollisionObjects(vector<CollisionObject *> *objects);
   virtual bool isAlive();
-  virtual void drawContents(GLint particleSizeLocation);
+  virtual void drawContents();
 
   // Screen events
 
@@ -57,6 +57,7 @@ private:
   vector<CollisionObject *> *collision_objects;
 
   // OpenGL attributes
+  GLuint programID;
   GLfloat* g_vertex_buffer_data;
   GLuint positionsVAO;
   GLuint positionsVBO;

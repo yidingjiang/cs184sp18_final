@@ -11,6 +11,7 @@
 #include "collision/plane.h"
 #include "collision/particle.h"
 #include "misc/camera_info.h"
+#include "shader.hpp"
 
 using namespace nanogui;
 using namespace std;
@@ -77,6 +78,7 @@ void FluidSimulator::loadFluid(Fluid *fluid) {
 
   // Unbind the VAO
   glBindVertexArray(0);
+  programID = LoadShaders( "../shaders/SimpleVertexShader.vertexshader", "../shaders/SimpleFragmentShader.fragmentshader" );
 }
 
 void FluidSimulator::loadFluidParameters(FluidParameters *fp) { this->fp = fp; }
@@ -138,7 +140,7 @@ void FluidSimulator::init() {
 
 bool FluidSimulator::isAlive() { return is_alive; }
 
-void FluidSimulator::drawContents(GLint particleSizeLocation) {
+void FluidSimulator::drawContents() {
   glEnable(GL_DEPTH_TEST);
 
   if (!is_paused) {
@@ -150,7 +152,8 @@ void FluidSimulator::drawContents(GLint particleSizeLocation) {
   }
 
   // Bind the active shader
-  glUniform1i(particleSizeLocation, 3*((float) camera->r)*5/45.0f);
+  GLint particleSizeLocation = glGetUniformLocation(programID, "particle_size");
+  glUniform1i(particleSizeLocation, 3*((float) camera.r)*5/45.0f);
 
   GLShader shader = shaders[activeShader];
   shader.bind();
@@ -181,7 +184,7 @@ void FluidSimulator::drawContents(GLint particleSizeLocation) {
   glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
   g_vertex_buffer_data = fluid->getBuffer();
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
-  glDrawArrays(GL_POINTS, 0, particles->size());
+  glDrawArrays(GL_POINTS, 0, fluid->particles.size());
   glBindVertexArray(0);
 }
 
