@@ -59,7 +59,7 @@ void Fluid::build_spatial_map() {
   }
 }
 
-float Fluid::hash_position(Vector3D pos) {
+float Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) {
   // TODO (Part 4.1): Hash a 3D position into a unique float identifier that represents
   // membership in some uniquely identified 3D box volume.
   double w = 3 * width / num_width_points;
@@ -69,7 +69,53 @@ float Fluid::hash_position(Vector3D pos) {
   float yVol = pos.y - fmod(pos.y, h);
   float zVol = pos.z - fmod(pos.z, t);
   
+  xVol += xOffset;
+  yVol += yOffset;
+  zVol += zOffset;
+  
   return (xVol * 31 + yVol) * 31 + zVol;
+}
+
+std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
+  std::vector<Particle *> neighbors = std::vector<Particle *>();
+  
+  
+  if (map.find(hash_position(pos)) == map.end()){
+    vector<Particle *> currCell = *map[hash_position(pos)];
+    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+  }
+  
+  if (map.find(hash_position(pos, 1, 0, 0)) == map.end()){
+    vector<Particle *> currCell = *map[hash_position(pos, 1, 0, 0)];
+    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+  }
+  
+  if (map.find(hash_position(pos, -1, 0, 0)) == map.end()){
+    vector<Particle *> currCell = *map[hash_position(pos, -1, 0, 0)];
+    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+  }
+  
+  if (map.find(hash_position(pos, 0, 1, 0)) == map.end()){
+    vector<Particle *> currCell = *map[hash_position(pos, 0, 1, 0)];
+    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+  }
+  
+  if (map.find(hash_position(pos, 0, -1, 0)) == map.end()){
+    vector<Particle *> currCell = *map[hash_position(pos, 0, -1, 0)];
+    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+  }
+  
+  if (map.find(hash_position(pos, 0, 0, 1)) == map.end()){
+    vector<Particle *> currCell = *map[hash_position(pos, 0, 0, 1)];
+    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+  }
+  
+  if (map.find(hash_position(pos, 0, 0, -1)) == map.end()){
+    vector<Particle *> currCell = *map[hash_position(pos, 0, 0, -1)];
+    neighbors.insert(neighbors.end(), currCell.begin(), currCell.end());
+  }
+  
+  return neighbors;
 }
 
 void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
