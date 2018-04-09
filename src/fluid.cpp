@@ -102,6 +102,7 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
       }
     }
   }
+  //std::cout << neighbors->size() << std::endl;
   return *neighbors;
 }
 
@@ -224,7 +225,7 @@ void Fluid::update_density() {
     p.density = r*mass;
     ci += p.density/p.rest_density - 1;
   }
-  cout << ci << endl;
+  //cout << ci << endl;
 }
 
 void Fluid::update_lambdas() {
