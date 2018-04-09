@@ -96,13 +96,12 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
     if (map[neighborCellsHash] != NULL){
       vector<Particle *> currCell = *map[neighborCellsHash];
       for (Particle* particle : currCell){
-        if ((pos-particle->origin).norm() < R){
+        if ((pos-particle->origin).norm() < R && ((pos-particle->origin).norm() != 0)) {
           neighbors->push_back(particle);
         }
       }
     }
   }
-  //std::cout << neighbors->size() << std::endl;
   return *neighbors;
 }
 
