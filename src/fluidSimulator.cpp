@@ -40,7 +40,7 @@ FluidSimulator::~FluidSimulator() {
   if (collision_objects) delete collision_objects;
 }
 
-void FluidSimulator::loadFluid(Fluid *fluid) { 
+void FluidSimulator::loadFluid(Fluid *fluid) {
   this->fluid = fluid;
 
   g_vertex_buffer_data = fluid->getBuffer();
@@ -53,7 +53,7 @@ void FluidSimulator::loadFluid(Fluid *fluid) {
   // since we expect to update the vertex positions every frame.
   glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
-  
+
   // Enable gl_PointSize in the vertex shader to specify the size of a point
   glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
   glVertexAttribPointer(
@@ -151,10 +151,38 @@ void FluidSimulator::drawContents() {
     }
   }
 
-  // Bind the active shader
+  // instancing projection
   GLint particleSizeLocation = glGetUniformLocation(programID, "particle_size");
   glUniform1i(particleSizeLocation, 3*((float) camera.r)*5/45.0f);
 
+  Matrix4f _view = getViewMatrix();
+  // convert CLG to GLSL
+  mat4 cameraTransform = convertToMat4(_view);
+
+  Matrix4f _projection = getProjectionMatrix();
+  mat4 projection = convertToMat4(_projection);
+
+  mat4 scaling = mat4(vec4(((float) camera.r)/45.0f, 0, 0, 0),
+                      vec4(0, ((float) camera.r)/45.0f, 0, 0),
+                      vec4(0, 0, ((float) camera.r)/45.0f, 0),
+                      vec4(0, 0, 0, 1));
+
+  GLuint transformLoc = glGetUniformLocation(programID, "transform");
+  GLint projLoc = glGetUniformLocation(programID, "projection");
+  GLint scalingLoc = glGetUniformLocation(programID, "scaling");
+  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, &cameraTransform[0][0]);
+  glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
+  glUniformMatrix4fv(scalingLoc, 1, GL_FALSE, &scaling[0][0]);
+
+  glBindVertexArray(positionsVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
+  g_vertex_buffer_data = fluid->getBuffer();
+  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
+  glDrawArrays(GL_POINTS, 0, fluid->particles.size());
+  glBindVertexArray(0);
+
+
+  // non instancing; Bind the active shader
   GLShader shader = shaders[activeShader];
   shader.bind();
 
@@ -179,13 +207,6 @@ void FluidSimulator::drawContents() {
   // for (Particle p : fluid->particles) {
   //   p.render(shader);
   // }
-
-  glBindVertexArray(positionsVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
-  g_vertex_buffer_data = fluid->getBuffer();
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
-  glDrawArrays(GL_POINTS, 0, fluid->particles.size());
-  glBindVertexArray(0);
 }
 
 
