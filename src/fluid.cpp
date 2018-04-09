@@ -67,14 +67,9 @@ void Fluid::build_spatial_map() {
 float Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) {
   // TODO (Part 4.1): Hash a 3D position into a unique float identifier that represents
   // membership in some uniquely identified 3D box volume.
-  
-  double widthCell = width / R;
-  double heightCell = height / R;
-  double lengthCell = length / R;
-  
-  float xVol = widthCell * floor(pos.x);
-  float yVol = heightCell * floor(pos.y);
-  float zVol = lengthCell * floor(pos.z);
+  int xVol = floor(pos.x / R);
+  int yVol = floor(pos.y / R);
+  int zVol = floor(pos.z / R);
   
   xVol += xOffset;
   yVol += yOffset;
