@@ -232,7 +232,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       }
     } else if (key == FLUID){
       int num_width_points, num_height_points, num_length_points;
-      double width, height, length;
+      double width, height, length, R;
       
       auto it_num_width_points = object.find("num_width_points");
       if (it_num_width_points != object.end()) {
@@ -276,6 +276,14 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
         incompleteObjectError("fluid", "length");
       }
       
+      auto it_R = object.find("r");
+      if (it_R != object.end()) {
+        R = *it_R;
+      } else {
+        incompleteObjectError("fluid", "r");
+      }
+      
+      fluid->R = R;
       fluid->num_width_points = num_width_points;
       fluid->num_height_points = num_height_points;
       fluid->num_length_points = num_length_points;

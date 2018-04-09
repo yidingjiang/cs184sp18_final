@@ -37,6 +37,7 @@
     "num_length_points": 3,
     "width": 0.5,
     "height": 0.5,
-    "length": 0.5
+    "length": 0.5,
+    "r": 0.1
   }
 }
