@@ -14,7 +14,7 @@ double mass = 0.01;
 #define EPSILON 1e-6
 
 Fluid::Fluid(double width, double length, double height, double particle_radius,
-             int num_particles, int num_height_points, 
+             int num_particles, int num_height_points,
              int num_width_points, int num_length_points) {
   this->width = width;
   this->height = height;
@@ -33,12 +33,12 @@ void Fluid::buildGrid() {
   double w_offset = width / ((double) num_width_points);
   double l_offset = length / ((double) num_length_points);
   double h_offset = height / ((double) num_height_points);
-  
+
   for (int i = 0; i < num_width_points; i++) {
     for (int j = 0; j < num_length_points; j++) {
       for (int k = 0; k < num_height_points; k++) {
         Vector3D pos = Vector3D(i * w_offset + ((double)(rand()%10 - 5))/100.,
-                                j * l_offset + ((double)(rand()%10 - 5))/100., 
+                                j * l_offset + ((double)(rand()%10 - 5))/100.,
                                 k * h_offset + ((double)(rand()%10 - 5))/100.);
         Particle p = Particle(pos, radius, friction);
         particles.emplace_back(p);
@@ -60,7 +60,7 @@ GLfloat* Fluid::getBuffer() {
         // data[count * 7+5] = particle.color[2];
         // data[count * 7+6] = particle.color[3];
         data[count * 7+3] = 1.0f;
-        data[count * 7+4] = 0.0f;
+        data[count * 7+4] = 1.0f;
         data[count * 7+5] = 1.0f;
         data[count * 7+6] = 1.0f;
         count += 1;
@@ -92,11 +92,11 @@ float Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) 
   float xVol = pos.x - fmod(pos.x, w);
   float yVol = pos.y - fmod(pos.y, h);
   float zVol = pos.z - fmod(pos.z, t);
-  
+
   xVol += xOffset;
   yVol += yOffset;
   zVol += zOffset;
-  
+
   return (xVol * 31 + yVol) * 31 + zVol;
 }
 
@@ -111,8 +111,8 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
   neighborCellsHashes.push_back(hash_position(pos, 0, -1, 0));
   neighborCellsHashes.push_back(hash_position(pos, 0, 0, 1));
   neighborCellsHashes.push_back(hash_position(pos, 0, 0, -1));
-  
-  // Iterate through the neighbor cell and check if within R distance. 
+
+  // Iterate through the neighbor cell and check if within R distance.
   for (float neighborCellsHash : neighborCellsHashes){
     if (map.find(neighborCellsHash) == map.end()){
       vector<Particle *> currCell = *map[neighborCellsHash];
@@ -123,7 +123,7 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
       }
     }
   }
-  
+
   return neighbors;
 }
 
@@ -143,7 +143,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
       p.forces += mass * ea;
     }
   }
-  
+
   for (auto &m : this->particles) {
     Vector3D temp = m.origin;
     m.origin += 1.0 * (m.origin-m.last_origin) + pow(delta_t, 2) * m.forces/mass;
@@ -162,7 +162,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   // for (Particle &pm : point_masses) {
   //   self_collide(pm, simulation_steps);
   // }
-  
+
   build_spatial_map();
 
   // This won't do anything until you complete Part 3.
