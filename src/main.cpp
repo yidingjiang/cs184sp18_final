@@ -196,7 +196,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
 
       /*Particle *p = new Particle(origin, radius, friction);
       objects->push_back(p);*/
-      
+
       fluid->radius = radius;
       fluid->friction = friction;
     } else if (key == PLANE) { // PLANE
@@ -232,13 +232,21 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       }
     } else if (key == FLUID){
       int num_width_points, num_height_points, num_length_points;
+      int neighborhood_particle;
       double width, height, length, R;
-      
+
       auto it_num_width_points = object.find("num_width_points");
       if (it_num_width_points != object.end()) {
         num_width_points = *it_num_width_points;
       } else {
         incompleteObjectError("fluid", "num_width_points");
+      }
+
+      auto _neighborhood_particle = object.find("neighborhood_particle");
+      if (_neighborhood_particle != object.end()) {
+        neighborhood_particle = *_neighborhood_particle;
+      } else {
+        incompleteObjectError("fluid", "neighborhood_particle");
       }
 
       auto it_num_height_points = object.find("num_height_points");
@@ -247,14 +255,14 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       } else {
         incompleteObjectError("fluid", "num_height_points");
       }
-      
+
       auto it_num_length_points = object.find("num_length_points");
       if (it_num_length_points != object.end()) {
         num_length_points = *it_num_length_points;
       } else {
         incompleteObjectError("fluid", "num_length_points");
       }
-      
+
       auto it_width = object.find("width");
       if (it_width != object.end()) {
         width = *it_width;
@@ -268,25 +276,26 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       } else {
         incompleteObjectError("fluid", "height");
       }
-      
+
       auto it_length = object.find("length");
       if (it_length != object.end()) {
         length = *it_length;
       } else {
         incompleteObjectError("fluid", "length");
       }
-      
+
       auto it_R = object.find("r");
       if (it_R != object.end()) {
         R = *it_R;
       } else {
         incompleteObjectError("fluid", "r");
       }
-      
+
       fluid->R = R;
       fluid->num_width_points = num_width_points;
       fluid->num_height_points = num_height_points;
       fluid->num_length_points = num_length_points;
+      fluid->neighborhood_particle = neighborhood_particle;
 
       fluid->width = width;
       fluid->height = height;

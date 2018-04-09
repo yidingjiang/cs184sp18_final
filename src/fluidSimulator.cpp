@@ -136,11 +136,13 @@ void FluidSimulator::drawContents() {
   }
 
   // coloring nearest neighbors
-  shader.setUniform("in_color", nanogui::Color(1.0f, 1.0f, 1.0f, 1.0f));
-  std::vector<Particle *> neighbors = fluid->getNeighbors(fluid->particles[3].origin);
-  fluid->particles[3].render(shader);
-  for (auto *p: neighbors) {
-    p->render(shader);
+  if (fluid->neighborhood_particle > 0) {
+    shader.setUniform("in_color", nanogui::Color(1.0f, 1.0f, 1.0f, 1.0f));
+    std::vector<Particle *> neighbors = fluid->getNeighbors(fluid->particles[fluid->neighborhood_particle].origin);
+    fluid->particles[fluid->neighborhood_particle].render(shader);
+    for (auto *p: neighbors) {
+      p->render(shader);
+    }
   }
 
   shader.setUniform("in_color", color);
