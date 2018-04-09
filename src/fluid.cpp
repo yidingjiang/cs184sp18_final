@@ -9,7 +9,7 @@
 
 using namespace std;
 
-double RHO_O = 1; //TODO in future, this should be the density function evaluated at t=0
+double RHO_O = -1; //TODO in future, this should be the density function evaluated at t=0
 double mass = 0.01;
 #define EPSILON 1e-6
 
@@ -82,7 +82,7 @@ float Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) 
 }
 
 std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
-  std::vector<Particle *> neighbors = std::vector<Particle *>();
+  std::vector<Particle *> * neighbors = new std::vector<Particle *>();
   // Get the location of all neighboring cells in the hashmap.
   std::vector<float> neighborCellsHashes = std::vector<float>();
   neighborCellsHashes.push_back(hash_position(pos));
@@ -92,70 +92,21 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
   neighborCellsHashes.push_back(hash_position(pos, 0, -1, 0));
   neighborCellsHashes.push_back(hash_position(pos, 0, 0, 1));
   neighborCellsHashes.push_back(hash_position(pos, 0, 0, -1));
+
   
   // Iterate through the neighbor cell and check if within R distance. 
   for (float neighborCellsHash : neighborCellsHashes){
-    if (map.find(neighborCellsHash) == map.end()){
+    if (map[neighborCellsHash] != NULL){
       vector<Particle *> currCell = *map[neighborCellsHash];
       for (Particle* particle : currCell){
         if ((pos-particle->origin).norm() < R){
-          neighbors.push_back(particle);
+          neighbors->push_back(particle);
         }
       }
     }
   }
-  
-  return neighbors;
+  return *neighbors;
 }
-
-// void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
-//                      vector<Vector3D> external_accelerations,
-//                       vector<CollisionObject *> *collision_objects) {
-//   double delta_t = 1.0f / frames_per_sec / simulation_steps;
-
-//   // TODO (Part 2.1): Compute total force acting on each point mass.
-//   for (auto &p : this->particles) {
-//     // reseting all forces
-//     p.forces = Vector3D(0,0,0);
-//   }
-
-//   for (auto ea: external_accelerations){
-//     for (auto &p: particles) {
-//       p.forces += mass * ea;
-//     }
-//   }
-  
-//   for (auto &m : this->particles) {
-//     Vector3D temp = m.origin;
-//     m.origin += 1.0 * (m.origin-m.last_origin) + pow(delta_t, 2) * m.forces/mass;
-//     m.last_origin = temp;
-//   }
-
-//   // TODO (Part 2.2): Use Verlet integration to compute new point mass origins
-//   /*for (auto &m : particles) {
-//     Vector3D temp = m.origin;
-//     m.origin += (1.-fp->damping/100.) * (m.origin - m.last_origin) + pow(delta_t, 2) * m.forces/mass;
-//     m.last_origin = temp;
-//   }*/
-
-//   // This won't do anything until you complete Part 4.
-//   // build_spatial_map();
-//   // for (Particle &pm : point_masses) {
-//   //   self_collide(pm, simulation_steps);
-//   // }
-  
-//   build_spatial_map();
-
-//   // This won't do anything until you complete Part 3.
-//   for (auto &m : this->particles) {
-//     for (CollisionObject *co : *collision_objects) {
-//       co->collide_particle(m);
-//     }
-//     for (auto &p : this->particles) {
-//       if ((p.origin-m.origin).norm() > 1e-10) p.collide_particle(m);
-//     }
-//   }
-// }
 
 void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                      vector<Vector3D> external_accelerations,
@@ -163,27 +114,33 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   double delta_t = 1.0f / frames_per_sec / simulation_steps;
   Particle temp(this->particles[0].origin, this->particles[0].radius, this->particles[0].friction); // just a placeholder 
   // TODO (Part 2.1): Compute total force acting on each point mass.
+  if (RHO_O == -1) {
+    this->update_density();
+    for (Particle p: particles) {
+      p.rest_density = p.density;
+    }
+  }
 
   for (auto &p: particles) {
     for (auto ea: external_accelerations){
       p.velocity += delta_t*ea;
     }
-    p.last_origin = p.origin;
-    p.x_star = delta_t*p.velocity;
+    p.x_star = p.origin+delta_t*p.velocity;
   }
   
   int solver_iters = 5;
 
   for(int iter=0; iter<solver_iters; iter++) {
     build_spatial_map();
-    this->update_density();
-    this->update_lambdas();
-    // TODO stuff is confusing from this point.
+  //   this->update_density();
+  //   this->update_lambdas();
+  //   // TODO stuff is confusing from this point.
     for (Particle &p: this->particles) {
-      p.delta_p = this->delta_p(p);
-      p.x_star += p.delta_p;
-      // Collision detection
+  //     // p.delta_p = this->delta_p(p);
+  //     // p.x_star += p.delta_p;
+  //     // Collision detection
       temp.origin = p.x_star;
+      temp.last_origin = p.origin;
       for (CollisionObject *co : *collision_objects) {
         co->collide_particle(temp);
       }
@@ -191,14 +148,14 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     } 
   }
 
-  for (Particle p: this->particles) {
+  for (Particle &p: this->particles) {
     p.velocity = (p.x_star-p.origin)/delta_t;
      //vorticity confinement
-    Vector3D corrective_force = f_vorticity(p);
+    // Vector3D corrective_force = f_vorticity(p);
     //TODO don't know what to do with the corrective force.
-    p.velocity += corrective_force*delta_t/mass;
+    // p.velocity += corrective_force*delta_t/mass;
     //viscosity
-    this->apply_viscosity(p);
+    // this->apply_viscosity(p);
     p.last_origin = p.origin;
     p.origin = p.x_star;
   }
@@ -237,7 +194,7 @@ Vector3D Fluid::del_W(Vector3D r) { // gradient of density kernel
 
 
 double Fluid::C_i(Particle p){
-  return p.density/RHO_O - 1;
+  return p.density/p.rest_density - 1;
 }
 
 
@@ -247,19 +204,20 @@ double Fluid::del_ci_pk_sq_norm(Particle i, Particle k){
   Vector3D diff = pi - pk;
   if (diff.norm() > R) return 0;
   if (diff.norm() > 1e-9) {
-    Vector3D v = del_W(diff)/RHO_O;
+    Vector3D v = del_W(diff)/i.rest_density;
     return CGL::dot(v,v);
   }
   Vector3D accum;
   for (Particle * &pj : getNeighbors(i.origin)) {
     accum += del_W(pi-pj->origin);
   }
-  accum /= RHO_O;
+  accum /= i.rest_density;
   return CGL::dot(accum,accum);
 }
 
 
 void Fluid::update_density() {
+  double ci = 0;
   for (Particle &p: this->particles) {
     double r = 0;
     Vector3D pi = p.origin;
@@ -267,7 +225,9 @@ void Fluid::update_density() {
       r += W(pi-pj->origin);
     }
     p.density = r*mass;
+    ci += p.density/p.rest_density - 1;
   }
+  cout << ci << endl;
 }
 
 void Fluid::update_lambdas() {
@@ -287,7 +247,7 @@ Vector3D Fluid::delta_p(Particle p){
   for (Particle * &pj: getNeighbors(pi)) {
     accum += (p.lambda+pj->lambda)*del_W(pi-pj->origin);
   }
-  return accum/RHO_O;
+  return accum/p.rest_density;
 }
 
 Vector3D Fluid::f_vorticity(Particle p){

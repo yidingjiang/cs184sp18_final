@@ -26,6 +26,7 @@ public:
   Vector3D start_origin;
   Vector3D x_star;
   double density;
+  double rest_density=-1;
   Vector3D delta_p;
   Vector3D forces;
   Vector3D omega;
