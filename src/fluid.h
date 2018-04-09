@@ -67,10 +67,10 @@ struct Fluid {
   vector<Particle> particles;
 
   // Spatial hashing
-  unordered_map<float, vector<Particle *> *> map;
+  unordered_map<string, vector<Particle *> *> map;
 
   void build_spatial_map();
-  float hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
+  string hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
 
   std::vector<Particle *> getNeighbors(Vector3D pos);
 

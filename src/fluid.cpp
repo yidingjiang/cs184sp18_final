@@ -56,7 +56,7 @@ void Fluid::build_spatial_map() {
   map.clear();
 
   for (Particle &particle : this->particles){
-    float key = hash_position(particle.origin);
+    string key = hash_position(particle.origin);
     if (map.find(key) == map.end()){
       map[key] = new std::vector<Particle *>();
     }
@@ -64,7 +64,7 @@ void Fluid::build_spatial_map() {
   }
 }
 
-float Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) {
+string Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) {
   // TODO (Part 4.1): Hash a 3D position into a unique float identifier that represents
   // membership in some uniquely identified 3D box volume.
   int xVol = floor(pos.x / R);
@@ -85,13 +85,13 @@ float Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) 
   yVol += yOffset;
   zVol += zOffset;
   
-  return (xVol * 31 + yVol) * 31 + zVol;
+  return std::to_string(xVol) + "/" + std::to_string(yVol) + "/" +  std::to_string(zVol);
 }
 
 std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
   std::vector<Particle *> * neighbors = new std::vector<Particle *>();
   // Get the location of all neighboring cells in the hashmap.
-  std::vector<float> neighborCellsHashes = std::vector<float>();
+  std::vector<string> neighborCellsHashes = std::vector<string>();
   neighborCellsHashes.push_back(hash_position(pos));
   neighborCellsHashes.push_back(hash_position(pos, 1, 0, 0));
   neighborCellsHashes.push_back(hash_position(pos, -1, 0, 0));
@@ -102,7 +102,7 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
 
   
   // Iterate through the neighbor cell and check if within R distance. 
-  for (float neighborCellsHash : neighborCellsHashes){
+  for (string neighborCellsHash : neighborCellsHashes){
     if (map[neighborCellsHash] != NULL){
       vector<Particle *> currCell = *map[neighborCellsHash];
       for (Particle* particle : currCell){
