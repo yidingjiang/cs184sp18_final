@@ -73,16 +73,17 @@ float Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) 
   
   if (pos.x < 0){
     xVol = ceil(pos.x / R);
-  } else if (pos.y < 0){
+  } 
+  if (pos.y < 0){
     yVol = ceil(pos.y / R);
-  }  else if (pos.z < 0){
+  }
+  if (pos.z < 0){
     zVol = ceil(pos.z / R);
   }
   
   xVol += xOffset;
   yVol += yOffset;
   zVol += zOffset;
-  //std::cout << (xVol * 31 + yVol) * 31 + zVol << std::endl;
   
   return (xVol * 31 + yVol) * 31 + zVol;
 }
