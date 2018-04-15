@@ -55,9 +55,12 @@ GLfloat* Fluid::getBuffer() {
         data[count * 7] = particle.origin.x;
         data[count * 7+1] = particle.origin.y;
         data[count * 7+2] = particle.origin.z;
-        data[count * 7+3] = particle.origin.x * particle.origin.x;
-        data[count * 7+4] = 1.0f;
-        data[count * 7+5] = particle.origin.z * particle.origin.z;
+        data[count * 7+3] = particle.color.x;
+        data[count * 7+4] = particle.color.y;
+        data[count * 7+5] = particle.color.z;
+        // data[count * 7+3] = particle.origin.x * particle.origin.x;
+        // data[count * 7+4] = 1.0f;
+        // data[count * 7+5] = particle.origin.z * particle.origin.z;
         data[count * 7+6] = 1.0f;
         count += 1;
     }
@@ -180,6 +183,9 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     // this->apply_viscosity(p);
     p.last_origin = p.origin;
     p.origin = p.x_star;
+
+    //update color
+    p.color = Vector3D(p.origin.x * p.origin.x, 1.0, p.origin.z * p.origin.z);
   }
 
 }

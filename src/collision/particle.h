@@ -24,6 +24,7 @@ public:
   Vector3D origin;
   Vector3D last_origin;
   Vector3D start_origin;
+  Vector3D color;
   Vector3D x_star;
   double density;
   double rest_density=-1;
