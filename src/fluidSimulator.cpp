@@ -62,7 +62,8 @@ void FluidSimulator::loadFluid(Fluid *fluid) {
 
   // Enable gl_PointSize in the vertex shader to specify the size of a point
   glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-  // glEnable(GL_POINT_SMOOTH);
+  // glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+  glEnable(GL_BLEND);
   glVertexAttribPointer(
     0,                  // vertex positions attribute specified at location 0 in the vertex shader.
     3,                  // position is a vec3
