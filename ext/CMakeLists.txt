@@ -7,7 +7,7 @@ add_definitions(
 )
 
 set(GLEW_SOURCE
-	glew-1.13.0/src/glew.c
+	../ext/glew-1.13.0/src/glew.c
 )
 
 set(GLEW_HEADERS

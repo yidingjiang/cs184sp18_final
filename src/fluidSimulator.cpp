@@ -26,8 +26,10 @@ FluidSimulator::FluidSimulator(Screen *screen) {
 
   phongShader.initFromFiles("Phong", "../shaders/camera.vert",
                             "../shaders/phong.frag");
+  // particleShader.initFromFiles("Particle", "../shaders/SimpleVertexShader.vertexshader")
 
   shaders.push_back(phongShader);
+  // shaders.push_back(particleShader);
 
   glEnable(GL_PROGRAM_POINT_SIZE);
   glEnable(GL_DEPTH_TEST);
@@ -47,6 +49,7 @@ void FluidSimulator::loadFluid(Fluid *fluid) {
   this->fluid = fluid;
 
   g_vertex_buffer_data = fluid->getBuffer();
+
   glGenVertexArrays(1, &positionsVAO);
   glGenBuffers(1, &positionsVBO);
 
@@ -59,6 +62,7 @@ void FluidSimulator::loadFluid(Fluid *fluid) {
 
   // Enable gl_PointSize in the vertex shader to specify the size of a point
   glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+  // glEnable(GL_POINT_SMOOTH);
   glVertexAttribPointer(
     0,                  // vertex positions attribute specified at location 0 in the vertex shader.
     3,                  // position is a vec3
@@ -81,7 +85,7 @@ void FluidSimulator::loadFluid(Fluid *fluid) {
 
   // Unbind the VAO
   glBindVertexArray(0);
-  programID = LoadShaders( "../shaders/SimpleVertexShader.vertexshader", "../shaders/SimpleFragmentShader.fragmentshader" );
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void FluidSimulator::loadFluidParameters(FluidParameters *fp) { this->fp = fp; }
@@ -162,27 +166,52 @@ void FluidSimulator::drawContents() {
   }
 
   // instancing projection
-  GLint particleSizeLocation = glGetUniformLocation(programID, "particle_size");
-  glUniform1i(particleSizeLocation, 3*((float) camera.r)*5/45.0f);
+  // GLint particleSizeLocation = glGetUniformLocation(programID, "particle_size");
+  // glUniform1i(particleSizeLocation, 3*((float) camera.r)*5/45.0f);
+  //
+  // Matrix4f _view = getViewMatrix();
+  // // convert CLG to GLSL
+  // mat4 cameraTransform = convertToMat4(_view);
+  //
+  // Matrix4f _projection = getProjectionMatrix();
+  // mat4 projection = convertToMat4(_projection);
+  //
+  // mat4 scaling = mat4(vec4(((float) camera.r)/45.0f, 0, 0, 0),
+  //                     vec4(0, ((float) camera.r)/45.0f, 0, 0),
+  //                     vec4(0, 0, ((float) camera.r)/45.0f, 0),
+  //                     vec4(0, 0, 0, 1));
+  //
+  // GLuint transformLoc = glGetUniformLocation(programID, "transform");
+  // GLint projLoc = glGetUniformLocation(programID, "projection");
+  // GLint scalingLoc = glGetUniformLocation(programID, "scaling");
+  // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, &cameraTransform[0][0]);
+  // glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
+  // glUniformMatrix4fv(scalingLoc, 1, GL_FALSE, &scaling[0][0]);
+  //
+  // glBindVertexArray(positionsVAO);
+  // glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
+  // g_vertex_buffer_data = fluid->getBuffer();
+  // glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
+  // glDrawArrays(GL_POINTS, 0, fluid->particles.size());
+  // glBindVertexArray(0);
 
-  Matrix4f _view = getViewMatrix();
-  // convert CLG to GLSL
-  mat4 cameraTransform = convertToMat4(_view);
 
-  Matrix4f _projection = getProjectionMatrix();
-  mat4 projection = convertToMat4(_projection);
+  // new shit has come to light
+  GLShader shader = shaders[activeShader];
+  shader.bind();
 
-  mat4 scaling = mat4(vec4(((float) camera.r)/45.0f, 0, 0, 0),
-                      vec4(0, ((float) camera.r)/45.0f, 0, 0),
-                      vec4(0, 0, ((float) camera.r)/45.0f, 0),
-                      vec4(0, 0, 0, 1));
+  Matrix4f model;
+  model.setIdentity();
 
-  GLuint transformLoc = glGetUniformLocation(programID, "transform");
-  GLint projLoc = glGetUniformLocation(programID, "projection");
-  GLint scalingLoc = glGetUniformLocation(programID, "scaling");
-  glUniformMatrix4fv(transformLoc, 1, GL_FALSE, &cameraTransform[0][0]);
-  glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
-  glUniformMatrix4fv(scalingLoc, 1, GL_FALSE, &scaling[0][0]);
+  Matrix4f view = getViewMatrix();
+  Matrix4f projection = getProjectionMatrix();
+
+  Matrix4f viewProjection = projection * view;
+
+  shader.setUniform("model", model);
+  shader.setUniform("viewProjection", viewProjection);
+  shader.setUniform("light", Vector3f(0.5, 2, 2));
+  shader.setUniform("in_color", color);
 
   glBindVertexArray(positionsVAO);
   glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
@@ -190,7 +219,7 @@ void FluidSimulator::drawContents() {
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
   glDrawArrays(GL_POINTS, 0, fluid->particles.size());
   glBindVertexArray(0);
-
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   // non instancing; Bind the active shader
   // GLShader shader = shaders[activeShader];
@@ -210,7 +239,7 @@ void FluidSimulator::drawContents() {
   // shader.setUniform("viewProjection", viewProjection);
   // shader.setUniform("light", Vector3f(0.5, 2, 2));
   // shader.setUniform("in_color", color);
-
+  //
   // for (CollisionObject *co : *collision_objects) {
   //   co->render(shader);
   // }
@@ -404,69 +433,6 @@ void FluidSimulator::initGUI(Screen *screen) {
   Window *window = new Window(screen, "Settings");
   window->setPosition(Vector2i(15, 15));
   window->setLayout(new GroupLayout(15, 6, 14, 5));
-
-  // Spring types
-
-  // new Label(window, "Spring types", "sans-bold");
-
-  // {
-  //   Button *b = new Button(window, "structural");
-  //   b->setFlags(Button::ToggleButton);
-  //   b->setPushed(fp->enable_structural_constraints);
-  //   b->setFontSize(14);
-  //   b->setChangeCallback(
-  //       [this](bool state) { fp->enable_structural_constraints = state; });
-
-  //   b = new Button(window, "shearing");
-  //   b->setFlags(Button::ToggleButton);
-  //   b->setPushed(fp->enable_shearing_constraints);
-  //   b->setFontSize(14);
-  //   b->setChangeCallback(
-  //       [this](bool state) { fp->enable_shearing_constraints = state; });
-
-  //   b = new Button(window, "bending");
-  //   b->setFlags(Button::ToggleButton);
-  //   b->setPushed(fp->enable_bending_constraints);
-  //   b->setFontSize(14);
-  //   b->setChangeCallback(
-  //       [this](bool state) { fp->enable_bending_constraints = state; });
-  // }
-
-  // Mass-spring parameters
-
-  // new Label(window, "Parameters", "sans-bold");
-
-  // {
-  //   Widget *panel = new Widget(window);
-  //   GridLayout *layout =
-  //       new GridLayout(Orientation::Horizontal, 2, Alignment::Middle, 5, 5);
-  //   layout->setColAlignment({Alignment::Maximum, Alignment::Fill});
-  //   layout->setSpacing(0, 10);
-  //   panel->setLayout(layout);
-
-  //   new Label(panel, "density :", "sans-bold");
-
-  //   FloatBox<double> *fb = new FloatBox<double>(panel);
-  //   fb->setEditable(true);
-  //   fb->setFixedSize(Vector2i(100, 20));
-  //   fb->setFontSize(14);
-  //   fb->setValue(fp->density / 10);
-  //   fb->setUnits("g/cm^2");
-  //   fb->setSpinnable(true);
-  //   fb->setCallback([this](float value) { fp->density = (double)(value * 10); });
-
-  //   new Label(panel, "ks :", "sans-bold");
-
-  //   fb = new FloatBox<double>(panel);
-  //   fb->setEditable(true);
-  //   fb->setFixedSize(Vector2i(100, 20));
-  //   fb->setFontSize(14);
-  //   fb->setValue(fp->ks);
-  //   fb->setUnits("N/m");
-  //   fb->setSpinnable(true);
-  //   fb->setMinValue(0);
-  //   fb->setCallback([this](float value) { fp->ks = value; });
-  // }
 
   // Simulation constants
 

@@ -64,6 +64,9 @@ target_link_libraries(fluidsim
     nanogui ${NANOGUI_EXTRA_LIBS}
     ${FREETYPE_LIBRARIES}
     ${CMAKE_THREADS_INIT}
+    ${GLEW_LIBRARIES}
+    glfw
+    glm
 )
 
 #-------------------------------------------------------------------------------

@@ -68,6 +68,7 @@ private:
   vector<GLShader> shaders;
 
   GLShader phongShader;
+  GLShader particleShader;
 
   // Camera attributes
 
