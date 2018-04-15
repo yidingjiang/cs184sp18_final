@@ -34,7 +34,7 @@ struct FluidParameters {
 struct Fluid {
   Fluid() {}
   Fluid(double width, double length, double height, double particle_radius,
-        int num_particles, int num_height_points, 
+        int num_particles, int num_height_points,
         int num_width_points, int num_length_points);
   ~Fluid();
 
@@ -54,10 +54,11 @@ struct Fluid {
   int num_width_points;
   int num_length_points;
   int num_height_points;
-  
+  int neighborhood_particle;
+
   double radius;
   double friction;
-  
+
   // Used to find neighboring particles
   double R=0.1;
   double W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
@@ -65,14 +66,26 @@ struct Fluid {
 
   // Fluid components
   vector<Particle> particles;
-  
+
   // Spatial hashing
-  unordered_map<float, vector<Particle *> *> map;
-  
+  unordered_map<string, vector<Particle *> *> map;
+
   void build_spatial_map();
-  float hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
-  
+  string hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
+
   std::vector<Particle *> getNeighbors(Vector3D pos);
+
+  double W(Vector3D r);
+  Vector3D del_W(Vector3D r);
+  double rho_i(Particle p);
+  double C_i(Particle p);
+  void update_lambdas();
+  void update_density();
+  double del_ci_pk_sq_norm(Particle i, Particle k);
+  Vector3D delta_p(Particle p);
+  Vector3D f_vorticity(Particle p);
+  void apply_viscosity(Particle p);
+  void update_omega();
 
 };
 

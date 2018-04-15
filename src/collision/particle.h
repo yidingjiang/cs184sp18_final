@@ -24,12 +24,21 @@ public:
   Vector3D origin;
   Vector3D last_origin;
   Vector3D start_origin;
+  Vector3D x_star;
+  double density;
+  double rest_density=-1;
+  Vector3D delta_p;
   Vector3D forces;
+  Vector3D omega;
 
   double radius;
   double radius2;
 
   double friction;
+
+  Vector3D velocity;
+  double lambda;
+
 };
 
 #endif /* COLLISIONOBJECT_PARTICLE_H */

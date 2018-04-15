@@ -32,11 +32,13 @@
             }
           ],
   "fluid": {
-    "num_width_points": 7,
-    "num_height_points": 7,
-    "num_length_points": 7,
-    "width": 1,
-    "height": 1,
-    "length": 1
+    "num_width_points": 3,
+    "num_height_points": 3,
+    "num_length_points": 3,
+    "neighborhood_particle": 11,
+    "width": 0.5,
+    "height": 0.5,
+    "length": 0.5,
+    "r": 1000000
   }
 }
