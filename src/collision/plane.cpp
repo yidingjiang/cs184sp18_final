@@ -13,11 +13,21 @@ void Plane::collide_particle(Particle &pm) {
   // TODO (Part 3.2): Handle collisions with planes.
   float last_side = dot(pm.last_origin-point, normal);
   float current_side = dot(pm.origin-point, normal);
-  if (abs(current_side) < pm.radius ) {
-    // std::cout << "here" << std::endl;
-    Vector3D tangent_p = pm.origin - dot(pm.origin - point, normal) * normal;
-    Vector3D correction_vec = tangent_p + (pm.radius+SURFACE_OFFSET) * normal * ((last_side < 0)?-1.:1.) - pm.last_origin;
-    pm.origin = pm.last_origin + (1.-friction)*correction_vec;
+  //std::cout << "++" << std::endl;
+  //std::cout << last_side << std::endl;
+  //std::cout << current_side << std::endl;
+  //if (abs(current_side) < pm.radius ) {
+  if ( ((dot(point - pm.origin, normal) > 0.0) && !(dot(point - pm.last_origin, normal) > 0.0))){
+    double t = dot((point - pm.origin), normal) / dot(normal, normal);
+    Vector3D intersect_point = pm.origin + t * normal;
+    Vector3D correction_vector = intersect_point - pm.last_origin + normal * SURFACE_OFFSET;
+    pm.origin = pm.last_origin + correction_vector * (1 - friction);
+  } else if ((dot(point - pm.origin, normal) < 0.0) && !(dot(point - pm.last_origin, normal) < 0.0)){
+    // Reverse all the signs of normal vector.
+    double t = dot((point - pm.origin), -normal) / dot(-normal, -normal);
+    Vector3D intersect_point = pm.origin + t * -normal;
+    Vector3D correction_vector = intersect_point - pm.last_origin + -normal * SURFACE_OFFSET;
+    pm.origin = pm.last_origin + correction_vector * (1 - friction);
   }
 }
 
