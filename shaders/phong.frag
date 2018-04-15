@@ -6,6 +6,7 @@ uniform vec3 light;
 
 in vec4 vertex;
 in vec4 normal;
+in vec4 particle_color;
 // in vec4 gl_FragCoord;
 
 out vec4 out_color;
@@ -17,7 +18,7 @@ vec4 shadePhong() {
 
   vec3 lightVec = light - vertex.xyz;
   vec3 lightDir = normalize(lightVec);
-  vec3 loc = vec3(vertex.y, vertex.x, vertex.z);
+  vec3 loc = vec3(0.0, 0.5*vertex.x, vertex.z);
   return vec4(normalize(loc), 1.0);
 
   //vec3 outDir = normalize(eye - vertex.xyz);
@@ -45,6 +46,7 @@ void main() {
   float mag = dot(N.xy, N.xy);
   if (mag > 1.0) discard;   // kill pixels outside circle
 
-  out_color = shadePhong();
+  //out_color = shadePhong();
+  out_color = particle_color;
   out_color.a = in_color.a;
 }

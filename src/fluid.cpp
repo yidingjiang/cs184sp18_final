@@ -55,13 +55,9 @@ GLfloat* Fluid::getBuffer() {
         data[count * 7] = particle.origin.x;
         data[count * 7+1] = particle.origin.y;
         data[count * 7+2] = particle.origin.z;
-        // data[count * 7+3] = particle.color[0];
-        // data[count * 7+4] = particle.color[1];
-        // data[count * 7+5] = particle.color[2];
-        // data[count * 7+6] = particle.color[3];
-        data[count * 7+3] = 1.0f;
+        data[count * 7+3] = particle.origin.x * particle.origin.x;
         data[count * 7+4] = 1.0f;
-        data[count * 7+5] = 1.0f;
+        data[count * 7+5] = particle.origin.z * particle.origin.z;
         data[count * 7+6] = 1.0f;
         count += 1;
     }
