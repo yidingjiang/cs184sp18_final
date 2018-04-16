@@ -218,9 +218,10 @@ void FluidSimulator::drawContents() {
   glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
   g_vertex_buffer_data = fluid->getBuffer();
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
-  glDrawArrays(GL_POINTS, 0, fluid->particles.size(r));
+  glDrawArrays(GL_POINTS, 0, fluid->particles.size());
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+  free(g_vertex_buffer_data);
 
   // non instancing; Bind the active shader
   // GLShader shader = shaders[activeShader];
