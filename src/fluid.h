@@ -9,9 +9,12 @@
 #include "CGL/misc.h"
 #include "collision/collisionObject.h"
 #include "collision/particle.h"
+#include "nanoflann.hpp"
+#include "utils.h"
 
 using namespace CGL;
 using namespace std;
+using namespace nanoflann;
 
 enum e_orientation { HORIZONTAL = 0, VERTICAL = 1 };
 
@@ -83,9 +86,10 @@ struct Fluid {
   double W(Vector3D r);
   Vector3D del_W(Vector3D r);
   double C_i(Particle p);
+  double density(Particle p, std::vector<Particle *> neighbors);
   void update_density(std::vector<std::vector<Particle *>>  neighborArray);
   void update_delta_p(std::vector<std::vector<Particle *>> neighborArray);
-  double rho_i(Particle p);
+  // double rho_i(Particle p);
   double lambda(Particle i, std::vector<std::vector<Particle *>>  neighborArray);
   void update_lambdas(std::vector<std::vector<Particle *>>  neighborArray);
   Vector3D del_ci_i(Particle i, std::vector<Particle *> neighbors);
@@ -95,6 +99,11 @@ struct Fluid {
   Vector3D f_vorticity(Particle p);
   void apply_viscosity(Particle p);
   void update_omega();
+
+  
+  PointCloud cloud;
+  typedef KDTreeSingleIndexAdaptor< L2_Simple_Adaptor<double, PointCloud> , PointCloud, 3 > kdtree;
+  std::vector<std::vector<Particle *>> build_index();
 
 };
 
