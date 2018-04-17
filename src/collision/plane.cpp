@@ -9,25 +9,47 @@ using namespace CGL;
 
 #define SURFACE_OFFSET 0.0001
 
+// void Plane::collide_particle(Particle &pm) {
+//   // TODO (Part 3.2): Handle collisions with planes.
+//   float last_side = dot(pm.last_origin-point, normal);
+//   float current_side = dot(pm.origin-point, normal);
+//   //std::cout << "++" << std::endl;
+//   //std::cout << last_side << std::endl;
+//   //std::cout << current_side << std::endl;
+//   //if (abs(current_side) < pm.radius ) {
+//   if ( ((dot(point - pm.origin, normal) > 0.0) && !(dot(point - pm.last_origin, normal) > 0.0))){
+//     double t = dot((point - pm.origin), normal) / dot(normal, normal);
+//     Vector3D intersect_point = pm.origin + t * normal;
+//     Vector3D correction_vector = intersect_point - pm.last_origin + normal * SURFACE_OFFSET;
+//     pm.origin = pm.last_origin + correction_vector * (1 - friction);
+//   } else if ((dot(point - pm.origin, normal) < 0.0) && !(dot(point - pm.last_origin, normal) < 0.0)){
+//     // Reverse all the signs of normal vector.
+//     double t = dot((point - pm.origin), -normal) / dot(-normal, -normal);
+//     Vector3D intersect_point = pm.origin + t * -normal;
+//     Vector3D correction_vector = intersect_point - pm.last_origin + -normal * SURFACE_OFFSET;
+//     pm.origin = pm.last_origin + correction_vector * (1 - friction);
+//   }
+// }
+
 void Plane::collide_particle(Particle &pm) {
   // TODO (Part 3.2): Handle collisions with planes.
-  float last_side = dot(pm.last_origin-point, normal);
-  float current_side = dot(pm.origin-point, normal);
+  float last_side = dot(pm.origin-point, normal);
+  float current_side = dot(pm.x_star-point, normal);
   //std::cout << "++" << std::endl;
   //std::cout << last_side << std::endl;
   //std::cout << current_side << std::endl;
   //if (abs(current_side) < pm.radius ) {
-  if ( ((dot(point - pm.origin, normal) > 0.0) && !(dot(point - pm.last_origin, normal) > 0.0))){
-    double t = dot((point - pm.origin), normal) / dot(normal, normal);
-    Vector3D intersect_point = pm.origin + t * normal;
-    Vector3D correction_vector = intersect_point - pm.last_origin + normal * SURFACE_OFFSET;
-    pm.origin = pm.last_origin + correction_vector * (1 - friction);
-  } else if ((dot(point - pm.origin, normal) < 0.0) && !(dot(point - pm.last_origin, normal) < 0.0)){
+  if ( ((dot(point - pm.x_star, normal) > 0.0) && !(dot(point - pm.origin, normal) > 0.0))){
+    double t = dot((point - pm.x_star), normal) / dot(normal, normal);
+    Vector3D intersect_point = pm.x_star + t * normal;
+    Vector3D correction_vector = intersect_point - pm.origin + normal * SURFACE_OFFSET;
+    pm.x_star = pm.origin + correction_vector * (1 - friction);
+  } else if ((dot(point - pm.x_star, normal) < 0.0) && !(dot(point - pm.origin, normal) < 0.0)){
     // Reverse all the signs of normal vector.
-    double t = dot((point - pm.origin), -normal) / dot(-normal, -normal);
-    Vector3D intersect_point = pm.origin + t * -normal;
-    Vector3D correction_vector = intersect_point - pm.last_origin + -normal * SURFACE_OFFSET;
-    pm.origin = pm.last_origin + correction_vector * (1 - friction);
+    double t = dot((point - pm.x_star), -normal) / dot(-normal, -normal);
+    Vector3D intersect_point = pm.x_star + t * -normal;
+    Vector3D correction_vector = intersect_point - pm.origin + -normal * SURFACE_OFFSET;
+    pm.x_star = pm.origin + correction_vector * (1 - friction);
   }
 }
 

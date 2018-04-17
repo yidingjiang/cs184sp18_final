@@ -55,14 +55,18 @@ struct Fluid {
   int num_length_points;
   int num_height_points;
   int neighborhood_particle;
+  int solver_iters = 2;
 
   double radius;
   double friction;
 
   // Used to find neighboring particles
+  double RHO_O = 1000;
+  double mass = 1;
+
   double R=0.1;
   double W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
-  double W_DEL_CONSTANT = 45.0/(PI*pow(R,6));
+  double W_DEL_CONSTANT = 45.0/(PI*pow(R,6)); //TODO this maybe negated
 
   // Fluid components
   vector<Particle> particles;
@@ -72,17 +76,22 @@ struct Fluid {
 
   void build_spatial_map();
   string hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
+  std::vector<std::vector<Particle *>> generateNeighborArray();
 
   std::vector<Particle *> getNeighbors(Vector3D pos);
 
   double W(Vector3D r);
   Vector3D del_W(Vector3D r);
-  double rho_i(Particle p);
   double C_i(Particle p);
-  void update_lambdas();
-  void update_density();
-  double del_ci_pk_sq_norm(Particle i, Particle k);
-  Vector3D delta_p(Particle p);
+  void update_density(std::vector<std::vector<Particle *>>  neighborArray);
+  void update_delta_p(std::vector<std::vector<Particle *>> neighborArray);
+  double rho_i(Particle p);
+  double lambda(Particle i, std::vector<std::vector<Particle *>>  neighborArray);
+  void update_lambdas(std::vector<std::vector<Particle *>>  neighborArray);
+  Vector3D del_ci_i(Particle i, std::vector<Particle *> neighbors);
+
+  Vector3D del_ci_j(Particle i, Particle k);
+
   Vector3D f_vorticity(Particle p);
   void apply_viscosity(Particle p);
   void update_omega();

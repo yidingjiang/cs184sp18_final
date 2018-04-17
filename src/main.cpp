@@ -301,6 +301,9 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       fluid->width = width;
       fluid->height = height;
       fluid->length = length;
+
+      // fluid -> RHO_O *= num_width_points*num_height_points*num_length_points;
+      fluid -> RHO_O /= (width*height*length);
     }
   }
 
