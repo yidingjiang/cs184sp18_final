@@ -55,13 +55,13 @@ struct Fluid {
   int num_length_points;
   int num_height_points;
   int neighborhood_particle;
-  int solver_iters = 2;
+  int solver_iters = 3;
 
   double radius;
   double friction;
 
   // Used to find neighboring particles
-  double RHO_O = 1000;
+  double RHO_O = 25000;
   double mass = 1;
 
   double R=0.1;

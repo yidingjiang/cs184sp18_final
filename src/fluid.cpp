@@ -113,12 +113,12 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
   // Get the location of all neighboring cells in the hashmap.
   std::vector<string> neighborCellsHashes = std::vector<string>();
   neighborCellsHashes.push_back(hash_position(pos));
-  // neighborCellsHashes.push_back(hash_position(pos, 1, 0, 0));
-  // neighborCellsHashes.push_back(hash_position(pos, -1, 0, 0));
-  // neighborCellsHashes.push_back(hash_position(pos, 0, 1, 0));
-  // neighborCellsHashes.push_back(hash_position(pos, 0, -1, 0));
-  // neighborCellsHashes.push_back(hash_position(pos, 0, 0, 1));
-  // neighborCellsHashes.push_back(hash_position(pos, 0, 0, -1));
+  neighborCellsHashes.push_back(hash_position(pos, 1, 0, 0));
+  neighborCellsHashes.push_back(hash_position(pos, -1, 0, 0));
+  neighborCellsHashes.push_back(hash_position(pos, 0, 1, 0));
+  neighborCellsHashes.push_back(hash_position(pos, 0, -1, 0));
+  neighborCellsHashes.push_back(hash_position(pos, 0, 0, 1));
+  neighborCellsHashes.push_back(hash_position(pos, 0, 0, -1));
 
 
   // Iterate through the neighbor cell and check if within R distance.
@@ -146,23 +146,26 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     }
     p.x_star = p.origin + delta_t*p.velocity;
   }
-
+  int i = 0;
   build_spatial_map();
   std::vector<std::vector<Particle *>>  neighborArray = generateNeighborArray();
   for(int iter=0; iter<solver_iters; iter++) {
     this->update_density(neighborArray);
     this->update_lambdas(neighborArray);
     this->update_delta_p(neighborArray);
-
+    i = 0;
     //apply delta_p and perform collision detection
     for (Particle &p: this->particles) {
-      p.x_star += p.delta_p;
+      p.x_star += p.delta_p*1e-5;
+      // cout << i << endl;
+      // cout << "c_i" << p.density/RHO_O - 1 << endl; //<< " delta_p_norm calc: " << p.delta_p.norm2() <<  " " << " Lambda: " << p.lambda << endl;
       // cout << p.delta_p.norm2() << endl;
       // p.delta_p *= 0.0;
       for (CollisionObject *co : *collision_objects) co->collide_particle(p);
+      i++;
     }
   }
-  int i = 0;
+  i  = 0;
   for (Particle &p: this->particles) {
     p.velocity = (p.x_star-p.origin)/delta_t;
      //vorticity confinement
@@ -175,7 +178,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     p.origin = p.x_star;
 
     //update color
-    p.color = Vector3D(neighborArray[i].size()/10.0, 1.0, p.origin.z * p.origin.z);
+    p.color = Vector3D( (p.origin.x < 0.51) && (p.origin.x > 0), (p.origin.y < 0.51) && (p.origin.y > 0), (p.origin.z < 0.51) && (p.origin.z > 0));
     i++;
   }
 
@@ -273,7 +276,7 @@ void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) 
     }
 
     p.lambda = -ci/(sum_sq_norm+EPSILON);
-    // cout << p.lambda << endl;
+    // cout << "Lambda: " << p.lambda << endl;
     i++;
   }
 }
@@ -286,13 +289,12 @@ void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
     std::vector<Particle *> neighbors = neighborArray[i];
     p.delta_p = Vector3D(0.0,0.0,0.0);
     // //TODO add scorr term
-    // //double scorr = -0.001*pow(, 4.0);
     if (neighbors.size() == 1) continue;
     for (Particle * &pj: neighbors) {
-      p.delta_p += (p.lambda+pj->lambda)*del_W(pi-pj->x_star);
+      double scorr = -0.001*pow(W(pi-pj->x_star)/W(Vector3D(0.0,0.0,0.0)), 4.0);
+      p.delta_p += (p.lambda+pj->lambda+scorr)*del_W(pi-pj->x_star);
     }
     p.delta_p /= RHO_O;
-    // cout << particles[i].delta_p.norm2() << endl;
     i++;
   }
 }

@@ -5,28 +5,28 @@
     "friction": 0.01
   },
   "plane": [{
-              "point": [0, -0.1, 0],
+              "point": [0, -0.01, 0],
               "normal": [0, 1, 0],
               "friction": 0.5
             },
             {
-              "point": [0, 0, 1],
+              "point": [0, 0, 0.51],
               "normal": [0, 0, 1],
               "friction": 0.5
             },
             {
-              "point": [0, 0, -1],
+              "point": [0, 0, -0.01],
               "normal": [0, 0, -1],
               "friction": 0.5
             },
             {
-              "point": [1, 0, 0],
+              "point": [0.51, 0, 0],
               "normal": [1, 0, 0],
               "friction": 0.5
             }
             ,
             {
-              "point": [-1, 0, 0],
+              "point": [-0.01, 0, 0],
               "normal": [-1, 0, 0],
               "friction": 0.5
             }
@@ -36,9 +36,9 @@
     "num_height_points": 10,
     "num_length_points": 10,
     "neighborhood_particle": 11,
-    "width": 1,
-    "height": 1,
-    "length": 1,
-    "r": 0.094
+    "width": 0.5,
+    "height": 0.5,
+    "length": 0.5,
+    "r": 0.15
   }
 }
