@@ -156,7 +156,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     i = 0;
     //apply delta_p and perform collision detection
     for (Particle &p: this->particles) {
-      p.x_star += p.delta_p*1e-5;
+      p.x_star += p.delta_p*1e-3;
       // cout << i << endl;
       // cout << "c_i" << p.density/RHO_O - 1 << endl; //<< " delta_p_norm calc: " << p.delta_p.norm2() <<  " " << " Lambda: " << p.lambda << endl;
       // cout << p.delta_p.norm2() << endl;
