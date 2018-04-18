@@ -235,6 +235,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       int num_width_points, num_height_points, num_length_points;
       int neighborhood_particle;
       double width, height, length, R;
+      int num_width_voxels, num_height_voxels, num_length_voxels;
 
       auto it_num_width_points = object.find("num_width_points");
       if (it_num_width_points != object.end()) {
@@ -291,6 +292,28 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       } else {
         incompleteObjectError("fluid", "r");
       }
+      
+      auto it_num_width_voxels = object.find("num_width_voxels");
+      if (it_num_width_voxels != object.end()) {
+        num_width_voxels = *it_num_width_voxels;
+      } else {
+        incompleteObjectError("fluid", "num_width_voxels");
+      }
+      
+      auto it_num_height_voxels = object.find("num_height_voxels");
+      if (it_num_height_voxels != object.end()) {
+        num_height_voxels = *it_num_height_voxels;
+      } else {
+        incompleteObjectError("fluid", "num_height_voxels");
+      }
+      
+      auto it_num_length_voxels = object.find("num_length_voxels");
+      if (it_num_length_voxels != object.end()) {
+        num_length_voxels = *it_num_length_voxels;
+      } else {
+        incompleteObjectError("fluid", "num_length_voxels");
+      }
+      
 
       fluid->R = R;
       fluid->num_width_points = num_width_points;
@@ -301,6 +324,10 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       fluid->width = width;
       fluid->height = height;
       fluid->length = length;
+      
+      fluid->num_width_voxels = num_width_voxels;
+      fluid->num_height_voxels = num_height_voxels;
+      fluid->num_length_voxels = num_length_voxels;
 
       // fluid -> RHO_O *= num_width_points*num_height_points*num_length_points;
       fluid -> RHO_O /= (width*height*length);
