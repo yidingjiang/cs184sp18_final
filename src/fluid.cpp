@@ -149,7 +149,7 @@ double Fluid::density(Particle p, std::vector<Particle *>  neighbors) {
   Vector3D pi = p.origin;
   double r = 0;
   for (Particle * &pj: neighbors) r += W(pi-pj->origin);
-  p.density = r; //TODO maybe include mass?
+  p.density = r*mass; //TODO maybe include mass?
   return r;
 }
 
