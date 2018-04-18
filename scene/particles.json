@@ -7,28 +7,28 @@
   "plane": [{
               "point": [0, -0.01, 0],
               "normal": [0, 1, 0],
-              "friction": 0.5
+              "friction": 0.0
             },
             {
               "point": [0, 0, 0.51],
-              "normal": [0, 0, 1],
-              "friction": 0.5
+              "normal": [0, 0, -1],
+              "friction": 0.2
             },
             {
               "point": [0, 0, -0.01],
-              "normal": [0, 0, -1],
-              "friction": 0.5
+              "normal": [0, 0, 1],
+              "friction": 0.2
             },
             {
               "point": [0.51, 0, 0],
-              "normal": [1, 0, 0],
-              "friction": 0.5
+              "normal": [-1, 0, 0],
+              "friction": 0.2
             }
             ,
             {
               "point": [-0.01, 0, 0],
-              "normal": [-1, 0, 0],
-              "friction": 0.5
+              "normal": [1, 0, 0],
+              "friction": 0.0
             }
           ],
   "fluid": {

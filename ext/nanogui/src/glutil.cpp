@@ -154,8 +154,8 @@ void GLShader::setUniform(const std::string &name, const GLUniformBuffer &buf, b
 
 GLint GLShader::uniform(const std::string &name, bool warn) const {
     GLint id = glGetUniformLocation(mProgramShader, name.c_str());
-    if (id == -1 && warn)
-        std::cerr << mName << ": warning: did not find uniform " << name << std::endl;
+    // if (id == -1 && warn)
+    //     std::cerr << mName << ": warning: did not find uniform " << name << std::endl;
     return id;
 }
 

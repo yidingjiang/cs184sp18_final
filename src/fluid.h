@@ -74,20 +74,10 @@ struct Fluid {
   // Fluid components
   vector<Particle> particles;
 
-  // Spatial hashing
-  unordered_map<string, vector<Particle *> *> map;
-
-  void build_spatial_map();
-  string hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
-  std::vector<std::vector<Particle *>> generateNeighborArray();
-
-  std::vector<Particle *> getNeighbors(Vector3D pos);
-
   double W(Vector3D r);
   Vector3D del_W(Vector3D r);
   double C_i(Particle p);
   double density(Particle p, std::vector<Particle *> neighbors);
-  void update_density(std::vector<std::vector<Particle *>>  neighborArray);
   void update_delta_p(std::vector<std::vector<Particle *>> neighborArray);
   // double rho_i(Particle p);
   double lambda(Particle i, std::vector<std::vector<Particle *>>  neighborArray);
