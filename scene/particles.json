@@ -5,12 +5,12 @@
     "friction": 0.01
   },
   "plane": [{
-              "point": [0, -0.01, 0],
+              "point": [0, -0.2, 0],
               "normal": [0, 1, 0],
               "friction": 0.0
             },
             {
-              "point": [0, 0, 0.51],
+              "point": [0, 0, 0.81],
               "normal": [0, 0, -1],
               "friction": 0.2
             },
@@ -39,9 +39,9 @@
     "width": 0.5,
     "height": 0.5,
     "length": 0.5,
-    "r": 0.15,
-    "rho_o": 1000.0,
-    "solver_iter": 1,
+    "r": 0.105,
+    "rho_o": 4e4,
+    "solver_iter": 8,
     "fps": 60,
     "sf": 0.01
   }

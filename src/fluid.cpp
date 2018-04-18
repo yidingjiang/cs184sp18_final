@@ -10,7 +10,7 @@
 using namespace std;
 // TODO instantiate particles with the correct mass, size, and distances.
 
-#define EPSILON 1e-6
+#define EPSILON 1e-4
 
 Fluid::Fluid(double width, double length, double height, double particle_radius,
              int num_particles, int num_height_points,
@@ -77,7 +77,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     }
     p.x_star = p.origin + delta_t*p.velocity;
   }
-  // int i = 0;
+  int i = 0;
   std::vector<std::vector<Particle *>>  neighborArray = build_index();
 
   for(int iter=0; iter<solver_iters; iter++) {
@@ -87,12 +87,12 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     //apply delta_p and perform collision detection
 
     for (Particle &p: this->particles) {
-      p.x_star += p.delta_p*1e-2;
+      p.x_star += p.delta_p*sf;
       for (CollisionObject *co : *collision_objects) co->collide_particle(p);
       // i++;
     }
   }
-  // i  = 0;
+  i  = 0;
   for (Particle &p: this->particles) {
     p.velocity = (p.x_star-p.origin)/delta_t;
      //vorticity confinement
@@ -104,10 +104,13 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     p.origin = p.x_star;
 
     //update color
-    p.color = Vector3D( 1, 1, 1);
-    // for(int k = 0; k < neighborArray[11].size(); k++) neighborArray[11][k]->color = Vector3D( 1, 1, 1);
-    // i++;
+    // p.color = Vector3D( neighborArray[i].size()/10 , 1, 1);
+    p.color = Vector3D( p.density/RHO_O ,0,(int)(p.origin.y <= -0.19));
+    i++;
   }
+  // int nidx = (int) rand()*1000.0/RAND_MAX;
+  // for(int k = 0; k < neighborArray[nidx].size(); k++) neighborArray[nidx][k]->color = Vector3D( 1, 1, 1);
+  // cout << nidx << endl;
 
 }
 
@@ -146,11 +149,11 @@ double Fluid::C_i(Particle p){
 
 
 double Fluid::density(Particle p, std::vector<Particle *>  neighbors) {
-  Vector3D pi = p.origin;
+  Vector3D pi = p.x_star;
   double r = 0;
-  for (Particle * &pj: neighbors) r += W(pi-pj->origin);
+  for (Particle * &pj: neighbors) r += W(pi-pj->x_star);
   p.density = r*mass; //TODO maybe include mass?
-  return r;
+  return r*mass;
 }
 
 
@@ -215,7 +218,7 @@ void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
     // //TODO add scorr term
     if (neighbors.size() == 1) continue;
     for (Particle * &pj: neighbors) {
-      double scorr = -0.1*pow(W(pi-pj->x_star)/W(Vector3D(0.0,0.0,0.0)), 4.0);
+      double scorr = -0.01*pow(W(pi-pj->x_star)/W(Vector3D(0.0,0.0,0.0)), 4.0);
       p.delta_p += (p.lambda+pj->lambda+scorr)*del_W(pi-pj->x_star);
     }
     p.delta_p /= RHO_O;
@@ -276,9 +279,9 @@ std::vector<std::vector<Particle *>> Fluid::build_index(){
     for  (int k =0; k < particles.size(); k++){
       std::vector<Particle *> to_append;
 
-      query_pt[0] = particles[k].origin.x;
-      query_pt[1] = particles[k].origin.y;
-      query_pt[2] = particles[k].origin.z;
+      query_pt[0] = particles[k].x_star.x;
+      query_pt[1] = particles[k].x_star.y;
+      query_pt[2] = particles[k].x_star.z;
 
       double nMatches = index.radiusSearch(&query_pt[0], R*R, ret_matches, params); //TODO should be R or squared?
       for (auto &pair: ret_matches) {

@@ -44,9 +44,9 @@ struct PointCloud
 	//  "if/else's" are actually solved at compile time.
 	inline double kdtree_get_pt(const size_t idx, int dim) const
 	{
-		if (dim == 0) return pts[idx].origin.x;
-		else if (dim == 1) return pts[idx].origin.y;
-		else return pts[idx].origin.z;
+		if (dim == 0) return pts[idx].x_star.x;
+		else if (dim == 1) return pts[idx].x_star.y;
+		else return pts[idx].x_star.z;
 	}
 
 	// Optional bounding-box computation: return false to default to a standard bbox computation loop.

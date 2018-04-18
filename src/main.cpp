@@ -293,24 +293,30 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       }
 
       auto it_rho = object.find("rho_o");
-      if (it_R != object.end()) {
-        RHO_O = *it_rho;
+      if (it_rho != object.end()) {
+        fluid->RHO_O = *it_rho;
       } else {
         incompleteObjectError("rho_o", "r");
       }
 
       auto it_si = object.find("solver_iter");
-      if (it_R != object.end()) {
-        si = *it_si;
+      if (it_si != object.end()) {
+        fluid->solver_iters = *it_si;
       } else {
         incompleteObjectError("solver_iter", "r");
       }
 
       auto it_fps = object.find("fps");
-      if (it_R != object.end()) {
-        fps = *it_fps;
+      if (it_fps != object.end()) {
+        fluid->fps = *it_fps;
       } else {
         incompleteObjectError("fps", "r");
+      }
+      auto it_sf = object.find("sf");
+      if (it_sf != object.end()) {
+        fluid->sf = *it_sf;
+      } else {
+        incompleteObjectError("sf", "r");
       }
       fluid->R = R;
       fluid->num_width_points = num_width_points;
@@ -322,11 +328,11 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       fluid->height = height;
       fluid->length = length;
 
-      // fluid -> RHO_O *= num_width_points*num_height_points*num_length_points;
-      fluid -> RHO_O /= RHO_O;
-      fluid->solver_iter = si;
-      fluid->fps = fps;
-      fluid->sf = sf;
+      fluid->mass = fluid->RHO_O*width*height*length/(num_height_points*num_width_points*num_length_points);
+      // fluid -> RHO_O = RHO_O;
+      // fluid->solver_iters = si;
+      // fluid->fps = fps;
+      // fluid->sf = sf;
     }
   }
 
