@@ -66,6 +66,8 @@ struct Fluid {
   // Used to find neighboring particles
   double RHO_O = 25000;
   double mass = 1;
+  int fps = 60;
+  double sf = 1.0;
 
   double R=0.1;
   double W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
@@ -90,7 +92,7 @@ struct Fluid {
   void apply_viscosity(Particle p);
   void update_omega();
 
-  
+
   PointCloud cloud;
   typedef KDTreeSingleIndexAdaptor< L2_Simple_Adaptor<double, PointCloud> , PointCloud, 3 > kdtree;
   std::vector<std::vector<Particle *>> build_index();

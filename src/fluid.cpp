@@ -98,7 +98,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
      //vorticity confinement
     //TODO don't know what to do with the corrective force.
     // viscosity
-    
+
     // this->apply_viscosity(p);
     p.last_origin = p.origin;
     p.origin = p.x_star;
@@ -189,7 +189,7 @@ void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) 
       del_temp = del_W(p.x_star-j->x_star)/RHO_O;
       del_i += del_temp;
       del_j += del_temp.norm2();
-    } 
+    }
     sum_sq_norm = del_j + del_i.norm2();
     cout << "deli " << del_i.norm2() << " delj " << del_j << endl;
     p.lambda = -ci/(sum_sq_norm+EPSILON);
@@ -275,11 +275,11 @@ std::vector<std::vector<Particle *>> Fluid::build_index(){
     std::vector<std::vector<Particle *>> to_return;
     for  (int k =0; k < particles.size(); k++){
       std::vector<Particle *> to_append;
-      
+
       query_pt[0] = particles[k].origin.x;
       query_pt[1] = particles[k].origin.y;
       query_pt[2] = particles[k].origin.z;
-      
+
       double nMatches = index.radiusSearch(&query_pt[0], R*R, ret_matches, params); //TODO should be R or squared?
       for (auto &pair: ret_matches) {
         to_append.emplace_back(&(this->particles[pair.first]));
