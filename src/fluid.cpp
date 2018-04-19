@@ -6,6 +6,7 @@
 #include "fluid.h"
 #include "collision/plane.h"
 #include "collision/particle.h"
+#include "float.h"
 
 using namespace std;
 // TODO instantiate particles with the correct mass, size, and distances.
@@ -81,6 +82,82 @@ void Fluid::build_spatial_map() {
   }
 }
 
+void Fluid::build_voxel_grid() {
+  // height, width, length
+  vector<bool> lengthVector(num_cells.z+1, false);
+  vector<vector<bool> > widthVector(num_cells.y+1,lengthVector);
+  vector<vector<vector<bool>>> heightVector(num_cells.x+1,widthVector);
+  
+  this->voxelGrid = heightVector;
+  Vector3D min = Vector3D(DBL_MAX, DBL_MAX, DBL_MAX);
+  Vector3D max = Vector3D(-DBL_MAX, -DBL_MAX, -DBL_MAX);
+  
+  for (Particle &particle : this->particles){
+    if (min.x > particle.origin.x){
+      min.x = particle.origin.x;
+    } else if (min.y > particle.origin.y){
+      min.y = particle.origin.y;
+    } else if (min.z > particle.origin.z){
+      min.z = particle.origin.z;
+    }
+    
+    if (max.x < particle.origin.x){
+      max.x = particle.origin.x;
+    } else if (max.y < particle.origin.y){
+      max.y = particle.origin.y;
+    } else if (max.z < particle.origin.z){
+      max.z = particle.origin.z;
+    }
+  }
+  
+  Vector3D sizeGrid = Vector3D(max.x - min.x, max.y - min.y, max.z - min.z);
+  Vector3D sizeCell = Vector3D(sizeGrid.x / num_cells.x, sizeGrid.y / num_cells.y, sizeGrid.z / num_cells.z);
+  
+  for (Particle &particle : this->particles){
+    Vector3D newWithMinCoord = particle.origin - min;
+    
+    Vector3D cellNum = Vector3D(floor(newWithMinCoord.x / sizeCell.x), floor(newWithMinCoord.y / sizeCell.y), floor(newWithMinCoord.z / sizeCell.z));
+    this->voxelGrid[cellNum.x][cellNum.y][cellNum.z] = true;
+  }
+  
+  if (firstFile){
+    saveVoxelsToMitsuba(min, max);
+    std::cout << "HELLO :)" << std::endl;
+    firstFile = false;
+  }
+}
+#include <fstream>
+void Fluid::saveVoxelsToMitsuba(Vector3D min, Vector3D max){
+  ofstream fout;
+  fout.open("mitsubaInput.vol", ios::binary | ios::out);
+
+  char a[9] = {'V', 'O', 'L', (char) 3, (char) 1, (char) 0, (char) 0, (char) 0, (char) 0};
+  fout.write((char*) &a, sizeof(a));
+  
+  uint32_t X = num_cells.x;
+  fout.write((char*)&X,sizeof(X));
+  uint32_t Y = num_cells.y;
+  fout.write((char*)&Y,sizeof(Y));
+  uint32_t Z = num_cells.z;
+  fout.write((char*)&Z,sizeof(Z));
+  
+  float xmin = min.x;
+  float ymin = min.y;
+  float zmin = min.z;
+  float xmax = max.x;
+  float ymax = max.y;
+  float zmax = max.z;
+  fout.write((char*)&xmin,sizeof(xmin));
+  fout.write((char*)&ymin,sizeof(ymin));
+  fout.write((char*)&zmin,sizeof(zmin));
+  fout.write((char*)&xmax,sizeof(xmax));
+  fout.write((char*)&ymax,sizeof(ymax));
+  fout.write((char*)&zmax,sizeof(zmax));
+  
+
+  fout.close();
+}
+
 string Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) {
   // TODO (Part 4.1): Hash a 3D position into a unique float identifier that represents
   // membership in some uniquely identified 3D box volume.
@@ -148,6 +225,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   }
   int i = 0;
   build_spatial_map();
+  build_voxel_grid();
   std::vector<std::vector<Particle *>>  neighborArray = generateNeighborArray();
   for(int iter=0; iter<solver_iters; iter++) {
     this->update_density(neighborArray);

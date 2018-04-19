@@ -325,9 +325,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       fluid->height = height;
       fluid->length = length;
       
-      fluid->num_width_voxels = num_width_voxels;
-      fluid->num_height_voxels = num_height_voxels;
-      fluid->num_length_voxels = num_length_voxels;
+      fluid->num_cells = Vector3D(num_width_voxels, num_height_voxels, num_length_voxels);
 
       // fluid -> RHO_O *= num_width_points*num_height_points*num_length_points;
       fluid -> RHO_O /= (width*height*length);
