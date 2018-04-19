@@ -319,6 +319,9 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
         incompleteObjectError("sf", "r");
       }
       fluid->R = R;
+      fluid->W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
+      fluid->W_DEL_CONSTANT = 45.0/(PI*pow(R,6)); //TODO this maybe negated
+
       fluid->num_width_points = num_width_points;
       fluid->num_height_points = num_height_points;
       fluid->num_length_points = num_length_points;
