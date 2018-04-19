@@ -85,7 +85,6 @@ void Fluid::build_spatial_map() {
 
 void Fluid::build_voxel_grid() {
   // height, width, length
-  std::cout << "JJ" << std::endl;
   vector<bool> voxels(num_cells.x * num_cells.y * num_cells.z, false);
   
   this->voxelGrid.swap(voxels);
