@@ -79,7 +79,7 @@ struct Fluid {
   unordered_map<string, vector<Particle *> *> map;
   
   // height, width, length
-  std::vector<std::vector<std::vector<bool>>> voxelGrid;
+  std::vector<bool> voxelGrid;
 
   void build_spatial_map();
   void build_voxel_grid();

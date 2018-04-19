@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <math.h>
 #include <random>
@@ -84,28 +85,31 @@ void Fluid::build_spatial_map() {
 
 void Fluid::build_voxel_grid() {
   // height, width, length
-  vector<bool> lengthVector(num_cells.z+1, false);
-  vector<vector<bool> > widthVector(num_cells.y+1,lengthVector);
-  vector<vector<vector<bool>>> heightVector(num_cells.x+1,widthVector);
+  std::cout << "JJ" << std::endl;
+  vector<bool> voxels(num_cells.x * num_cells.y * num_cells.z, false);
   
-  this->voxelGrid = heightVector;
+  this->voxelGrid.swap(voxels);
   Vector3D min = Vector3D(DBL_MAX, DBL_MAX, DBL_MAX);
   Vector3D max = Vector3D(-DBL_MAX, -DBL_MAX, -DBL_MAX);
   
   for (Particle &particle : this->particles){
     if (min.x > particle.origin.x){
       min.x = particle.origin.x;
-    } else if (min.y > particle.origin.y){
+    }
+    if (min.y > particle.origin.y){
       min.y = particle.origin.y;
-    } else if (min.z > particle.origin.z){
+    }
+    if (min.z > particle.origin.z){
       min.z = particle.origin.z;
     }
     
     if (max.x < particle.origin.x){
       max.x = particle.origin.x;
-    } else if (max.y < particle.origin.y){
+    }
+    if (max.y < particle.origin.y){
       max.y = particle.origin.y;
-    } else if (max.z < particle.origin.z){
+    } 
+    if (max.z < particle.origin.z){
       max.z = particle.origin.z;
     }
   }
@@ -117,22 +121,25 @@ void Fluid::build_voxel_grid() {
     Vector3D newWithMinCoord = particle.origin - min;
     
     Vector3D cellNum = Vector3D(floor(newWithMinCoord.x / sizeCell.x), floor(newWithMinCoord.y / sizeCell.y), floor(newWithMinCoord.z / sizeCell.z));
-    this->voxelGrid[cellNum.x][cellNum.y][cellNum.z] = true;
+    //Flat[x + WIDTH * (y + DEPTH * z)]
+    this->voxelGrid[cellNum.x + num_cells.x * (cellNum.y + num_cells.y * cellNum.z)] = true;
   }
   
   if (firstFile){
     saveVoxelsToMitsuba(min, max);
-    std::cout << "HELLO :)" << std::endl;
     firstFile = false;
   }
 }
-#include <fstream>
+
 void Fluid::saveVoxelsToMitsuba(Vector3D min, Vector3D max){
   ofstream fout;
   fout.open("mitsubaInput.vol", ios::binary | ios::out);
 
-  char a[9] = {'V', 'O', 'L', (char) 3, (char) 1, (char) 0, (char) 0, (char) 0, (char) 0};
+  char a[4] = {'V', 'O', 'L', (char) 3};
   fout.write((char*) &a, sizeof(a));
+  
+  uint32_t encodingId = 1;
+  fout.write((char*)&encodingId,sizeof(encodingId));
   
   uint32_t X = num_cells.x;
   fout.write((char*)&X,sizeof(X));
@@ -140,6 +147,9 @@ void Fluid::saveVoxelsToMitsuba(Vector3D min, Vector3D max){
   fout.write((char*)&Y,sizeof(Y));
   uint32_t Z = num_cells.z;
   fout.write((char*)&Z,sizeof(Z));
+  
+  uint32_t numChannel = 1;
+  fout.write((char*)&numChannel,sizeof(numChannel));
   
   float xmin = min.x;
   float ymin = min.y;
@@ -153,6 +163,16 @@ void Fluid::saveVoxelsToMitsuba(Vector3D min, Vector3D max){
   fout.write((char*)&xmax,sizeof(xmax));
   fout.write((char*)&ymax,sizeof(ymax));
   fout.write((char*)&zmax,sizeof(zmax));
+  
+  for (int xpos = 0; xpos < num_cells.x; ++xpos) {
+    for (int ypos = 0; ypos < num_cells.y; ++ypos) {  
+      for (int zpos = 0; zpos < num_cells.z; ++zpos) { 
+        float currVal = this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)]; 
+        //std::cout << currVal << std::endl;
+        fout.write((char*)&currVal,sizeof(currVal));
+      }
+    } 
+  }
   
 
   fout.close();

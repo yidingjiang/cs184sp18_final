@@ -40,8 +40,8 @@
     "height": 0.5,
     "length": 0.5,
     "r": 0.15,
-    "num_width_voxels": 100,
-    "num_height_voxels": 100,
-    "num_length_voxels": 100
+    "num_width_voxels": 10,
+    "num_height_voxels": 10,
+    "num_length_voxels": 10
   }
 }
