@@ -1,6 +1,6 @@
 {
   "particle": {
-    "origin": [1.0, 0.2, 0.5],
+    "origin": [2.0, 0.2, 2,0],
     "radius": 0.05,
     "friction": 0.01
   },
@@ -10,23 +10,23 @@
               "friction": 0.0
             },
             {
-              "point": [0, 0, 0.81],
+              "point": [0, 0, 1],
               "normal": [0, 0, -1],
               "friction": 0.2
             },
             {
-              "point": [0, 0, -0.01],
+              "point": [0, 0, -0.6],
               "normal": [0, 0, 1],
               "friction": 0.2
             },
             {
-              "point": [0.51, 0, 0],
+              "point": [1, 0, 0],
               "normal": [-1, 0, 0],
               "friction": 0.2
             }
             ,
             {
-              "point": [-0.01, 0, 0],
+              "point": [-0.5, 0, 0],
               "normal": [1, 0, 0],
               "friction": 0.0
             }
@@ -36,13 +36,13 @@
     "num_height_points": 10,
     "num_length_points": 10,
     "neighborhood_particle": 11,
-    "width": 0.5,
-    "height": 0.5,
-    "length": 0.5,
-    "r": 0.105,
-    "rho_o": 4e4,
-    "solver_iter": 8,
+    "width": 1.0,
+    "height": 1.0,
+    "length": 1.0,
+    "r": 0.15,
+    "rho_o": 1000,
+    "solver_iter": 10,
     "fps": 60,
-    "sf": 0.01
+    "sf": 1.0
   }
 }

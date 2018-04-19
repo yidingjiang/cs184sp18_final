@@ -69,9 +69,9 @@ struct Fluid {
   int fps = 60;
   double sf = 1.0;
 
-  double R=0.1;
-  double W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
-  double W_DEL_CONSTANT = 45.0/(PI*pow(R,6)); //TODO this maybe negated
+  double R=0.15;
+  double W_CONSTANT =  315.0/(64.0*M_PI*R*R*R*R*R*R*R*R*R);
+  double W_DEL_CONSTANT = 45.0/(M_PI*pow(R,6.0)); //TODO this maybe negated
 
   // Fluid components
   vector<Particle> particles;
