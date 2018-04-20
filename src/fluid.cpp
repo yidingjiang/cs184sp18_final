@@ -80,22 +80,19 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     }
     p.x_star = p.origin + delta_t*p.velocity;
   }
-  int i = 0;
+
   std::vector<std::vector<Particle *>>  neighborArray = build_index();
 
   for(int iter=0; iter<solver_iters; iter++) {
-    this->update_lambdas(neighborArray);
-    this->update_delta_p(neighborArray);
     //apply delta_p and perform collision detection
 
-    for (Particle &p: this->particles) {
-      p.x_star += p.delta_p*sf;
-    }
-    for (Particle &p: this->particles) {
+    for (int particle_idx=0; particle_idx < particles.size(); particle_idx++){
+      Particle &p = particles[particle_idx];
+      p.x_star += delta_p(p, neighborArray[particle_idx]);
       for (CollisionObject *co : *collision_objects) co->collide_particle(p);
     }
   }
-  i  = 0;
+  // int i  = 0;
   for (Particle &p: this->particles) {
     p.velocity = (p.x_star-p.origin)/delta_t;
   }
@@ -111,7 +108,7 @@ for (Particle &p: this->particles) {
     // p.color = Vector3D( neighborArray[i].size()/10 , 1, 1);
     // p.color = Vector3D( p.density/RHO_O ,0,(int)(p.origin.y <= -0.19));
     p.color = Vector3D(0.05,10*(p.origin.y+0.2)*(p.origin.y+0.2)+0.2, 1.0);
-    i++;
+    // i++;
   }
   // int nidx = (int) rand()*1000.0/RAND_MAX;
   // for(int k = 0; k < neighborArray[nidx].size(); k++) neighborArray[nidx][k]->color = Vector3D( 1, 1, 1);
@@ -158,7 +155,7 @@ double Fluid::C_i(Particle p){
 }
 
 
-double Fluid::density(Particle p, std::vector<Particle *>  neighbors) {
+double Fluid::density(Particle &p, std::vector<Particle *>  neighbors) {
   Vector3D pi = p.x_star;
   double r = 0;
   for (Particle * &pj: neighbors) {
@@ -170,47 +167,35 @@ double Fluid::density(Particle p, std::vector<Particle *>  neighbors) {
 
 
 
+double Fluid::lambda(Particle &p, std::vector<Particle *>  neighbors) {
+  double ci = density(p, neighbors)/RHO_O - 1.0;
+  double sum_sq_norm;
 
+  double del_j=0;
+  Vector3D del_i(0.0,0.0,0.0);
+  Vector3D del_temp(0.0,0.0,0.0);
 
-void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) {
-  int i = 0;
-  for (Particle &p: this-> particles) {
-
-    std::vector<Particle *> neighbors  = neighborArray[i];
-    double ci = density(p, neighbors)/RHO_O - 1.0;
-    // std::cout << ci << '\n';
-    double sum_sq_norm;
-
-    double del_j=0;
-    Vector3D del_i(0.0,0.0,0.0);
-    Vector3D del_temp(0.0,0.0,0.0);
-
-    for (Particle * &j: neighbors){
-      del_temp = del_W(p.x_star-j->x_star)/RHO_O;
-      del_i += del_temp;
-      del_j += del_temp.norm2();
-    }
-    sum_sq_norm = del_j + del_i.norm2();
-    p.lambda = -ci/(sum_sq_norm+EPSILON);
-    i++;
+  for (Particle * &j: neighbors){
+    del_temp = del_W(p.x_star-j->x_star)/RHO_O;
+    del_i += del_temp;
+    del_j += del_temp.norm2();
   }
+  sum_sq_norm = del_j + del_i.norm2();
+  p.lambda = -ci/(sum_sq_norm+EPSILON);
+  return p.lambda;
 }
 
-void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
-  int i = 0;
-  for (Particle &p: this->particles) {
-    Vector3D p_pred = p.x_star;
-    std::vector<Particle *> neighbors = neighborArray[i];
-    Vector3D delta = Vector3D(0.0,0.0,0.0);
-    float l = p.lambda;
-    for (Particle * &pj: neighbors) {
-      float scorr = -0.001 * pow(W(p_pred-pj->x_star)/W(Vector3D(0.01, 0.01, 0.01)*R), 4.0);
-      Vector3D gradient = del_W(p_pred-pj->x_star);
-      delta += (l + pj->lambda+scorr) * gradient;
-    }
-    p.delta_p = delta / RHO_O;
-    i++;
+Vector3D Fluid::delta_p(Particle &p, std::vector<Particle *>  neighbors){
+  Vector3D p_pred = p.x_star;
+  Vector3D delta = Vector3D(0.0,0.0,0.0);
+  float l = lambda(p, neighbors);
+  for (Particle * &pj: neighbors) {
+    float scorr = -0.001 * pow(W(p_pred-pj->x_star)/W(Vector3D(0.01, 0.01, 0.01)*R), 4.0);
+    Vector3D gradient = del_W(p_pred-pj->x_star);
+    delta += (l + pj->lambda+scorr) * gradient;
   }
+  p.delta_p = delta / RHO_O;
+  return p.delta_p;
 }
 
 

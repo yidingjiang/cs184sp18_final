@@ -79,14 +79,11 @@ struct Fluid {
   double W(Vector3D r);
   Vector3D del_W(Vector3D r);
   double C_i(Particle p);
-  double density(Particle p, std::vector<Particle *> neighbors);
-  void update_delta_p(std::vector<std::vector<Particle *>> neighborArray);
-  // double rho_i(Particle p);
-  double lambda(Particle i, std::vector<std::vector<Particle *>>  neighborArray);
-  void update_lambdas(std::vector<std::vector<Particle *>>  neighborArray);
-  Vector3D del_ci_i(Particle i, std::vector<Particle *> neighbors);
 
-  Vector3D del_ci_j(Particle i, Particle k);
+  double density(Particle &p, std::vector<Particle *> neighbors);
+  double lambda(Particle &p, std::vector<Particle *>  neighbors);
+  Vector3D delta_p(Particle &p, std::vector<Particle *>  neighbors);
+
 
   void apply_vorticity(std::vector<std::vector<Particle *>> neighborArray);
   void apply_viscosity(std::vector<std::vector<Particle *>> neighborArray);
