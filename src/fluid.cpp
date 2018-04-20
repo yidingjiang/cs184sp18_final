@@ -229,8 +229,13 @@ void Fluid::saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max
   uint32_t Z = num_cells.z;
   fout.write((char*)&Z,sizeof(Z));
   
-  uint32_t numChannel = 1;
-  fout.write((char*)&numChannel,sizeof(numChannel));
+  if (!orientation){
+    uint32_t numChannel = 1;
+    fout.write((char*)&numChannel,sizeof(numChannel));
+  } else {
+    uint32_t numChannel = 3;
+    fout.write((char*)&numChannel,sizeof(numChannel));
+  }
   
   float xmin = min.x;
   float ymin = min.y;
