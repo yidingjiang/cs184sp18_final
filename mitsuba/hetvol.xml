@@ -17,7 +17,7 @@
 		</volume>
 
 		<volume name="albedo" type="constvolume">
-			<spectrum name="value" value="0.9"/>
+			<spectrum name="value" value="0.8 0.8 0.9"/>
 		</volume>
 		<float name="scale" value="100"/>
 		<phase type="microflake">
@@ -31,6 +31,17 @@
 		<ref name="interior" id="smoke"/>
 		
 		
+	</shape>
+	
+	<shape type="sphere">
+		<point name="center" x="4.3" y="18" z="5.2"/>
+		<float name="radius" value="2"/>
+
+		<emitter type="area">
+			<spectrum name="radiance" value="45"/>
+		</emitter>
+
+		<bsdf type="diffuse"/>
 	</shape>
 
 	<shape type="obj">
