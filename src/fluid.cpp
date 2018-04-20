@@ -83,11 +83,11 @@ void Fluid::build_spatial_map() {
   }
 }
 
-void Fluid::build_voxel_grid() {
+void Fluid::build_voxel_grid(int frameNum) {
   // height, width, length
   vector<bool> voxels(num_cells.x * num_cells.y * num_cells.z, false);
   
-  this->voxelGrid.swap(voxels);
+  this->voxelGrid = voxels;
   Vector3D min = Vector3D(DBL_MAX, DBL_MAX, DBL_MAX);
   Vector3D max = Vector3D(-DBL_MAX, -DBL_MAX, -DBL_MAX);
   
@@ -119,11 +119,35 @@ void Fluid::build_voxel_grid() {
   for (Particle &particle : this->particles){
     Vector3D newWithMinCoord = particle.origin - min;
     
-    Vector3D cellNum = Vector3D(floor(newWithMinCoord.x / sizeCell.x), floor(newWithMinCoord.y / sizeCell.y), floor(newWithMinCoord.z / sizeCell.z));
-    //Flat[x + WIDTH * (y + DEPTH * z)]
+    double positionArrayX = newWithMinCoord.x / sizeCell.x;
+    double positionArrayY = newWithMinCoord.y / sizeCell.y;
+    double positionArrayZ = newWithMinCoord.z / sizeCell.z;
+    
+    if (positionArrayX != 0 && positionArrayX == floor(positionArrayX)){
+      positionArrayX -= 1;
+    } else{
+      positionArrayX = floor(positionArrayX);
+    }
+    
+    if (positionArrayY != 0 && positionArrayY == floor(positionArrayY)){
+      positionArrayY -= 1;
+    } else{
+      positionArrayY = floor(positionArrayY);
+    }
+    
+    if (positionArrayZ != 0 && positionArrayZ == floor(positionArrayZ)){
+      positionArrayZ -= 1;
+    } else{
+      positionArrayZ = floor(positionArrayZ);
+    }
+    
+    Vector3D cellNum = Vector3D(positionArrayX, positionArrayY, positionArrayZ);
+    
     this->voxelGrid[cellNum.x + num_cells.x * (cellNum.y + num_cells.y * cellNum.z)] = true;
   }
   
+  vector<Vector3D> voxelsOrient(num_cells.x * num_cells.y * num_cells.z, Vector3D(0,0,0));
+  this->voxelOrientations = voxelsOrient;
   // DO ORIENTATION STUFF
   for (int xpos = 0; xpos < num_cells.x; ++xpos) {
     for (int ypos = 0; ypos < num_cells.y; ++ypos) {  
@@ -133,50 +157,63 @@ void Fluid::build_voxel_grid() {
           this->voxelOrientations[xpos + num_cells.x * (ypos + num_cells.y * zpos)] = Vector3D(0,0,0);
         }
         else{
-          bool up = false;
-          bool down = false;
-          bool left = false;
-          bool right = false;
-          bool closer = false;
-          bool further = false;
+          Vector3D up = Vector3D(0,0,0);
+          Vector3D down = Vector3D(0,0,0);
+          Vector3D left = Vector3D(0,0,0);
+          Vector3D right = Vector3D(0,0,0);
+          Vector3D closer = Vector3D(0,0,0);
+          Vector3D further = Vector3D(0,0,0);
           
-          if (xPos > 0) {
-            left = this->voxelGrid[xpos-1 + num_cells.x * (ypos + num_cells.y * zpos)]; 
+          if (xpos > 0) {
+            if (this->voxelGrid[xpos-1 + num_cells.x * (ypos + num_cells.y * zpos)]){
+              left = Vector3D(1, 0, 0);
+            }
           }
-          if (xPos < num_cells.x-1) {
-            right = this->voxelGrid[xpos+1 + num_cells.x * (ypos + num_cells.y * zpos)];
-          }
-          
-          if (yPos > 0) {
-            down = this->voxelGrid[xpos + num_cells.x * (ypos-1 + num_cells.y * zpos)]; 
-          }
-          if (yPos < num_cells.y-1) { 
-            up = this->voxelGrid[xpos + num_cells.x * (ypos+1 + num_cells.y * zpos)]; 
+          if (xpos < num_cells.x-1) {
+            if (this->voxelGrid[xpos+1 + num_cells.x * (ypos + num_cells.y * zpos)]){
+              right = Vector3D(-1, 0, 0);
+            }
           }
           
-          if (zPos > 0) {
-            closer = this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * (zpos - 1))]; 
+          if (ypos > 0) {
+            if (this->voxelGrid[xpos + num_cells.x * (ypos-1 + num_cells.y * zpos)]){
+              down = Vector3D(0, 1, 0);
+            }
+          }
+          if (ypos < num_cells.y-1) { 
+            if (this->voxelGrid[xpos + num_cells.x * (ypos+1 + num_cells.y * zpos)]){
+              up = Vector3D(0, -1, 0);
+            }
           }
           
-          if (zPos < num_cells.z-1) { 
-            further = this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * (zpos + 1))]; 
+          if (zpos > 0) {
+            if (this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * (zpos - 1))]){
+              closer = Vector3D(0,0,1);
+            }
           }
           
-          if (up && left && right) 
+          if (zpos < num_cells.z-1) { 
+            if (this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * (zpos + 1))]){
+              further = Vector3D(0,0,-1);
+            }
+          }
+          
+          Vector3D currentVector = up + down + left + right + closer + further;
+          currentVector.normalize();
+          this->voxelOrientations[xpos + num_cells.x * (ypos + num_cells.y * (zpos + 1))] = currentVector;
         }
       }
     } 
   }
-  
   if (firstFile){
-    saveVoxelsToMitsuba(min, max);
+    //saveVoxelsToMitsuba("mitsubaInput" + std::to_string(frameNum) + ".vol", min, max);
     firstFile = false;
   }
 }
 
-void Fluid::saveVoxelsToMitsuba(Vector3D min, Vector3D max){
+void Fluid::saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max){
   ofstream fout;
-  fout.open("mitsubaInput.vol", ios::binary | ios::out);
+  fout.open(fileName, ios::binary | ios::out);
 
   char a[4] = {'V', 'O', 'L', (char) 3};
   fout.write((char*) &a, sizeof(a));
@@ -288,7 +325,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   }
   int i = 0;
   build_spatial_map();
-  build_voxel_grid();
+  build_voxel_grid(0);
   std::vector<std::vector<Particle *>>  neighborArray = generateNeighborArray();
   for(int iter=0; iter<solver_iters; iter++) {
     this->update_density(neighborArray);

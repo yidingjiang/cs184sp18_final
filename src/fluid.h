@@ -45,7 +45,7 @@ struct Fluid {
                 vector<CollisionObject *> *collision_objects);
 
   void reset();
-  void saveVoxelsToMitsuba(Vector3D min, Vector3D max);
+  void saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max);
 
   // Fluid properties
   double width;
@@ -83,7 +83,7 @@ struct Fluid {
   std::vector<Vector3D> voxelOrientations;
 
   void build_spatial_map();
-  void build_voxel_grid();
+  void build_voxel_grid(int frameNum);
   string hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
   std::vector<std::vector<Particle *>> generateNeighborArray();
 
