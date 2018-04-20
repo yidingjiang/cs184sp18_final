@@ -45,7 +45,7 @@ struct Fluid {
                 vector<CollisionObject *> *collision_objects);
 
   void reset();
-  void saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max);
+  void saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max, bool orientation);
 
   // Fluid properties
   double width;

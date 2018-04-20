@@ -200,18 +200,19 @@ void Fluid::build_voxel_grid(int frameNum) {
           
           Vector3D currentVector = up + down + left + right + closer + further;
           currentVector.normalize();
-          this->voxelOrientations[xpos + num_cells.x * (ypos + num_cells.y * (zpos + 1))] = currentVector;
+          this->voxelOrientations[xpos + num_cells.x * (ypos + num_cells.y * zpos)] = currentVector;
         }
       }
     } 
   }
   if (firstFile){
-    //saveVoxelsToMitsuba("mitsubaInput" + std::to_string(frameNum) + ".vol", min, max);
+    saveVoxelsToMitsuba("../mitsuba/input/mitsubaVoxel" + std::to_string(frameNum) + ".vol", min, max, false);
+    saveVoxelsToMitsuba("../mitsuba/input/mitsubaOrientation" + std::to_string(frameNum) + ".vol", min, max, false);
     firstFile = false;
   }
 }
 
-void Fluid::saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max){
+void Fluid::saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max, bool orientation){
   ofstream fout;
   fout.open(fileName, ios::binary | ios::out);
 
@@ -244,14 +245,31 @@ void Fluid::saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max
   fout.write((char*)&ymax,sizeof(ymax));
   fout.write((char*)&zmax,sizeof(zmax));
   
-  for (int xpos = 0; xpos < num_cells.x; ++xpos) {
-    for (int ypos = 0; ypos < num_cells.y; ++ypos) {  
-      for (int zpos = 0; zpos < num_cells.z; ++zpos) { 
-        float currVal = this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)]; 
-        //std::cout << currVal << std::endl;
-        fout.write((char*)&currVal,sizeof(currVal));
-      }
-    } 
+  if (!orientation){
+    for (int xpos = 0; xpos < num_cells.x; ++xpos) {
+      for (int ypos = 0; ypos < num_cells.y; ++ypos) {  
+        for (int zpos = 0; zpos < num_cells.z; ++zpos) { 
+          float currVal = this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)]; 
+          //std::cout << currVal << std::endl;
+          fout.write((char*)&currVal,sizeof(currVal));
+        }
+      } 
+    }
+  } else{
+    for (int xpos = 0; xpos < num_cells.x; ++xpos) {
+      for (int ypos = 0; ypos < num_cells.y; ++ypos) {  
+        for (int zpos = 0; zpos < num_cells.z; ++zpos) { 
+          Vector3D currVal = this->voxelOrientations[xpos + num_cells.x * (ypos + num_cells.y * zpos)]; 
+          float x = currVal.x;
+          float y = currVal.y;
+          float z = currVal.z;
+          //std::cout << currVal << std::endl;
+          fout.write((char*)&x,sizeof(x));
+          fout.write((char*)&y,sizeof(y));
+          fout.write((char*)&z,sizeof(z));
+        }
+      } 
+    }
   }
   
 
