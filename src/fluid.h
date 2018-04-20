@@ -59,6 +59,8 @@ struct Fluid {
   int num_height_points;
   int neighborhood_particle;
   int solver_iters = 3;
+  double viscosity;
+  double vorticity;
 
   double radius;
   double friction;

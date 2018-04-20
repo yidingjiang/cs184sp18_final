@@ -11,8 +11,8 @@ using namespace std;
 // TODO instantiate particles with the correct mass, size, and distances.
 
 #define EPSILON 5000.0
-#define C_VISCOSITY 0.0001
-#define C_VORTICITY 0.005
+// #define C_VISCOSITY 0.0001
+// #define C_VORTICITY 0.005
 
 
 Fluid::Fluid(double width, double length, double height, double particle_radius,
@@ -317,11 +317,11 @@ void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
 void Fluid::apply_vorticity(std::vector<std::vector<Particle *>> neighborArray){
   for (int i = 0; i < particles.size(); i++){
     Particle &p = particles[i];
-    Vector3D N;    
+    Vector3D N;
 
     p.forces *= 0;
     continue;
-    
+
     if (p.omega.norm() > 1e-8) {
       std::vector<Particle *> neighbors = neighborArray[i];
       Vector3D pi = p.x_star;
@@ -331,7 +331,7 @@ void Fluid::apply_vorticity(std::vector<std::vector<Particle *>> neighborArray){
       }
       if (N.norm() > 1e-8) N.normalize();
     }
-    p.forces = C_VORTICITY*CGL::cross(N, p.omega);
+    p.forces = vorticity*CGL::cross(N, p.omega);
   }
 }
 
@@ -339,7 +339,7 @@ void Fluid::update_omega(std::vector<std::vector<Particle *>> neighborArray){
   for (int i = 0; i < particles.size(); i++){
     Particle &p = particles[i];
     std::vector<Particle *> neighbors = neighborArray[i];
-    
+
     Vector3D accum;
     Vector3D pi = p.x_star;
     for (Particle * &j: neighbors) {
@@ -352,10 +352,10 @@ void Fluid::update_omega(std::vector<std::vector<Particle *>> neighborArray){
 
 
 void Fluid::apply_viscosity(std::vector<std::vector<Particle *>> neighborArray) {
-  for (int i = 0; i < particles.size(); i++){  
+  for (int i = 0; i < particles.size(); i++){
     Particle &p = particles[i];
     std::vector<Particle *> neighbors = neighborArray[i];
-    
+
     Vector3D accum;
     Vector3D pi = p.x_star;
     for (Particle * &j: neighbors) {
@@ -363,7 +363,7 @@ void Fluid::apply_viscosity(std::vector<std::vector<Particle *>> neighborArray) 
       accum += W(pi-j->x_star)*vij;
     }
 
-    p.velocity += C_VISCOSITY*accum; //TODO viscosity works, but need to use smaller hyperparams than paper
+    p.velocity += viscosity*accum; //TODO viscosity works, but need to use smaller hyperparams than paper
   }
 
 }

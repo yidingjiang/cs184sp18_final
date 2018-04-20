@@ -312,12 +312,28 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       } else {
         incompleteObjectError("fps", "r");
       }
+
       auto it_sf = object.find("sf");
       if (it_sf != object.end()) {
         fluid->sf = *it_sf;
       } else {
         incompleteObjectError("sf", "r");
       }
+
+      auto it_vis = object.find("viscosity");
+      if (it_vis != object.end()) {
+        fluid->viscosity = *it_vis;
+      } else {
+        incompleteObjectError("viscosity", "r");
+      }
+
+      auto it_vor = object.find("vorticity");
+      if (it_vor != object.end()) {
+        fluid->vorticity = *it_vor;
+      } else {
+        incompleteObjectError("vorticity", "r");
+      }
+      
       fluid->R = R;
       fluid->W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
       fluid->W_DEL_CONSTANT = 45.0/(PI*pow(R,6)); //TODO this maybe negated
