@@ -291,7 +291,7 @@ void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
     Vector3D delta = Vector3D(0.0,0.0,0.0);
     float l = p.lambda;
     for (Particle * &pj: neighbors) {
-      float scorr = -0.001 * pow(W(p_pred-pj->x_star)/W(Vector3D(0.01, 0.01, 0.01)*R), 4.0);
+      float scorr = -0.005 * pow(W(p_pred-pj->x_star)/W(Vector3D(0.01, 0.01, 0.01)*R), 4.0);
       Vector3D gradient = del_W(p_pred-pj->x_star);
       delta += (l + pj->lambda+scorr) * gradient;
     }
