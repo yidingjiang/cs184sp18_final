@@ -11,7 +11,7 @@ using namespace std;
 // TODO instantiate particles with the correct mass, size, and distances.
 
 #define EPSILON 5000.0
-#define C_VISCOSITY 0.00001
+#define C_VISCOSITY 0.0001
 #define C_VORTICITY 0.005
 
 
@@ -39,9 +39,9 @@ void Fluid::buildGrid() {
   for (int i = 0; i < num_width_points; i++) {
     for (int j = 0; j < num_length_points; j++) {
       for (int k = 0; k < num_height_points; k++) {
-        Vector3D pos = Vector3D((i-num_width_points/2.0) * w_offset + width/2.0,
+        Vector3D pos = Vector3D((i- (num_width_points/2.0)) * w_offset,
                                 j * l_offset,
-                                (k - num_height_points/2.0) * h_offset + height/2.0);
+                                (k - (num_height_points/2.0)) * h_offset);
         Particle p = Particle(pos, radius, friction);
         particles.emplace_back(p);
       }
@@ -132,6 +132,11 @@ void Fluid::reset() {
   for (int i = 0; i < particles.size(); i++) {
     pm->origin = pm->start_origin;
     pm->last_origin = pm->start_origin;
+    pm->forces *= 0;
+    pm->x_star = pm->origin;
+    pm->omega *= 0;
+    pm->delta_p *= 0;
+    pm->velocity *= 0;
     pm++;
   }
 }
