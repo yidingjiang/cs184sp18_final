@@ -86,17 +86,13 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   for(int iter=0; iter<solver_iters; iter++) {
     this->update_lambdas(neighborArray);
     this->update_delta_p(neighborArray);
-    // i = 0;
     //apply delta_p and perform collision detection
 
     for (Particle &p: this->particles) {
       p.x_star += p.delta_p*sf;
-      // for (CollisionObject *co : *collision_objects) co->collide_particle(p);
-      // i++;
     }
     for (Particle &p: this->particles) {
       for (CollisionObject *co : *collision_objects) co->collide_particle(p);
-      // i++;
     }
   }
   i  = 0;
@@ -146,10 +142,7 @@ void Fluid::reset() {
 
 double Fluid::W(Vector3D r) { //density kernel
   double r_norm = r.norm();
-  // std::cout << "norm " << r_norm << '\n';
   if (r_norm > R) return 0;
-  // std::cout << "W CONSTANT " << W_CONSTANT << '\n';
-  // std::cout << "R " << R << '\n';
   return pow(R*R-r_norm*r_norm, 3.0)*W_CONSTANT;
 }
 
@@ -165,80 +158,25 @@ double Fluid::C_i(Particle p){
 }
 
 
-// double Fluid::density(Particle p, std::vector<Particle *>  neighbors) {
-//   Vector3D pi = p.x_star;
-//   double r = 0;
-//   for (Particle * &pj: neighbors) r += W(pi-pj->x_star);
-//   p.density = r*mass; //TODO maybe include mass?
-//   return r*mass;
-// }
-
 double Fluid::density(Particle p, std::vector<Particle *>  neighbors) {
   Vector3D pi = p.x_star;
   double r = 0;
-  // cout << neighbors.size() << endl;
   for (Particle * &pj: neighbors) {
-    // std::cout << "W " << W(pi-pj->x_star) << '\n';
     r += W(pi-pj->x_star);
   }
-  p.density = r; //TODO maybe include mass?
+  p.density = r;
   return r;
 }
 
 
-Vector3D Fluid::del_ci_j(Particle i, Particle k) {
-  Vector3D to_return =  -del_W(i.x_star-k.x_star)/RHO_O; //TODO: could be negated
-  return to_return;
-}
-
-Vector3D Fluid::del_ci_i(Particle i, std::vector<Particle *> neighbors) {
-  Vector3D accum;
-  for (Particle * &j : neighbors) {
-    accum += del_W(i.x_star-j->x_star); //TODO: might be negated
-  }
-  Vector3D to_return = accum/RHO_O;
-  // cout << "ii:" << to_return << endl;
-  return to_return;
-}
 
 
-
-// void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) {
-//   int i = 0;
-//   double accum;
-//   for (Particle &p: this-> particles) {
-//
-//     std::vector<Particle *> neighbors  = neighborArray[i];
-//     double ci = density(p, neighbors)/RHO_O - 1.0;
-//     cout << ci << endl;
-//     double sum_sq_norm;
-//
-//     double del_j=0;
-//     Vector3D del_i(0.0,0.0,0.0);
-//     Vector3D del_temp(0.0,0.0,0.0);
-//
-//     for (Particle * &j: neighbors){
-//       del_temp = del_W(p.x_star-j->x_star)/RHO_O;
-//       del_i += del_temp;
-//       del_j += del_temp.norm2();
-//     }
-//     sum_sq_norm = del_j + del_i.norm2();
-//     // cout << "deli " << del_i.norm2() << " delj " << del_j << endl;
-//     p.lambda = -ci/(sum_sq_norm+EPSILON);
-//     accum += ci;
-//     // cout << "Lambda: " << p.lambda << endl;
-//     i++;
-//   }
-//   // cout << accum/particles.size() << endl;
-// }
 
 void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) {
   int i = 0;
   for (Particle &p: this-> particles) {
 
     std::vector<Particle *> neighbors  = neighborArray[i];
-    // std::cout << neighbors.size() << '\n';
-    // std::cout << density(p, neighbors) << '\n';
     double ci = density(p, neighbors)/RHO_O - 1.0;
     // std::cout << ci << '\n';
     double sum_sq_norm;
@@ -253,35 +191,10 @@ void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) 
       del_j += del_temp.norm2();
     }
     sum_sq_norm = del_j + del_i.norm2();
-    // std::cout << "divisor " << sum_sq_norm << '\n';
     p.lambda = -ci/(sum_sq_norm+EPSILON);
-    // std::cout << "lambda " << p.lambda << '\n';
     i++;
   }
 }
-
-
-// void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
-//   int i = 0;
-//   for (Particle &p: this-> particles) {
-//     Vector3D pi = p.x_star;
-//     std::vector<Particle *> neighbors = neighborArray[i];
-//     p.delta_p = Vector3D(0.0,0.0,0.0);
-//     // //TODO add scorr term
-//     // if (neighbors.size() == 1) continue;
-//     for (Particle * &pj: neighbors) {
-//       double scorr_denom = W(Vector3D(0.1, 0, 0)*R);
-//       double scorr = -0.01*pow(W(pi-pj->x_star)/scorr_denom, 4.0);
-//       // std::cout << "scorr " << scorr << '\n';
-//       // std::cout << "scorr " << p.lambda+pj->lambda+scorr << '\n';
-//       p.delta_p += (p.lambda+pj->lambda+scorr)*del_W(pi-pj->x_star);
-//     }
-//     // std::cout << "scorr " << p.delta_p << '\n';
-//     p.delta_p /= RHO_O;
-//     // std::cout << "scorr " << p.delta_p << '\n';
-//     i++;
-//   }
-// }
 
 void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
   int i = 0;
@@ -390,12 +303,11 @@ std::vector<std::vector<Particle *>> Fluid::build_index(){
       query_pt[1] = particles[k].x_star.y;
       query_pt[2] = particles[k].x_star.z;
 
-      double nMatches = index.radiusSearch(&query_pt[0], R*R, ret_matches, params); //TODO should be R or squared?
+      double nMatches = index.radiusSearch(&query_pt[0], R*R, ret_matches, params);
       for (auto &pair: ret_matches) {
         to_append.emplace_back(&(this->particles[pair.first]));
       }
       to_return.emplace_back(to_append);
-      // cout << to_append.size() << endl;
     }
 
     return to_return;
