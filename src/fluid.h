@@ -80,6 +80,7 @@ struct Fluid {
   
   // height, width, length
   std::vector<bool> voxelGrid;
+  std::vector<Vector3D> voxelOrientations;
 
   void build_spatial_map();
   void build_voxel_grid();

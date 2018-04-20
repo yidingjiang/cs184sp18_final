@@ -124,6 +124,50 @@ void Fluid::build_voxel_grid() {
     this->voxelGrid[cellNum.x + num_cells.x * (cellNum.y + num_cells.y * cellNum.z)] = true;
   }
   
+  // DO ORIENTATION STUFF
+  for (int xpos = 0; xpos < num_cells.x; ++xpos) {
+    for (int ypos = 0; ypos < num_cells.y; ++ypos) {  
+      for (int zpos = 0; zpos < num_cells.z; ++zpos) { 
+        bool curr = this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)]; 
+        if (!curr){
+          this->voxelOrientations[xpos + num_cells.x * (ypos + num_cells.y * zpos)] = Vector3D(0,0,0);
+        }
+        else{
+          bool up = false;
+          bool down = false;
+          bool left = false;
+          bool right = false;
+          bool closer = false;
+          bool further = false;
+          
+          if (xPos > 0) {
+            left = this->voxelGrid[xpos-1 + num_cells.x * (ypos + num_cells.y * zpos)]; 
+          }
+          if (xPos < num_cells.x-1) {
+            right = this->voxelGrid[xpos+1 + num_cells.x * (ypos + num_cells.y * zpos)];
+          }
+          
+          if (yPos > 0) {
+            down = this->voxelGrid[xpos + num_cells.x * (ypos-1 + num_cells.y * zpos)]; 
+          }
+          if (yPos < num_cells.y-1) { 
+            up = this->voxelGrid[xpos + num_cells.x * (ypos+1 + num_cells.y * zpos)]; 
+          }
+          
+          if (zPos > 0) {
+            closer = this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * (zpos - 1))]; 
+          }
+          
+          if (zPos < num_cells.z-1) { 
+            further = this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * (zpos + 1))]; 
+          }
+          
+          if (up && left && right) 
+        }
+      }
+    } 
+  }
+  
   if (firstFile){
     saveVoxelsToMitsuba(min, max);
     firstFile = false;
