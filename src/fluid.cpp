@@ -11,6 +11,9 @@ using namespace std;
 // TODO instantiate particles with the correct mass, size, and distances.
 
 #define EPSILON 5000.0
+#define C_VISCOSITY 0.00001
+#define C_VORTICITY 0.005
+
 
 Fluid::Fluid(double width, double length, double height, double particle_radius,
              int num_particles, int num_height_points,
@@ -73,7 +76,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   for (auto &p: particles) {
     p.last_origin = p.origin;
     for (auto ea: external_accelerations){
-      p.velocity += delta_t*ea;
+      p.velocity += delta_t*(ea+p.forces);
     }
     p.x_star = p.origin + delta_t*p.velocity;
   }
@@ -99,12 +102,13 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   i  = 0;
   for (Particle &p: this->particles) {
     p.velocity = (p.x_star-p.origin)/delta_t;
-     //vorticity confinement
-    //TODO don't know what to do with the corrective force.
-    // viscosity
+  }
 
-    // this->apply_viscosity(p);
-    // p.last_origin = p.origin;
+  this->update_omega(neighborArray);
+  this->apply_vorticity(neighborArray);
+  this->apply_viscosity(neighborArray);
+
+for (Particle &p: this->particles) {
     p.origin = p.x_star;
 
     //update color
@@ -305,40 +309,59 @@ void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
 
 
 
-// Vector3D Fluid::f_vorticity(Particle p){
-//   Vector3D pi = p.origin;
-//   Vector3D omega_i = p.omega;
-//   double epsilon = EPSILON;
-//   Vector3D N;
-//   for (Particle * &j: getNeighbors(pi)) {
-//     N += (mass/j->density)*(j->omega).norm()*del_W(pi-j->origin);
-//   }
-//   if (N.norm() > 1e-6) N.normalize();
-//   return epsilon*CGL::cross(N, p.omega);
-// }
+void Fluid::apply_vorticity(std::vector<std::vector<Particle *>> neighborArray){
+  for (int i = 0; i < particles.size(); i++){
+    Particle &p = particles[i];
+    Vector3D N;    
 
-// void Fluid::update_omega(){
-//   for (Particle &p: this->particles){
-//       Vector3D accum;
-//       Vector3D pi = p.origin;
-//       for (Particle * &j: getNeighbors(pi)) {
-//         Vector3D vij = p.velocity - j->velocity;
-//         accum += CGL::cross(vij,del_W(pi-j->origin)); //TODO delW may be negative
-//       }
-//       p.omega = accum;
-//   }
-// }
+    p.forces *= 0;
+    continue;
+    
+    if (p.omega.norm() > 1e-8) {
+      std::vector<Particle *> neighbors = neighborArray[i];
+      Vector3D pi = p.x_star;
+      Vector3D omega_i = p.omega;
+      for (Particle * &j: neighbors) {
+        N += (j->omega).norm()*del_W(pi-j->x_star)/j->density; //TODO density might not be included.
+      }
+      if (N.norm() > 1e-8) N.normalize();
+    }
+    p.forces = C_VORTICITY*CGL::cross(N, p.omega);
+  }
+}
+
+void Fluid::update_omega(std::vector<std::vector<Particle *>> neighborArray){
+  for (int i = 0; i < particles.size(); i++){
+    Particle &p = particles[i];
+    std::vector<Particle *> neighbors = neighborArray[i];
+    
+    Vector3D accum;
+    Vector3D pi = p.x_star;
+    for (Particle * &j: neighbors) {
+      Vector3D vij =  j->velocity - p.velocity;
+      accum += CGL::cross(vij,del_W(pi-j->origin));
+    }
+    p.omega = accum;
+  }
+}
 
 
-// void Fluid::apply_viscosity(Particle p) {
-//   Vector3D accum;
-//   Vector3D pi = p.origin;
-//   for (Particle * &j: getNeighbors(pi)) {
-//     Vector3D vij = p.velocity - j->velocity;
-//     accum += W(pi-j->origin)*vij;
-//   }
-//   p.velocity += 0.01*accum;
-// }
+void Fluid::apply_viscosity(std::vector<std::vector<Particle *>> neighborArray) {
+  for (int i = 0; i < particles.size(); i++){  
+    Particle &p = particles[i];
+    std::vector<Particle *> neighbors = neighborArray[i];
+    
+    Vector3D accum;
+    Vector3D pi = p.x_star;
+    for (Particle * &j: neighbors) {
+      Vector3D vij =  j->velocity - p.velocity;
+      accum += W(pi-j->x_star)*vij;
+    }
+
+    p.velocity += C_VISCOSITY*accum; //TODO viscosity works, but need to use smaller hyperparams than paper
+  }
+
+}
 
 
 std::vector<std::vector<Particle *>> Fluid::build_index(){

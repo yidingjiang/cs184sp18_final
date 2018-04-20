@@ -88,9 +88,9 @@ struct Fluid {
 
   Vector3D del_ci_j(Particle i, Particle k);
 
-  Vector3D f_vorticity(Particle p);
-  void apply_viscosity(Particle p);
-  void update_omega();
+  void apply_vorticity(std::vector<std::vector<Particle *>> neighborArray);
+  void apply_viscosity(std::vector<std::vector<Particle *>> neighborArray);
+  void update_omega(std::vector<std::vector<Particle *>> neighborArray);
 
 
   PointCloud cloud;
