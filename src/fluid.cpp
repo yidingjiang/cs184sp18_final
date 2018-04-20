@@ -10,7 +10,7 @@
 using namespace std;
 // TODO instantiate particles with the correct mass, size, and distances.
 
-#define EPSILON 1e-4
+#define EPSILON 5000.0
 
 Fluid::Fluid(double width, double length, double height, double particle_radius,
              int num_particles, int num_height_points,
@@ -36,9 +36,9 @@ void Fluid::buildGrid() {
   for (int i = 0; i < num_width_points; i++) {
     for (int j = 0; j < num_length_points; j++) {
       for (int k = 0; k < num_height_points; k++) {
-        Vector3D pos = Vector3D(i * w_offset,
+        Vector3D pos = Vector3D((i-num_width_points/2.0) * w_offset + width/2.0,
                                 j * l_offset,
-                                k * h_offset);
+                                (k - num_height_points/2.0) * h_offset + height/2.0);
         Particle p = Particle(pos, radius, friction);
         particles.emplace_back(p);
       }
@@ -137,7 +137,7 @@ void Fluid::reset() {
 double Fluid::W(Vector3D r) { //density kernel
   double r_norm = r.norm();
   // std::cout << "norm " << r_norm << '\n';
-  if (r_norm > R) return 1e-6;
+  if (r_norm > R) return 0;
   // std::cout << "W CONSTANT " << W_CONSTANT << '\n';
   // std::cout << "R " << R << '\n';
   return pow(R*R-r_norm*r_norm, 3.0)*W_CONSTANT;
@@ -145,7 +145,7 @@ double Fluid::W(Vector3D r) { //density kernel
 
 Vector3D Fluid::del_W(Vector3D r) { // gradient of density kernel
   double r_norm = r.norm();
-  // if (r_norm > R) return Vector3D(0.0,0.0,0.0); //TODO possibly return 0 is r_norm is small
+  if (r_norm > R) return Vector3D(0.0,0.0,0.0); //TODO possibly return 0 is r_norm is small
   return -r*pow(R-r_norm,2.0)*W_DEL_CONSTANT/(r_norm + 1e-6); //TODO this could be negated.
 }
 
@@ -230,6 +230,7 @@ void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) 
     // std::cout << neighbors.size() << '\n';
     // std::cout << density(p, neighbors) << '\n';
     double ci = density(p, neighbors)/RHO_O - 1.0;
+    // std::cout << ci << '\n';
     double sum_sq_norm;
 
     double del_j=0;
@@ -242,7 +243,9 @@ void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) 
       del_j += del_temp.norm2();
     }
     sum_sq_norm = del_j + del_i.norm2();
+    // std::cout << "divisor " << sum_sq_norm << '\n';
     p.lambda = -ci/(sum_sq_norm+EPSILON);
+    // std::cout << "lambda " << p.lambda << '\n';
     i++;
   }
 }

@@ -12,7 +12,7 @@ out vec4 normal;
 out vec4 particle_color;
 
 void main() {
-  gl_PointSize = 12.5;
+  gl_PointSize = 10;
   gl_Position = viewProjection * model * in_position;
 
   vertex = in_position;
