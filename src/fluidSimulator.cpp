@@ -213,7 +213,8 @@ void FluidSimulator::drawContents() {
   shader.setUniform("viewProjection", viewProjection);
   shader.setUniform("light", Vector3f(0.5, 2, 2));
   shader.setUniform("in_color", color);
-  shader.setUniform("particle_size", 6.*(7.-camera.r));
+  // shader.setUniform("particle_size", 6.*(7.-camera.r));
+  shader.setUniform("particle_size", 35./camera.r);
 
   glBindVertexArray(positionsVAO);
   glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
