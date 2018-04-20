@@ -60,7 +60,7 @@ GLfloat* Fluid::getBuffer() {
         // data[count * 7+3] = particle.origin.x * particle.origin.x;
         // data[count * 7+4] = 1.0f;
         // data[count * 7+5] = particle.origin.z * particle.origin.z;
-        data[count * 7+6] = 1.0f;
+        data[count * 7+6] = 0.5f;
         count += 1;
     }
     return data;
@@ -110,7 +110,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     //update color
     // p.color = Vector3D( neighborArray[i].size()/10 , 1, 1);
     // p.color = Vector3D( p.density/RHO_O ,0,(int)(p.origin.y <= -0.19));
-    p.color = Vector3D(0.05,10*(p.origin.y+0.2)*(p.origin.y+0.2)+0.2, 0.5);
+    p.color = Vector3D(0.05,10*(p.origin.y+0.2)*(p.origin.y+0.2)+0.2, 1.0);
     i++;
   }
   // int nidx = (int) rand()*1000.0/RAND_MAX;
