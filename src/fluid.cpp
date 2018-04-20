@@ -199,7 +199,9 @@ void Fluid::build_voxel_grid(int frameNum) {
           }
           
           Vector3D currentVector = up + down + left + right + closer + further;
-          currentVector.normalize();
+          if (currentVector.norm() != 0){
+            currentVector.normalize();
+          }
           this->voxelOrientations[xpos + num_cells.x * (ypos + num_cells.y * zpos)] = currentVector;
         }
       }
@@ -207,7 +209,7 @@ void Fluid::build_voxel_grid(int frameNum) {
   }
   if (firstFile){
     saveVoxelsToMitsuba("../mitsuba/input/mitsubaVoxel" + std::to_string(frameNum) + ".vol", min, max, false);
-    saveVoxelsToMitsuba("../mitsuba/input/mitsubaOrientation" + std::to_string(frameNum) + ".vol", min, max, false);
+    saveVoxelsToMitsuba("../mitsuba/input/mitsubaOrientation" + std::to_string(frameNum) + ".vol", min, max, true);
     firstFile = false;
   }
 }
@@ -268,7 +270,6 @@ void Fluid::saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max
           float x = currVal.x;
           float y = currVal.y;
           float z = currVal.z;
-          //std::cout << currVal << std::endl;
           fout.write((char*)&x,sizeof(x));
           fout.write((char*)&y,sizeof(y));
           fout.write((char*)&z,sizeof(z));
