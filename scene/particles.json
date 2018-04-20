@@ -34,15 +34,15 @@
   "fluid": {
     "num_width_points": 10,
     "num_height_points": 10,
-    "num_length_points": 20,
+    "num_length_points": 10,
     "neighborhood_particle": 11,
     "width": 1,
     "height": 1,
-    "length": 2,
+    "length": 1,
     "r": 0.15,
     "rho_o": 1000,
-    "solver_iter": 10,
-    "fps": 60,
+    "solver_iter": 5,
+    "fps": 200,
     "sf": 1.0
   }
 }

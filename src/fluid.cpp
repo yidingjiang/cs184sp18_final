@@ -69,7 +69,7 @@ GLfloat* Fluid::getBuffer() {
 void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                      vector<Vector3D> external_accelerations,
                       vector<CollisionObject *> *collision_objects) {
-  double delta_t = 1.0f / frames_per_sec / simulation_steps;
+  double delta_t = 1.0f / fps / simulation_steps;
   for (auto &p: particles) {
     p.last_origin = p.origin;
     for (auto ea: external_accelerations){
@@ -109,7 +109,8 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
 
     //update color
     // p.color = Vector3D( neighborArray[i].size()/10 , 1, 1);
-    p.color = Vector3D( p.density/RHO_O ,0,(int)(p.origin.y <= -0.19));
+    // p.color = Vector3D( p.density/RHO_O ,0,(int)(p.origin.y <= -0.19));
+    p.color = Vector3D(0.05,10*(p.origin.y+0.2)*(p.origin.y+0.2)+0.2, 0.5);
     i++;
   }
   // int nidx = (int) rand()*1000.0/RAND_MAX;
