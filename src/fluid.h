@@ -48,6 +48,7 @@ struct Fluid {
                 vector<CollisionObject *> *collision_objects);
 
   void reset();
+  void saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max, bool orientation);
 
   // Fluid properties
   double width;
@@ -59,6 +60,9 @@ struct Fluid {
   int num_height_points;
   int neighborhood_particle;
   int solver_iters = 3;
+  
+  Vector3D num_cells;
+  bool firstFile = true;
   double viscosity;
   double vorticity;
 
@@ -77,6 +81,20 @@ struct Fluid {
 
   // Fluid components
   vector<Particle> particles;
+
+  // Spatial hashing
+  unordered_map<string, vector<Particle *> *> map;
+  
+  // height, width, length
+  std::vector<bool> voxelGrid;
+  std::vector<Vector3D> voxelOrientations;
+
+  void build_spatial_map();
+  void build_voxel_grid(int frameNum);
+  string hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
+  std::vector<std::vector<Particle *>> generateNeighborArray();
+
+  std::vector<Particle *> getNeighbors(Vector3D pos);
 
   double W(Vector3D r);
   Vector3D del_W(Vector3D r);

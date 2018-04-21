@@ -45,6 +45,9 @@
     "fps": 100,
     "sf": 1.0,
     "viscosity": 0.00025,
-    "vorticity": 0.005
+    "vorticity": 0.005,
+    "num_width_voxels": 10,
+    "num_height_voxels": 10,
+    "num_length_voxels": 10
   }
 }
