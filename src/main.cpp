@@ -315,7 +315,52 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       }
       
 
+      auto it_rho = object.find("rho_o");
+      if (it_rho != object.end()) {
+        fluid->RHO_O = *it_rho;
+      } else {
+        incompleteObjectError("rho_o", "r");
+      }
+
+      auto it_si = object.find("solver_iter");
+      if (it_si != object.end()) {
+        fluid->solver_iters = *it_si;
+      } else {
+        incompleteObjectError("solver_iter", "r");
+      }
+
+      auto it_fps = object.find("fps");
+      if (it_fps != object.end()) {
+        fluid->fps = *it_fps;
+      } else {
+        incompleteObjectError("fps", "r");
+      }
+
+      auto it_sf = object.find("sf");
+      if (it_sf != object.end()) {
+        fluid->sf = *it_sf;
+      } else {
+        incompleteObjectError("sf", "r");
+      }
+
+      auto it_vis = object.find("viscosity");
+      if (it_vis != object.end()) {
+        fluid->viscosity = *it_vis;
+      } else {
+        incompleteObjectError("viscosity", "r");
+      }
+
+      auto it_vor = object.find("vorticity");
+      if (it_vor != object.end()) {
+        fluid->vorticity = *it_vor;
+      } else {
+        incompleteObjectError("vorticity", "r");
+      }
+      
       fluid->R = R;
+      fluid->W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
+      fluid->W_DEL_CONSTANT = 45.0/(PI*pow(R,6)); //TODO this maybe negated
+
       fluid->num_width_points = num_width_points;
       fluid->num_height_points = num_height_points;
       fluid->num_length_points = num_length_points;
@@ -327,8 +372,11 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       
       fluid->num_cells = Vector3D(num_width_voxels, num_height_voxels, num_length_voxels);
 
-      // fluid -> RHO_O *= num_width_points*num_height_points*num_length_points;
-      fluid -> RHO_O /= (width*height*length);
+      fluid->mass = fluid->RHO_O*width*height*length/(num_height_points*num_width_points*num_length_points);
+      // fluid -> RHO_O = RHO_O;
+      // fluid->solver_iters = si;
+      // fluid->fps = fps;
+      // fluid->sf = sf;
     }
   }
 

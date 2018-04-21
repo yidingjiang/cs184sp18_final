@@ -2,6 +2,7 @@
 
 uniform mat4 model;
 uniform mat4 viewProjection;
+uniform float particle_size;
 
 layout(location = 0) in vec4 in_position;
 layout(location = 1) in vec4 in_color;
@@ -12,7 +13,7 @@ out vec4 normal;
 out vec4 particle_color;
 
 void main() {
-  gl_PointSize = 10.0;
+  gl_PointSize = particle_size;
   gl_Position = viewProjection * model * in_position;
 
   vertex = in_position;

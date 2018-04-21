@@ -9,9 +9,12 @@
 #include "CGL/misc.h"
 #include "collision/collisionObject.h"
 #include "collision/particle.h"
+#include "nanoflann.hpp"
+#include "utils.h"
 
 using namespace CGL;
 using namespace std;
+using namespace nanoflann;
 
 enum e_orientation { HORIZONTAL = 0, VERTICAL = 1 };
 
@@ -60,6 +63,8 @@ struct Fluid {
   
   Vector3D num_cells;
   bool firstFile = true;
+  double viscosity;
+  double vorticity;
 
   double radius;
   double friction;
@@ -67,10 +72,12 @@ struct Fluid {
   // Used to find neighboring particles
   double RHO_O = 25000;
   double mass = 1;
+  int fps = 60;
+  double sf = 1.0;
 
-  double R=0.1;
-  double W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
-  double W_DEL_CONSTANT = 45.0/(PI*pow(R,6)); //TODO this maybe negated
+  double R=0.15;
+  double W_CONSTANT =  315.0/(64.0*M_PI*R*R*R*R*R*R*R*R*R);
+  double W_DEL_CONSTANT = 45.0/(M_PI*pow(R,6.0)); //TODO this maybe negated
 
   // Fluid components
   vector<Particle> particles;
@@ -92,18 +99,23 @@ struct Fluid {
   double W(Vector3D r);
   Vector3D del_W(Vector3D r);
   double C_i(Particle p);
-  void update_density(std::vector<std::vector<Particle *>>  neighborArray);
+  double density(Particle p, std::vector<Particle *> neighbors);
   void update_delta_p(std::vector<std::vector<Particle *>> neighborArray);
-  double rho_i(Particle p);
+  // double rho_i(Particle p);
   double lambda(Particle i, std::vector<std::vector<Particle *>>  neighborArray);
   void update_lambdas(std::vector<std::vector<Particle *>>  neighborArray);
   Vector3D del_ci_i(Particle i, std::vector<Particle *> neighbors);
 
   Vector3D del_ci_j(Particle i, Particle k);
 
-  Vector3D f_vorticity(Particle p);
-  void apply_viscosity(Particle p);
-  void update_omega();
+  void apply_vorticity(std::vector<std::vector<Particle *>> neighborArray);
+  void apply_viscosity(std::vector<std::vector<Particle *>> neighborArray);
+  void update_omega(std::vector<std::vector<Particle *>> neighborArray);
+
+
+  PointCloud cloud;
+  typedef KDTreeSingleIndexAdaptor< L2_Simple_Adaptor<double, PointCloud> , PointCloud, 3 > kdtree;
+  std::vector<std::vector<Particle *>> build_index();
 
 };
 

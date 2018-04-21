@@ -213,6 +213,8 @@ void FluidSimulator::drawContents() {
   shader.setUniform("viewProjection", viewProjection);
   shader.setUniform("light", Vector3f(0.5, 2, 2));
   shader.setUniform("in_color", color);
+  // shader.setUniform("particle_size", 6.*(7.-camera.r));
+  shader.setUniform("particle_size", 40./camera.r);
 
   glBindVertexArray(positionsVAO);
   glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
@@ -223,31 +225,7 @@ void FluidSimulator::drawContents() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   free(g_vertex_buffer_data);
 
-  // non instancing; Bind the active shader
-  // GLShader shader = shaders[activeShader];
-  // shader.bind();
-  //
-  // // Prepare the camera projection matrix
-  //
-  // Matrix4f model;
-  // model.setIdentity();
-  //
-  // Matrix4f view = getViewMatrix();
-  // Matrix4f projection = getProjectionMatrix();
-  //
-  // Matrix4f viewProjection = projection * view;
-  //
-  // shader.setUniform("model", model);
-  // shader.setUniform("viewProjection", viewProjection);
-  // shader.setUniform("light", Vector3f(0.5, 2, 2));
-  // shader.setUniform("in_color", color);
-  //
-  // for (CollisionObject *co : *collision_objects) {
-  //   co->render(shader);
-  // }
-  // for (Particle p : fluid->particles) {
-  //   p.render(shader);
-  // }
+  // is_paused = true;
 }
 
 

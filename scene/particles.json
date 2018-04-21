@@ -1,45 +1,51 @@
 {
   "particle": {
-    "origin": [1.0, 0.2, 0.5],
+    "origin": [2.0, 0.2, 2,0],
     "radius": 0.05,
     "friction": 0.01
   },
   "plane": [{
-              "point": [0, -0.01, 0],
+              "point": [0, -0.2, 0],
               "normal": [0, 1, 0],
-              "friction": 0.5
+              "friction": 0.0
             },
             {
-              "point": [0, 0, 0.51],
-              "normal": [0, 0, 1],
-              "friction": 0.5
-            },
-            {
-              "point": [0, 0, -0.01],
+              "point": [0, 0, 0.7],
               "normal": [0, 0, -1],
-              "friction": 0.5
+              "friction": 0.2
             },
             {
-              "point": [0.51, 0, 0],
-              "normal": [1, 0, 0],
-              "friction": 0.5
+              "point": [0, 0, -0.7],
+              "normal": [0, 0, 1],
+              "friction": 0.2
+            },
+            {
+              "point": [0.7, 0, 0],
+              "normal": [-1, 0, 0],
+              "friction": 0.2
             }
             ,
             {
-              "point": [-0.01, 0, 0],
-              "normal": [-1, 0, 0],
-              "friction": 0.5
+              "point": [-0.7, 0, 0],
+              "normal": [1, 0, 0],
+              "friction": 0.0
             }
           ],
   "fluid": {
-    "num_width_points": 10,
-    "num_height_points": 10,
-    "num_length_points": 10,
+    "num_width_points": 6,
+    "num_height_points": 6,
+    "num_length_points": 40,
     "neighborhood_particle": 11,
-    "width": 0.5,
-    "height": 0.5,
-    "length": 0.5,
+    "width": 0.6,
+    "height": 0.6,
+    "length": 4,
     "r": 0.15,
+    "rho_o": 1000,
+    "solver_iter": 5,
+    "fps": 100,
+    "sf": 1.0,
+    "viscosity": 0.00025,
+    "vorticity": 0.005,
     "num_width_voxels": 10,
     "num_height_voxels": 10,
     "num_length_voxels": 10
