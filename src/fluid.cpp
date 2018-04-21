@@ -8,6 +8,7 @@
 #include "collision/plane.h"
 #include "collision/particle.h"
 #include "float.h"
+#include "mcubes.h"
 
 using namespace std;
 // TODO instantiate particles with the correct mass, size, and distances.
@@ -208,8 +209,8 @@ void Fluid::build_voxel_grid(int frameNum) {
     } 
   }
   if (firstFile){
-    saveVoxelsToMitsuba("../mitsuba/input/mitsubaVoxel" + std::to_string(frameNum) + ".vol", min, max, false);
-    saveVoxelsToMitsuba("../mitsuba/input/mitsubaOrientation" + std::to_string(frameNum) + ".vol", min, max, true);
+    //saveVoxelsToMitsuba("../mitsuba/input/mitsubaVoxel" + std::to_string(frameNum) + ".vol", min, max, false);
+    //saveVoxelsToMitsuba("../mitsuba/input/mitsubaOrientation" + std::to_string(frameNum) + ".vol", min, max, true);
     firstFile = false;
   }
 }

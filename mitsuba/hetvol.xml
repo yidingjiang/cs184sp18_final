@@ -17,12 +17,10 @@
 		</volume>
 
 		<volume name="albedo" type="constvolume">
-			<spectrum name="value" value="0.8 0.8 0.9"/>
+			<spectrum name="value" value="0.07 0.1 0.1"/>
 		</volume>
-		<float name="scale" value="100"/>
-		<phase type="microflake">
-			<float name="stddev" value="0.3"/>
-		</phase>
+		<float name="scale" value="5"/>
+		<phase type="isotropic"/>
 	</medium>
 
 	<shape type="obj">
