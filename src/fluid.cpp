@@ -291,7 +291,7 @@ void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
     Vector3D delta = Vector3D(0.0,0.0,0.0);
     float l = p.lambda;
     for (Particle * &pj: neighbors) {
-      float scorr = -0.005 * pow(W(p_pred-pj->x_star)/W(Vector3D(0.01, 0.01, 0.01)*R), 4.0);
+      float scorr = -0.0001 * pow(W(p_pred-pj->x_star)/W(Vector3D(0.03, 0.03, 0.03)*R), 4.0);
       Vector3D gradient = del_W(p_pred-pj->x_star);
       delta += (l + pj->lambda+scorr) * gradient;
     }
@@ -327,7 +327,7 @@ void Fluid::apply_vorticity(std::vector<std::vector<Particle *>> neighborArray){
       Vector3D pi = p.x_star;
       Vector3D omega_i = p.omega;
       for (Particle * &j: neighbors) {
-        N += (j->omega).norm()*del_W(pi-j->x_star)/j->density; //TODO density might not be included.
+        N += (j->omega).norm()*del_W(pi-j->x_star); //TODO density might not be included.
       }
       if (N.norm() > 1e-8) N.normalize();
     }

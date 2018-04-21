@@ -7,7 +7,7 @@
 using namespace std;
 using namespace CGL;
 
-#define SURFACE_OFFSET 0.0001
+#define SURFACE_OFFSET 1e-6
 
 // void Plane::collide_particle(Particle &pm) {
 //   // TODO (Part 3.2): Handle collisions with planes.

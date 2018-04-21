@@ -28,10 +28,10 @@ vec4 shadePhong() {
   N.z = sqrt(1.0-mag);
   float diffuse = max(0.0, dot(vec3(0,0,1), N));
 
-  vec3 eye1 = vec3 (0.0, 0.0, 1.0);
-  vec3 halfVector = normalize( eye1 + vec3(0,0,1));
+  //vec3 eye1 = vec3 (0.0, 0.0, 1.0);
+  vec3 halfVector = normalize( eye + vec3(0,0,1));
   float spec = max( pow(dot(N,halfVector), 250.0), 0.);
-  vec4 S = vec4(1)*vec4(1)* spec;
+  vec4 S = vec4(1)* spec;
   return particle_color * diffuse + S;
 
 
