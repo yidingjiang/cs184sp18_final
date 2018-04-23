@@ -533,11 +533,11 @@ void FluidSimulator::initGUI(Screen *screen) {
   //       [this, screen](int idx) { activeShader = static_cast<e_shader>(idx); });
   // }
 
-  new Label(window, "Color", "sans-bold");
-
-  {
-    ColorWheel *cw = new ColorWheel(window, color);
-    cw->setCallback(
-        [this](const nanogui::Color &color) { this->color = color; });
-  }
+  // new Label(window, "Color", "sans-bold");
+  //
+  // {
+  //   ColorWheel *cw = new ColorWheel(window, color);
+  //   cw->setCallback(
+  //       [this](const nanogui::Color &color) { this->color = color; });
+  // }
 }
