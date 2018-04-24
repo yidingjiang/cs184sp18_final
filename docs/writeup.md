@@ -52,6 +52,20 @@ We want to investigate the possible use of machine learning in fluid simulation 
    - Performance profiling
    - Create rendering and prepare for presentation
 
+**Project Status Update**
+
+During the last three weeks of the project, we successfully implemented the paper Position-Based fluids, and we are currently working on implementing  a) surfacing,  and b) ML-based acceleration. 
+
+We decided to structure our project based on the Cloth Simulator. To this end, we implemented our own particle class with properties like position, velocity, viscosity etc. We also implemented each of the necessary functions to apply the fluid simulation constraints described in the paper. These functions are called in the main simulate() loop, where the properties of various particles are adjusted iteratively. Since the method relies heavily on finding the nearest neighbors for every particle, and since a grid-hash is extremely inefficient for large particle radii, we used FLANN (a KDtree implementation) to perform our nearest neighbors search. Once we have computed the neighbors, we use this information to compute various quantities like incompressibility correction, vorticity confinement adjustment etc. These adjustments are applied to the particles (along with collision detection) to simulate the fluid. We found the simulation to be very sensitive to equation parameters, so these parameters are now loaded in through the scene JSON file using a modified version of the parsing code that was already available in Cloth Simulator.  This allows us to change parameters of the simulation without re-compiling the code.
+
+We heavily modified the OpenGL part of the cloth simulator project to make it compatible with our project. Instead of using spheres like Clothsim, we are instead using OpenGL particles, and to save on the computation, we use instancing. To make debugging easier, we also implemented a function that changes particle color based on its properties like speed, position etc. Another useful function that we implemented colors a particle's neighbors. We are also currently implementing a collisionObject for general polygons. This will let us read in arbitrary obstacles, and we will be able to collide the water with objects like bunny, spheres, and much more.
+
+For surfacing, we wrote a function to voxelize the particles and binarize this information to pass on to Mitsuba (an open source raytracer). We hoped to use Fluid rendering capabilities in Mitsuba for rendering water by simply passing it as a volume object, but we found the results to be unsatisfactory.  To fix this, we are currently implementing marching-cubes to reconstruct the water surface and use that for our renders. We hope to finish soon after the midterm. So far we are on track with our original plan, and we hope to proceed exactly in accordance to the plan.
+
+**Future Progress**
+
+For the last part of the project, we plan to use Machine Learning techniques to accelerate the simulation. Our inspiration for this project is the paper about [Fluid Simulation using Regression Forests](https://www.inf.ethz.ch/personal/ladickyl/fluid_sigasia15.pdf), but since our implementation is based on Position-based Fluids paper, the quantities that we are using are not directly compatible with the ML paper. Currently we are exploring ways to combine the strengths of both papers without having to re-write significant parts of the code. In the worst case, our plan is to simply use a convolutional neural network that predicts the particle trajectory from K nearest neighbors as the input. We believe that we will be able to get significant speed gains due to the parallelization and by replacing the iterative solver with a single feed-forward step. Our final pipeline will use Tensorflow C++ API to simulate the fluid, Marching Cubes implementation to do the surfacing, and Mitsuba to raytrace the final result that looks like water. 
+
 **Resources**
 
 [Position Based Fluids](http://mmacklin.com/pbf_sig_preprint.pdf)
