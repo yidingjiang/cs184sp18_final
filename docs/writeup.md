@@ -67,6 +67,7 @@ For surfacing, we wrote a function to voxelize the particles and binarize this i
 For the last part of the project, we plan to use Machine Learning techniques to accelerate the simulation. Our inspiration for this project is the paper about [Fluid Simulation using Regression Forests](https://www.inf.ethz.ch/personal/ladickyl/fluid_sigasia15.pdf), but since our implementation is based on Position-based Fluids paper, the quantities that we are using are not directly compatible with the ML paper. Currently we are exploring ways to combine the strengths of both papers without having to re-write significant parts of the code. In the worst case, our plan is to simply use a convolutional neural network that predicts the particle trajectory from K nearest neighbors as the input. We believe that we will be able to get significant speed gains due to the parallelization and by replacing the iterative solver with a single feed-forward step. Our final pipeline will use Tensorflow C++ API to simulate the fluid, Marching Cubes implementation to do the surfacing, and Mitsuba to raytrace the final result that looks like water. 
 
 Link to ACM SIGGRAPH paper CS284A: <https://drive.google.com/file/d/18qJBAjaSd3tmXc8yFNyI21eGS17npt0S/view?usp=sharing>
+Slides: <https://docs.google.com/presentation/d/1WFHYo0yR2pkavF79elH-taTa5xkzhFRqttoH_YvyOIA/edit?usp=sharing>
 
 **Resources**
 
