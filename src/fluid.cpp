@@ -217,6 +217,8 @@ void Fluid::build_voxel_grid(int frameNum) {
     //saveVoxelsToMitsuba("../mitsuba/input/mitsubaVoxel" + std::to_string(frameNum) + ".vol", min, max, false);
     //saveVoxelsToMitsuba("../mitsuba/input/mitsubaOrientation" + std::to_string(frameNum) + ".vol", min, max, true);
     firstFile = false;
+    
+    saveFacesToObjs("../mitsuba/input/face" + std::to_string(frameNum) + ".obj");
   }
 }
 
@@ -225,10 +227,14 @@ void Fluid::convertVoxelToFaces(){
 	//		double step_x, double step_y, double step_z);
   //cube * test = new cube();
   
+  triangles = vector<vector<Vector3D>>();
   // DO ORIENTATION STUFF
+  
+  //std::cout << "KKK" << std::endl;
   for (int xpos = 0; xpos < num_cells.x; ++xpos) {
     for (int ypos = 0; ypos < num_cells.y; ++ypos) {
       for (int zpos = 0; zpos < num_cells.z; ++zpos) {
+        //std::cout << this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)] << std::endl;
         if ((xpos < num_cells.x-1) && (ypos < num_cells.y-1) && (zpos < num_cells.z-1)) {
           vector<double> grid = vector<double>();
           grid.push_back(this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)]);
@@ -250,11 +256,13 @@ void Fluid::convertVoxelToFaces(){
           positions.push_back(Vector3D(xpos+1,ypos+1,zpos+1));
           positions.push_back(Vector3D(xpos,ypos+1,zpos+1));
           
-          std::cout << Polygonise(grid,0.5, positions).size() << std::endl;
+          vector<vector<Vector3D>> currTriangles = Polygonise(grid,0.5, positions);
+          triangles.insert(std::end(triangles), std::begin(currTriangles), std::end(currTriangles));
         }
       }
     }
   }
+  //std::cout << triangles.size() << std::endl;
   /*
   vector<double> grid = vector<double>();
   grid.push_back(1);
@@ -279,6 +287,24 @@ void Fluid::convertVoxelToFaces(){
   std::cout << Polygonise(grid,0.5, positions).size() << std::endl;
   
   std::cout << "BYE" << std::endl;*/
+}
+
+void Fluid::saveFacesToObjs(std::string fileName){
+  ofstream myfile;
+  myfile.open (fileName);
+  
+  
+  int numVertex = 0;
+  for (vector<Vector3D> face : triangles){
+    for (Vector3D point : face){
+      myfile << "v " + std::to_string(point.x) + " " + std::to_string(point.y) + " " + std::to_string(point.z) + "\n";
+      numVertex++;
+    }
+    myfile << "f " + std::to_string(numVertex-2) + " " + std::to_string(numVertex-1) + " " + std::to_string(numVertex) + "\n";
+  }
+
+
+  myfile.close();
 }
 
 void Fluid::saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max, bool orientation){

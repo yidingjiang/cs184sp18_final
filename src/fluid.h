@@ -89,6 +89,9 @@ struct Fluid {
   // height, width, length
   std::vector<double> voxelGrid;
   std::vector<Vector3D> voxelOrientations;
+  vector<vector<Vector3D>> triangles;
+  
+  void saveFacesToObjs(std::string fileName);
 
   void build_spatial_map();
   void build_voxel_grid(int frameNum);
