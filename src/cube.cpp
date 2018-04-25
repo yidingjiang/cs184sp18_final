@@ -35,9 +35,9 @@ typedef struct {
 	0 will be returned if the grid cell is either totally above
    of totally below the isolevel.
 */
-int Polygonise(vector<double> grid,double isolevel, vector<Vector3D> positions)
+vector<vector<Vector3D>> Polygonise(vector<double> grid,double isolevel, vector<Vector3D> positions)
 {
-   vector<TRIANGLE> triangles = vector<TRIANGLE>();
+   vector<vector<Vector3D>> triangles = vector<vector<Vector3D>>();
   
    int i,ntriang;
    int cubeindex;
@@ -350,7 +350,7 @@ int triTable[256][16] =
 
    /* Cube is entirely in/out of the surface */
    if (edgeTable[cubeindex] == 0)
-      return(0);
+      return(triangles);
 
    /* Find the vertices where the surface intersects the cube */
    if (edgeTable[cubeindex] & 1)
@@ -394,12 +394,15 @@ int triTable[256][16] =
    ntriang = 0;
    for (i=0;triTable[cubeindex][i]!=-1;i+=3) {
       //triangle
-      //triangles[ntriang].p[0] = vertlist[triTable[cubeindex][i  ]];
-      //triangles[ntriang].p[1] = vertlist[triTable[cubeindex][i+1]];
-      //triangles[ntriang].p[2] = vertlist[triTable[cubeindex][i+2]];
+      vector<Vector3D> triangle = vector<Vector3D>();
+      triangle.push_back(vertlist[triTable[cubeindex][i]]);
+      triangle.push_back(vertlist[triTable[cubeindex][i+1]]);
+      triangle.push_back(vertlist[triTable[cubeindex][i+2]]);
+      
+      triangles.push_back(triangle);
       ntriang++;
    }
 
-   return(ntriang);
+   return(triangles);
 }
 

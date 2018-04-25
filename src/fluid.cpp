@@ -224,6 +224,38 @@ void Fluid::convertVoxelToFaces(){
   //mcubes(	double start_x, double start_y, double start_z, double end_x, double end_y, double end_z,
 	//		double step_x, double step_y, double step_z);
   //cube * test = new cube();
+  
+  // DO ORIENTATION STUFF
+  for (int xpos = 0; xpos < num_cells.x; ++xpos) {
+    for (int ypos = 0; ypos < num_cells.y; ++ypos) {
+      for (int zpos = 0; zpos < num_cells.z; ++zpos) {
+        if ((xpos < num_cells.x-1) && (ypos < num_cells.y-1) && (zpos < num_cells.z-1)) {
+          vector<double> grid = vector<double>();
+          grid.push_back(this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)]);
+          grid.push_back(this->voxelGrid[xpos+1 + num_cells.x * (ypos + num_cells.y * zpos)]);
+          grid.push_back(this->voxelGrid[xpos+1 + num_cells.x * (ypos + num_cells.y * (zpos+1))]);
+          grid.push_back(this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * (zpos+1))]);
+          grid.push_back(this->voxelGrid[xpos + num_cells.x * (ypos+1 + num_cells.y * zpos)]);
+          grid.push_back(this->voxelGrid[xpos+1 + num_cells.x * (ypos+1 + num_cells.y * zpos)]);
+          grid.push_back(this->voxelGrid[xpos+1 + num_cells.x * (ypos+1 + num_cells.y * (zpos+1))]);
+          grid.push_back(this->voxelGrid[xpos + num_cells.x * (ypos+1 + num_cells.y * (zpos+1))]);
+          
+          vector<Vector3D> positions = vector<Vector3D>();
+          positions.push_back(Vector3D(xpos,ypos,zpos));
+          positions.push_back(Vector3D(xpos+1,ypos,zpos));
+          positions.push_back(Vector3D(xpos+1,ypos,zpos+1));
+          positions.push_back(Vector3D(xpos,ypos,zpos+1));
+          positions.push_back(Vector3D(xpos,ypos+1,zpos));
+          positions.push_back(Vector3D(xpos+1,ypos+1,zpos));
+          positions.push_back(Vector3D(xpos+1,ypos+1,zpos+1));
+          positions.push_back(Vector3D(xpos,ypos+1,zpos+1));
+          
+          std::cout << Polygonise(grid,0.5, positions).size() << std::endl;
+        }
+      }
+    }
+  }
+  /*
   vector<double> grid = vector<double>();
   grid.push_back(1);
   grid.push_back(1);
@@ -244,9 +276,9 @@ void Fluid::convertVoxelToFaces(){
   positions.push_back(Vector3D(1,1,1));
   positions.push_back(Vector3D(0,1,1));
   std::cout << "HELLO" << std::endl;
-  std::cout << Polygonise(grid,0.5, positions) << std::endl;
+  std::cout << Polygonise(grid,0.5, positions).size() << std::endl;
   
-  std::cout << "BYE" << std::endl;
+  std::cout << "BYE" << std::endl;*/
 }
 
 void Fluid::saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max, bool orientation){
