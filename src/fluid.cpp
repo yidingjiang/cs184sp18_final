@@ -8,7 +8,7 @@
 #include "collision/plane.h"
 #include "collision/particle.h"
 #include "float.h"
-#include "mcubes.h"
+#include "cube.cpp"
 
 using namespace std;
 // TODO instantiate particles with the correct mass, size, and distances.
@@ -89,7 +89,7 @@ void Fluid::build_spatial_map() {
 
 void Fluid::build_voxel_grid(int frameNum) {
   // height, width, length
-  vector<bool> voxels(num_cells.x * num_cells.y * num_cells.z, false);
+  vector<double> voxels(num_cells.x * num_cells.y * num_cells.z, 0);
 
   this->voxelGrid = voxels;
   Vector3D min = Vector3D(DBL_MAX, DBL_MAX, DBL_MAX);
@@ -147,7 +147,7 @@ void Fluid::build_voxel_grid(int frameNum) {
 
     Vector3D cellNum = Vector3D(positionArrayX, positionArrayY, positionArrayZ);
 
-    this->voxelGrid[cellNum.x + num_cells.x * (cellNum.y + num_cells.y * cellNum.z)] = true;
+    this->voxelGrid[cellNum.x + num_cells.x * (cellNum.y + num_cells.y * cellNum.z)] = 1;
   }
 
   vector<Vector3D> voxelsOrient(num_cells.x * num_cells.y * num_cells.z, Vector3D(0,0,0));
@@ -211,11 +211,42 @@ void Fluid::build_voxel_grid(int frameNum) {
       }
     }
   }
+  
+  convertVoxelToFaces();
   if (firstFile){
     //saveVoxelsToMitsuba("../mitsuba/input/mitsubaVoxel" + std::to_string(frameNum) + ".vol", min, max, false);
     //saveVoxelsToMitsuba("../mitsuba/input/mitsubaOrientation" + std::to_string(frameNum) + ".vol", min, max, true);
     firstFile = false;
   }
+}
+
+void Fluid::convertVoxelToFaces(){
+  //mcubes(	double start_x, double start_y, double start_z, double end_x, double end_y, double end_z,
+	//		double step_x, double step_y, double step_z);
+  //cube * test = new cube();
+  vector<double> grid = vector<double>();
+  grid.push_back(1);
+  grid.push_back(1);
+  grid.push_back(0);
+  grid.push_back(0);
+  grid.push_back(0);
+  grid.push_back(0);
+  grid.push_back(0);
+  grid.push_back(0);
+  
+  vector<Vector3D> positions = vector<Vector3D>();
+  positions.push_back(Vector3D(0,0,0));
+  positions.push_back(Vector3D(1,0,0));
+  positions.push_back(Vector3D(1,0,1));
+  positions.push_back(Vector3D(0,0,1));
+  positions.push_back(Vector3D(0,1,0));
+  positions.push_back(Vector3D(1,1,0));
+  positions.push_back(Vector3D(1,1,1));
+  positions.push_back(Vector3D(0,1,1));
+  std::cout << "HELLO" << std::endl;
+  std::cout << Polygonise(grid,0.5, positions) << std::endl;
+  
+  std::cout << "BYE" << std::endl;
 }
 
 void Fluid::saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max, bool orientation){

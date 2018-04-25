@@ -41,6 +41,7 @@ struct Fluid {
         int num_width_points, int num_length_points);
   ~Fluid();
 
+  void convertVoxelToFaces();
   void buildGrid();
   GLfloat* getBuffer();
   void simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
@@ -86,7 +87,7 @@ struct Fluid {
   unordered_map<string, vector<Particle *> *> map;
   
   // height, width, length
-  std::vector<bool> voxelGrid;
+  std::vector<double> voxelGrid;
   std::vector<Vector3D> voxelOrientations;
 
   void build_spatial_map();
