@@ -41,7 +41,7 @@ struct Fluid {
         int num_width_points, int num_length_points);
   ~Fluid();
 
-  void convertVoxelToFaces();
+  void convertVoxelToFaces(Vector3D min, Vector3D sizeCell);
   void buildGrid();
   GLfloat* getBuffer();
   void simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,

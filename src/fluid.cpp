@@ -119,6 +119,7 @@ void Fluid::build_voxel_grid(int frameNum) {
 
   Vector3D sizeGrid = Vector3D(max.x - min.x, max.y - min.y, max.z - min.z);
   Vector3D sizeCell = Vector3D(sizeGrid.x / num_cells.x, sizeGrid.y / num_cells.y, sizeGrid.z / num_cells.z);
+  //std::cout << sizeCell << std::endl;
 
   for (Particle &particle : this->particles){
     Vector3D newWithMinCoord = particle.origin - min;
@@ -144,11 +145,33 @@ void Fluid::build_voxel_grid(int frameNum) {
     } else{
       positionArrayZ = floor(positionArrayZ);
     }
-
+    positionArrayX = floor(positionArrayX);
+    positionArrayY = floor(positionArrayY);
+    positionArrayZ = floor(positionArrayZ);
+    
     Vector3D cellNum = Vector3D(positionArrayX, positionArrayY, positionArrayZ);
+    
+    
     
     this->voxelGrid[cellNum.x + 1 + (num_cells.x+2) * (cellNum.y+1 + (num_cells.y+2) * (cellNum.z+1))] = 1;
   }
+  /*if (firstFile){
+    for (int xpos = 0; xpos < num_cells.x+2; ++xpos) {
+      for (int ypos = 0; ypos < num_cells.y+2; ++ypos) {
+        for (int zpos = 0; zpos < num_cells.z+2; ++zpos) {
+          if (!(xpos == 0 || ypos == 0 || zpos == 0 || xpos == num_cells.x+1 || ypos == num_cells.y+1 || zpos == num_cells.z+1)){
+            if (this->voxelGrid[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)] == 0){
+              std::cout << xpos << std::endl;
+              std::cout << ypos << std::endl;
+              std::cout << zpos << std::endl;
+              std::cout << "{{{{{}}}}}" << std::endl;
+              
+            }
+          }
+        }
+      }  
+    }
+  }*/
   
   /*int test = 0;
   for (int xpos = 0; xpos < num_cells.x+2; ++xpos) {
@@ -172,15 +195,28 @@ void Fluid::build_voxel_grid(int frameNum) {
     }
   }
   
+  /*if (firstFile){
+    for (int xpos = 0; xpos < num_cells.x+2; ++xpos) {
+      for (int ypos = 0; ypos < num_cells.y+2; ++ypos) {
+        for (int zpos = 0; zpos < num_cells.z+2; ++zpos) {
+          if (!(xpos == 0 || ypos == 0 || zpos == 0 || xpos == num_cells.x+1 || ypos == num_cells.y+1 || zpos == num_cells.z+1)){
+            if (this->voxelGrid[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)] == 0){
+              std::cout << this->voxelGrid[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)] << std::endl;
+            }
+          }
+        }
+      }  
+    }
+  }*/
 
-  vector<Vector3D> voxelsOrient(num_cells.x * num_cells.y * num_cells.z, Vector3D(0,0,0));
+  vector<Vector3D> voxelsOrient((num_cells.x+2) * (num_cells.y+2) * (num_cells.z+2), Vector3D(0,0,0));
   this->voxelOrientations = voxelsOrient;
   // DO ORIENTATION STUFF
   for (int xpos = 0; xpos < num_cells.x; ++xpos) {
     for (int ypos = 0; ypos < num_cells.y; ++ypos) {
       for (int zpos = 0; zpos < num_cells.z; ++zpos) {
-        bool curr = this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)];
-        if (!curr){
+        int curr = this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)];
+        if (curr == 0){
           this->voxelOrientations[xpos + num_cells.x * (ypos + num_cells.y * zpos)] = Vector3D(0,0,0);
         }
         else{
@@ -235,7 +271,7 @@ void Fluid::build_voxel_grid(int frameNum) {
     }
   }
   
-  convertVoxelToFaces();
+  convertVoxelToFaces(min, sizeCell);
   if (firstFile){
     //saveVoxelsToMitsuba("../mitsuba/input/mitsubaVoxel" + std::to_string(frameNum) + ".vol", min, max, false);
     //saveVoxelsToMitsuba("../mitsuba/input/mitsubaOrientation" + std::to_string(frameNum) + ".vol", min, max, true);
@@ -245,7 +281,7 @@ void Fluid::build_voxel_grid(int frameNum) {
   }
 }
 
-void Fluid::convertVoxelToFaces(){
+void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
   //mcubes(	double start_x, double start_y, double start_z, double end_x, double end_y, double end_z,
 	//		double step_x, double step_y, double step_z);
   //cube * test = new cube();
@@ -280,13 +316,23 @@ void Fluid::convertVoxelToFaces(){
           positions.push_back(Vector3D(xpos,ypos+1,zpos+1));
           
           vector<vector<Vector3D>> currTriangles = Polygonise(grid,0.5, positions);
+          
           triangles.insert(std::end(triangles), std::begin(currTriangles), std::end(currTriangles));
         }
       }
     }
   }
   
-  
+  // Convert triangles to correct coordinates:
+  for (vector<Vector3D> &triangle : triangles){
+    for (Vector3D &point : triangle){
+       point.x *= sizeCell.x;
+       point.y *= sizeCell.y;
+       point.z *= sizeCell.z;
+       
+       point += min;
+    }
+  }
   
   //std::cout << triangles.size() << std::endl;
   /*
@@ -458,7 +504,8 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
 void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                      vector<Vector3D> external_accelerations,
                       vector<CollisionObject *> *collision_objects) {
-  double delta_t = 1.0f / fps / simulation_steps;
+  build_voxel_grid(0);
+  /*double delta_t = 1.0f / fps / simulation_steps;
   for (auto &p: particles) {
     p.last_origin = p.origin;
     for (auto ea: external_accelerations){
@@ -508,7 +555,7 @@ for (Particle &p: this->particles) {
   // int nidx = (int) rand()*1000.0/RAND_MAX;
   // for(int k = 0; k < neighborArray[nidx].size(); k++) neighborArray[nidx][k]->color = Vector3D( 1, 1, 1);
   // cout << nidx << endl;
-
+  */
 }
 
 ///////////////////////////////////////////////////////
