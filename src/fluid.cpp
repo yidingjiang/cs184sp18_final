@@ -206,7 +206,7 @@ std::vector<std::vector<Particle *>>  Fluid::generateNeighborArray(){
 
 /*
 * Simulation Physics Code
-*/
+*/ 
 
 double Fluid::W(Vector3D r) { //density kernel
   double r_norm = r.norm();
