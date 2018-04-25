@@ -23,7 +23,7 @@ public:
   virtual void drawContents();
 
   // Screen events
-
+  void write_screenshot();
   virtual bool cursorPosCallbackEvent(double x, double y);
   virtual bool mouseButtonCallbackEvent(int button, int action, int modifiers);
   virtual bool keyCallbackEvent(int key, int scancode, int action, int mods);
@@ -48,6 +48,7 @@ private:
 
   int frames_per_sec = 60;
   int simulation_steps = 1;
+  int step = 0;
 
   CGL::Vector3D gravity = CGL::Vector3D(0, -9.8, 0);
   nanogui::Color color = nanogui::Color(1.0f, 0.0f, 0.0f, 1.0f);

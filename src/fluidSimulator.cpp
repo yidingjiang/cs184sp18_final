@@ -13,6 +13,9 @@
 #include "misc/camera_info.h"
 #include "shader.hpp"
 
+#include <sstream>
+#include "CGL/lodepng.h"
+
 #include <glm/glm.hpp>
 
 using namespace glm;
@@ -166,38 +169,6 @@ void FluidSimulator::drawContents() {
     }
   }
 
-  // instancing projection
-  // GLint particleSizeLocation = glGetUniformLocation(programID, "particle_size");
-  // glUniform1i(particleSizeLocation, 3*((float) camera.r)*5/45.0f);
-  //
-  // Matrix4f _view = getViewMatrix();
-  // // convert CLG to GLSL
-  // mat4 cameraTransform = convertToMat4(_view);
-  //
-  // Matrix4f _projection = getProjectionMatrix();
-  // mat4 projection = convertToMat4(_projection);
-  //
-  // mat4 scaling = mat4(vec4(((float) camera.r)/45.0f, 0, 0, 0),
-  //                     vec4(0, ((float) camera.r)/45.0f, 0, 0),
-  //                     vec4(0, 0, ((float) camera.r)/45.0f, 0),
-  //                     vec4(0, 0, 0, 1));
-  //
-  // GLuint transformLoc = glGetUniformLocation(programID, "transform");
-  // GLint projLoc = glGetUniformLocation(programID, "projection");
-  // GLint scalingLoc = glGetUniformLocation(programID, "scaling");
-  // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, &cameraTransform[0][0]);
-  // glUniformMatrix4fv(projLoc, 1, GL_FALSE, &projection[0][0]);
-  // glUniformMatrix4fv(scalingLoc, 1, GL_FALSE, &scaling[0][0]);
-  //
-  // glBindVertexArray(positionsVAO);
-  // glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
-  // g_vertex_buffer_data = fluid->getBuffer();
-  // glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
-  // glDrawArrays(GL_POINTS, 0, fluid->particles.size());
-  // glBindVertexArray(0);
-
-
-  // new shit has come to light
   GLShader shader = shaders[activeShader];
   shader.bind();
 
@@ -213,7 +184,6 @@ void FluidSimulator::drawContents() {
   shader.setUniform("viewProjection", viewProjection);
   shader.setUniform("light", Vector3f(0.5, 2, 2));
   shader.setUniform("in_color", color);
-  // shader.setUniform("particle_size", 6.*(7.-camera.r));
   shader.setUniform("particle_size", 80./camera.r);
 
   glBindVertexArray(positionsVAO);
@@ -221,13 +191,37 @@ void FluidSimulator::drawContents() {
   g_vertex_buffer_data = fluid->getBuffer();
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
   glDrawArrays(GL_POINTS, 0, fluid->particles.size());
+  write_screenshot();
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   free(g_vertex_buffer_data);
 
+  step += 1;
   // is_paused = true;
 }
 
+void FluidSimulator::write_screenshot() {
+    vector<unsigned char> windowPixels( 4*screen_w*screen_h );
+    glReadPixels(0, 0,
+                screen_w,
+                screen_h,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                &windowPixels[0] );
+
+    vector<unsigned char> flippedPixels( 4*screen_w*screen_h );
+    for (int row = 0; row < screen_h; ++row)
+      memcpy(&flippedPixels[row * screen_w * 4], &windowPixels[(screen_h - row - 1) * screen_w * 4], 4*screen_w);
+
+    stringstream ss;
+    ss << "screenshot_" << step << ".png";
+    string file = ss.str();
+    cout << "Writing file " << file << "...";
+    if (lodepng::encode(file, flippedPixels, screen_w, screen_h))
+      cerr << "Could not be written" << endl;
+    else
+      cout << "Success!" << endl;
+}
 
 // ----------------------------------------------------------------------------
 // CAMERA CALCULATIONS
