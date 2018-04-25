@@ -89,7 +89,7 @@ void Fluid::build_spatial_map() {
 
 void Fluid::build_voxel_grid(int frameNum) {
   // height, width, length
-  vector<double> voxels(num_cells.x * num_cells.y * num_cells.z, 0);
+  vector<double> voxels((num_cells.x+2) * (num_cells.y+2) * (num_cells.z+2), 0);
 
   this->voxelGrid = voxels;
   Vector3D min = Vector3D(DBL_MAX, DBL_MAX, DBL_MAX);
@@ -146,9 +146,32 @@ void Fluid::build_voxel_grid(int frameNum) {
     }
 
     Vector3D cellNum = Vector3D(positionArrayX, positionArrayY, positionArrayZ);
-
-    this->voxelGrid[cellNum.x + num_cells.x * (cellNum.y + num_cells.y * cellNum.z)] = 1;
+    
+    this->voxelGrid[cellNum.x + 1 + (num_cells.x+2) * (cellNum.y+1 + (num_cells.y+2) * (cellNum.z+1))] = 1;
   }
+  
+  /*int test = 0;
+  for (int xpos = 0; xpos < num_cells.x+2; ++xpos) {
+    for (int ypos = 0; ypos < num_cells.y+2; ++ypos) {
+      for (int zpos = 0; zpos < num_cells.z+2; ++zpos) {
+        if (this->voxelGrid[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)] == 1){
+          test++;
+        }
+      }
+    }
+  }
+  std::cout << test << std::endl;*/
+  
+  for (int xpos = 0; xpos < num_cells.x+2; ++xpos) {
+    for (int ypos = 0; ypos < num_cells.y+2; ++ypos) {
+      for (int zpos = 0; zpos < num_cells.z+2; ++zpos) {
+        if (xpos == 0 || ypos == 0 || zpos == 0 || xpos == num_cells.x+1 || ypos == num_cells.y+1 || zpos == num_cells.z+1){
+          this->voxelGrid[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)] = 0;
+        }
+      }
+    }
+  }
+  
 
   vector<Vector3D> voxelsOrient(num_cells.x * num_cells.y * num_cells.z, Vector3D(0,0,0));
   this->voxelOrientations = voxelsOrient;
@@ -231,20 +254,20 @@ void Fluid::convertVoxelToFaces(){
   // DO ORIENTATION STUFF
   
   //std::cout << "KKK" << std::endl;
-  for (int xpos = 0; xpos < num_cells.x; ++xpos) {
-    for (int ypos = 0; ypos < num_cells.y; ++ypos) {
-      for (int zpos = 0; zpos < num_cells.z; ++zpos) {
+  for (int xpos = 0; xpos < num_cells.x + 2; ++xpos) {
+    for (int ypos = 0; ypos < num_cells.y + 2; ++ypos) {
+      for (int zpos = 0; zpos < num_cells.z + 2; ++zpos) {
         //std::cout << this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)] << std::endl;
-        if ((xpos < num_cells.x-1) && (ypos < num_cells.y-1) && (zpos < num_cells.z-1)) {
+        if ((xpos < num_cells.x+2-1) && (ypos < num_cells.y+2-1) && (zpos < num_cells.z+2-1)) {
           vector<double> grid = vector<double>();
-          grid.push_back(this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)]);
-          grid.push_back(this->voxelGrid[xpos+1 + num_cells.x * (ypos + num_cells.y * zpos)]);
-          grid.push_back(this->voxelGrid[xpos+1 + num_cells.x * (ypos + num_cells.y * (zpos+1))]);
-          grid.push_back(this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * (zpos+1))]);
-          grid.push_back(this->voxelGrid[xpos + num_cells.x * (ypos+1 + num_cells.y * zpos)]);
-          grid.push_back(this->voxelGrid[xpos+1 + num_cells.x * (ypos+1 + num_cells.y * zpos)]);
-          grid.push_back(this->voxelGrid[xpos+1 + num_cells.x * (ypos+1 + num_cells.y * (zpos+1))]);
-          grid.push_back(this->voxelGrid[xpos + num_cells.x * (ypos+1 + num_cells.y * (zpos+1))]);
+          grid.push_back(this->voxelGrid[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)]);
+          grid.push_back(this->voxelGrid[xpos+1 + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)]);
+          grid.push_back(this->voxelGrid[xpos+1 + (num_cells.x+2) * (ypos + (num_cells.y+2) * (zpos+1))]);
+          grid.push_back(this->voxelGrid[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * (zpos+1))]);
+          grid.push_back(this->voxelGrid[xpos + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * zpos)]);
+          grid.push_back(this->voxelGrid[xpos+1 + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * zpos)]);
+          grid.push_back(this->voxelGrid[xpos+1 + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * (zpos+1))]);
+          grid.push_back(this->voxelGrid[xpos + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * (zpos+1))]);
           
           vector<Vector3D> positions = vector<Vector3D>();
           positions.push_back(Vector3D(xpos,ypos,zpos));
@@ -262,6 +285,9 @@ void Fluid::convertVoxelToFaces(){
       }
     }
   }
+  
+  
+  
   //std::cout << triangles.size() << std::endl;
   /*
   vector<double> grid = vector<double>();
