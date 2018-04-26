@@ -191,7 +191,10 @@ void FluidSimulator::drawContents() {
   g_vertex_buffer_data = fluid->getBuffer();
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
   glDrawArrays(GL_POINTS, 0, fluid->particles.size());
+
   //write_screenshot();
+  fluid->save_state_to_csv();
+
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   free(g_vertex_buffer_data);

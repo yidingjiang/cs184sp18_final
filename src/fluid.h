@@ -82,7 +82,7 @@ struct Fluid {
   int num_height_points;
   int neighborhood_particle;
   int solver_iters = 3;
-  
+
   Vector3D num_cells;
   bool firstFile = true;
   double viscosity;
@@ -106,12 +106,12 @@ struct Fluid {
 
   // Spatial hashing
   unordered_map<string, vector<Particle *> *> map;
-  
+
   // height, width, length
   std::vector<double> voxelGrid;
   std::vector<Vector3D> voxelOrientations;
   vector<vector<vertex>> triangles;
-  
+
   void saveFacesToObjs(std::string fileName);
 
   void build_spatial_map();
@@ -137,10 +137,11 @@ struct Fluid {
   void apply_viscosity(std::vector<std::vector<Particle *>> neighborArray);
   void update_omega(std::vector<std::vector<Particle *>> neighborArray);
 
-
   PointCloud cloud;
   typedef KDTreeSingleIndexAdaptor< L2_Simple_Adaptor<double, PointCloud> , PointCloud, 3 > kdtree;
   std::vector<std::vector<Particle *>> build_index();
+
+  void save_state_to_csv();
 
 };
 

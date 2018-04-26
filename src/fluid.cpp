@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <math.h>
 #include <random>
 #include <vector>
@@ -458,60 +459,6 @@ void Fluid::saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max
   fout.close();
 }
 
-string Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) {
-  // TODO (Part 4.1): Hash a 3D position into a unique float identifier that represents
-  // membership in some uniquely identified 3D box volume.
-  double threeR = 3*R;
-  int xVol = floor(pos.x / threeR);
-  int yVol = floor(pos.y / threeR);
-  int zVol = floor(pos.z / threeR);
-
-  if (pos.x < 0){
-    xVol = ceil(pos.x / threeR);
-  }
-  if (pos.y < 0){
-    yVol = ceil(pos.y / threeR);
-  }
-  if (pos.z < 0){
-    zVol = ceil(pos.z / threeR);
-  }
-
-  xVol += xOffset;
-  yVol += yOffset;
-  zVol += zOffset;
-
-  return std::to_string(xVol) + "/" + std::to_string(yVol) + "/" +  std::to_string(zVol);
-}
-
-
-
-std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
-  std::vector<Particle *> neighbors = std::vector<Particle *>();
-  // Get the location of all neighboring cells in the hashmap.
-  std::vector<string> neighborCellsHashes = std::vector<string>();
-  neighborCellsHashes.push_back(hash_position(pos));
-  neighborCellsHashes.push_back(hash_position(pos, 1, 0, 0));
-  neighborCellsHashes.push_back(hash_position(pos, -1, 0, 0));
-  neighborCellsHashes.push_back(hash_position(pos, 0, 1, 0));
-  neighborCellsHashes.push_back(hash_position(pos, 0, -1, 0));
-  neighborCellsHashes.push_back(hash_position(pos, 0, 0, 1));
-  neighborCellsHashes.push_back(hash_position(pos, 0, 0, -1));
-
-
-  // Iterate through the neighbor cell and check if within R distance.
-  for (string neighborCellsHash : neighborCellsHashes){
-    if (map[neighborCellsHash] != NULL){
-      vector<Particle *> currCell = *map[neighborCellsHash];
-      for (Particle* particle : currCell){
-        if ((pos-particle->origin).norm() < R) {
-          neighbors.push_back(particle);
-        }
-      }
-    }
-  }
-  return neighbors;
-}
-
 void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                      vector<Vector3D> external_accelerations,
                       vector<CollisionObject *> *collision_objects, int step) {
@@ -524,28 +471,24 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     }
     p.x_star = p.origin + delta_t*p.velocity;
   }
-  int i = 0;
+
+  // for surfacing only
   build_spatial_map();
   build_voxel_grid(step);
+
   std::vector<std::vector<Particle *>>  neighborArray = build_index();
 
   for(int iter=0; iter<solver_iters; iter++) {
     this->update_lambdas(neighborArray);
     this->update_delta_p(neighborArray);
-    // i = 0;
     //apply delta_p and perform collision detection
-
     for (Particle &p: this->particles) {
       p.x_star += p.delta_p*sf;
-      // for (CollisionObject *co : *collision_objects) co->collide_particle(p);
-      // i++;
     }
     for (Particle &p: this->particles) {
       for (CollisionObject *co : *collision_objects) co->collide_particle(p);
-      // i++;
     }
   }
-  i  = 0;
   for (Particle &p: this->particles) {
     p.velocity = (p.x_star-p.origin)/delta_t;
   }
@@ -556,12 +499,11 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
 
 for (Particle &p: this->particles) {
     p.origin = p.x_star;
-
     //update color
     // p.color = Vector3D( neighborArray[i].size()/10 , 1, 1);
     // p.color = Vector3D( p.density/RHO_O ,0,(int)(p.origin.y <= -0.19));
     p.color = Vector3D(0.05,5*(p.origin.y+0.2)*(p.origin.y+0.2), 1.0);
-    i++;
+    // i++;
   }
   // int nidx = (int) rand()*1000.0/RAND_MAX;
   // for(int k = 0; k < neighborArray[nidx].size(); k++) neighborArray[nidx][k]->color = Vector3D( 1, 1, 1);
@@ -586,6 +528,7 @@ void Fluid::reset() {
     pm++;
   }
 }
+
 /*
 * Simulation Physics Code
 */
@@ -609,15 +552,6 @@ Vector3D Fluid::del_W(Vector3D r) { // gradient of density kernel
 double Fluid::C_i(Particle p){
   return p.density/RHO_O - 1;
 }
-
-
-// double Fluid::density(Particle p, std::vector<Particle *>  neighbors) {
-//   Vector3D pi = p.x_star;
-//   double r = 0;
-//   for (Particle * &pj: neighbors) r += W(pi-pj->x_star);
-//   p.density = r*mass; //TODO maybe include mass?
-//   return r*mass;
-// }
 
 double Fluid::density(Particle p, std::vector<Particle *>  neighbors) {
   Vector3D pi = p.x_star;
@@ -646,37 +580,6 @@ Vector3D Fluid::del_ci_i(Particle i, std::vector<Particle *> neighbors) {
   // cout << "ii:" << to_return << endl;
   return to_return;
 }
-
-
-
-// void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) {
-//   int i = 0;
-//   double accum;
-//   for (Particle &p: this-> particles) {
-//
-//     std::vector<Particle *> neighbors  = neighborArray[i];
-//     double ci = density(p, neighbors)/RHO_O - 1.0;
-//     cout << ci << endl;
-//     double sum_sq_norm;
-//
-//     double del_j=0;
-//     Vector3D del_i(0.0,0.0,0.0);
-//     Vector3D del_temp(0.0,0.0,0.0);
-//
-//     for (Particle * &j: neighbors){
-//       del_temp = del_W(p.x_star-j->x_star)/RHO_O;
-//       del_i += del_temp;
-//       del_j += del_temp.norm2();
-//     }
-//     sum_sq_norm = del_j + del_i.norm2();
-//     // cout << "deli " << del_i.norm2() << " delj " << del_j << endl;
-//     p.lambda = -ci/(sum_sq_norm+EPSILON);
-//     accum += ci;
-//     // cout << "Lambda: " << p.lambda << endl;
-//     i++;
-//   }
-//   // cout << accum/particles.size() << endl;
-// }
 
 void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) {
   int i = 0;
@@ -707,28 +610,6 @@ void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) 
 }
 
 
-// void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
-//   int i = 0;
-//   for (Particle &p: this-> particles) {
-//     Vector3D pi = p.x_star;
-//     std::vector<Particle *> neighbors = neighborArray[i];
-//     p.delta_p = Vector3D(0.0,0.0,0.0);
-//     // //TODO add scorr term
-//     // if (neighbors.size() == 1) continue;
-//     for (Particle * &pj: neighbors) {
-//       double scorr_denom = W(Vector3D(0.1, 0, 0)*R);
-//       double scorr = -0.01*pow(W(pi-pj->x_star)/scorr_denom, 4.0);
-//       // std::cout << "scorr " << scorr << '\n';
-//       // std::cout << "scorr " << p.lambda+pj->lambda+scorr << '\n';
-//       p.delta_p += (p.lambda+pj->lambda+scorr)*del_W(pi-pj->x_star);
-//     }
-//     // std::cout << "scorr " << p.delta_p << '\n';
-//     p.delta_p /= RHO_O;
-//     // std::cout << "scorr " << p.delta_p << '\n';
-//     i++;
-//   }
-// }
-
 void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
   int i = 0;
   for (Particle &p: this->particles) {
@@ -745,20 +626,6 @@ void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
     i++;
   }
 }
-
-
-
-// vec3 delta = vec3(0.0f);
-// float l = p->lambda;
-// for (int i=0; i<num_neighbors; i++) {
-//     float s_corr = -PRESSURE_K * pow(poly6Kernel(p->pred_position, neighbors[i]->pred_position) / poly6Kernel(p->pred_position, vec3(DELTA_Q) + p->pred_position), PRESSURE_N);
-//     vec3 gradient = spikyKernelGradient(p->pred_position, neighbors[i]->pred_position);
-//
-//     delta += (l + neighbors[i]->lambda + s_corr) * gradient;
-// }
-// p->delta_position = 1.0f / RO_REST * delta;
-
-
 
 void Fluid::apply_vorticity(std::vector<std::vector<Particle *>> neighborArray){
   for (int i = 0; i < particles.size(); i++){
@@ -796,7 +663,6 @@ void Fluid::update_omega(std::vector<std::vector<Particle *>> neighborArray){
   }
 }
 
-
 void Fluid::apply_viscosity(std::vector<std::vector<Particle *>> neighborArray) {
   for (int i = 0; i < particles.size(); i++){
     Particle &p = particles[i];
@@ -814,6 +680,59 @@ void Fluid::apply_viscosity(std::vector<std::vector<Particle *>> neighborArray) 
 
 }
 
+// ==================================neighbors=======================================
+
+string Fluid::hash_position(Vector3D pos, int xOffset, int yOffset, int zOffset) {
+  // TODO (Part 4.1): Hash a 3D position into a unique float identifier that represents
+  // membership in some uniquely identified 3D box volume.
+  double threeR = 3*R;
+  int xVol = floor(pos.x / threeR);
+  int yVol = floor(pos.y / threeR);
+  int zVol = floor(pos.z / threeR);
+
+  if (pos.x < 0){
+    xVol = ceil(pos.x / threeR);
+  }
+  if (pos.y < 0){
+    yVol = ceil(pos.y / threeR);
+  }
+  if (pos.z < 0){
+    zVol = ceil(pos.z / threeR);
+  }
+
+  xVol += xOffset;
+  yVol += yOffset;
+  zVol += zOffset;
+
+  return std::to_string(xVol) + "/" + std::to_string(yVol) + "/" +  std::to_string(zVol);
+}
+
+std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
+  std::vector<Particle *> neighbors = std::vector<Particle *>();
+  // Get the location of all neighboring cells in the hashmap.
+  std::vector<string> neighborCellsHashes = std::vector<string>();
+  neighborCellsHashes.push_back(hash_position(pos));
+  neighborCellsHashes.push_back(hash_position(pos, 1, 0, 0));
+  neighborCellsHashes.push_back(hash_position(pos, -1, 0, 0));
+  neighborCellsHashes.push_back(hash_position(pos, 0, 1, 0));
+  neighborCellsHashes.push_back(hash_position(pos, 0, -1, 0));
+  neighborCellsHashes.push_back(hash_position(pos, 0, 0, 1));
+  neighborCellsHashes.push_back(hash_position(pos, 0, 0, -1));
+
+
+  // Iterate through the neighbor cell and check if within R distance.
+  for (string neighborCellsHash : neighborCellsHashes){
+    if (map[neighborCellsHash] != NULL){
+      vector<Particle *> currCell = *map[neighborCellsHash];
+      for (Particle* particle : currCell){
+        if ((pos-particle->origin).norm() < R) {
+          neighbors.push_back(particle);
+        }
+      }
+    }
+  }
+  return neighbors;
+}
 
 std::vector<std::vector<Particle *>> Fluid::build_index(){
     // Populate cloud
@@ -845,6 +764,27 @@ std::vector<std::vector<Particle *>> Fluid::build_index(){
     }
 
     return to_return;
+}
 
+// ==================================state saving=======================================
 
+void Fluid::save_state_to_csv() {
+  ofstream fs;
+  std::string filename = "state.csv";
+  fs.open(filename);
+
+  std::vector<std::vector<Particle *>>  neighborArray = build_index();
+  for (int i = 0; i < particles.size(); i++) {
+    // write self state
+    Particle *p = &particles[i];
+    fs << p->origin.x << "," << p->origin.y << "," << p->origin.z << ","
+       << p->velocity.x << "," << p->velocity.y << "," << p->velocity.z << std::endl;
+    for (int j = 0; j < 3; j++) {
+      p = neighborArray[i][j];
+      fs << p->origin.x << "," << p->origin.y << "," << p->origin.z << ","
+         << p->velocity.x << "," << p->velocity.y << "," << p->velocity.z << std::endl;
+    }
+  }
+
+  fs.close();
 }
