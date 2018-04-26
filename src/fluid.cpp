@@ -387,7 +387,7 @@ for (Particle &p: this->particles) {
     //update color
     // p.color = Vector3D( neighborArray[i].size()/10 , 1, 1);
     // p.color = Vector3D( p.density/RHO_O ,0,(int)(p.origin.y <= -0.19));
-    p.color = Vector3D(0.05,10*(p.origin.y+0.2)*(p.origin.y+0.2)+0.2, 1.0);
+    p.color = Vector3D(0.05,5*(p.origin.y+0.2)*(p.origin.y+0.2), 1.0);
     i++;
   }
   // int nidx = (int) rand()*1000.0/RAND_MAX;
@@ -564,7 +564,7 @@ void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
     Vector3D delta = Vector3D(0.0,0.0,0.0);
     float l = p.lambda;
     for (Particle * &pj: neighbors) {
-      float scorr = -0.0001 * pow(W(p_pred-pj->x_star)/W(Vector3D(0.02, 0.02, 0.02)*R), 4.0);
+      float scorr = -0.001 * pow(W(p_pred-pj->x_star)/W(Vector3D(0.02, 0.02, 0.02)*R), 4.0);
       Vector3D gradient = del_W(p_pred-pj->x_star);
       delta += (l + pj->lambda+scorr) * gradient;
     }
