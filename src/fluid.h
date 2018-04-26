@@ -9,9 +9,33 @@
 #include "CGL/misc.h"
 #include "collision/collisionObject.h"
 #include "collision/particle.h"
+#include "nanoflann.hpp"
+#include "utils.h"
 
 using namespace CGL;
 using namespace std;
+using namespace nanoflann;
+
+struct vertex {
+  Vector3D p;
+  Vector3D n;
+  vertex(Vector3D pos, Vector3D norm){
+    p = pos;
+    n = norm;
+  };
+  vertex(double x, double y, double z){
+    p = Vector3D(x,y,z);
+    n = Vector3D(0,0,0);
+  };
+  vertex(Vector3D pos){
+    p = pos;
+    n = Vector3D(0,0,0);
+  };
+  vertex(){
+    p = Vector3D(0,0,0);
+    n = Vector3D(0,0,0);
+  };
+};
 
 enum e_orientation { HORIZONTAL = 0, VERTICAL = 1 };
 
@@ -38,13 +62,15 @@ struct Fluid {
         int num_width_points, int num_length_points);
   ~Fluid();
 
+  void convertVoxelToFaces(Vector3D min, Vector3D sizeCell);
   void buildGrid();
   GLfloat* getBuffer();
   void simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                 vector<Vector3D> external_accelerations,
-                vector<CollisionObject *> *collision_objects);
+                vector<CollisionObject *> *collision_objects, int step);
 
   void reset();
+  void saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max, bool orientation);
 
   // Fluid properties
   double width;
@@ -57,9 +83,10 @@ struct Fluid {
   int neighborhood_particle;
   int solver_iters = 3;
   
-  int num_width_voxels;
-  int num_height_voxels;
-  int num_length_voxels;
+  Vector3D num_cells;
+  bool firstFile = true;
+  double viscosity;
+  double vorticity;
 
   double radius;
   double friction;
@@ -67,18 +94,28 @@ struct Fluid {
   // Used to find neighboring particles
   double RHO_O = 25000;
   double mass = 1;
+  int fps = 60;
+  double sf = 1.0;
 
-  double R=0.1;
-  double W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
-  double W_DEL_CONSTANT = 45.0/(PI*pow(R,6)); //TODO this maybe negated
+  double R=0.15;
+  double W_CONSTANT =  315.0/(64.0*M_PI*R*R*R*R*R*R*R*R*R);
+  double W_DEL_CONSTANT = 45.0/(M_PI*pow(R,6.0)); //TODO this maybe negated
 
   // Fluid components
   vector<Particle> particles;
 
   // Spatial hashing
   unordered_map<string, vector<Particle *> *> map;
+  
+  // height, width, length
+  std::vector<double> voxelGrid;
+  std::vector<Vector3D> voxelOrientations;
+  vector<vector<vertex>> triangles;
+  
+  void saveFacesToObjs(std::string fileName);
 
   void build_spatial_map();
+  void build_voxel_grid(int frameNum);
   string hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
   std::vector<std::vector<Particle *>> generateNeighborArray();
 
@@ -87,18 +124,23 @@ struct Fluid {
   double W(Vector3D r);
   Vector3D del_W(Vector3D r);
   double C_i(Particle p);
-  void update_density(std::vector<std::vector<Particle *>>  neighborArray);
+  double density(Particle p, std::vector<Particle *> neighbors);
   void update_delta_p(std::vector<std::vector<Particle *>> neighborArray);
-  double rho_i(Particle p);
+  // double rho_i(Particle p);
   double lambda(Particle i, std::vector<std::vector<Particle *>>  neighborArray);
   void update_lambdas(std::vector<std::vector<Particle *>>  neighborArray);
   Vector3D del_ci_i(Particle i, std::vector<Particle *> neighbors);
 
   Vector3D del_ci_j(Particle i, Particle k);
 
-  Vector3D f_vorticity(Particle p);
-  void apply_viscosity(Particle p);
-  void update_omega();
+  void apply_vorticity(std::vector<std::vector<Particle *>> neighborArray);
+  void apply_viscosity(std::vector<std::vector<Particle *>> neighborArray);
+  void update_omega(std::vector<std::vector<Particle *>> neighborArray);
+
+
+  PointCloud cloud;
+  typedef KDTreeSingleIndexAdaptor< L2_Simple_Adaptor<double, PointCloud> , PointCloud, 3 > kdtree;
+  std::vector<std::vector<Particle *>> build_index();
 
 };
 
