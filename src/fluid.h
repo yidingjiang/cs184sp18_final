@@ -16,6 +16,27 @@ using namespace CGL;
 using namespace std;
 using namespace nanoflann;
 
+struct vertex {
+  Vector3D p;
+  Vector3D n;
+  vertex(Vector3D pos, Vector3D norm){
+    p = pos;
+    n = norm;
+  };
+  vertex(double x, double y, double z){
+    p = Vector3D(x,y,z);
+    n = Vector3D(0,0,0);
+  };
+  vertex(Vector3D pos){
+    p = pos;
+    n = Vector3D(0,0,0);
+  };
+  vertex(){
+    p = Vector3D(0,0,0);
+    n = Vector3D(0,0,0);
+  };
+};
+
 enum e_orientation { HORIZONTAL = 0, VERTICAL = 1 };
 
 struct FluidParameters {
@@ -89,7 +110,7 @@ struct Fluid {
   // height, width, length
   std::vector<double> voxelGrid;
   std::vector<Vector3D> voxelOrientations;
-  vector<vector<Vector3D>> triangles;
+  vector<vector<vertex>> triangles;
   
   void saveFacesToObjs(std::string fileName);
 

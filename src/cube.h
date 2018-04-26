@@ -9,10 +9,7 @@
 #include "math.h"
 
 
-struct vertex {
-  Vector3D p;
-  Vector3D n;
-};
+
 
 /**
  * Cube.

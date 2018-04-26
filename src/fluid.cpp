@@ -212,12 +212,12 @@ void Fluid::build_voxel_grid(int frameNum) {
   vector<Vector3D> voxelsOrient((num_cells.x+2) * (num_cells.y+2) * (num_cells.z+2), Vector3D(0,0,0));
   this->voxelOrientations = voxelsOrient;
   // DO ORIENTATION STUFF
-  for (int xpos = 0; xpos < num_cells.x; ++xpos) {
-    for (int ypos = 0; ypos < num_cells.y; ++ypos) {
-      for (int zpos = 0; zpos < num_cells.z; ++zpos) {
-        int curr = this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * zpos)];
+  for (int xpos = 0; xpos < num_cells.x + 2; ++xpos) {
+    for (int ypos = 0; ypos < num_cells.y + 2; ++ypos) {
+      for (int zpos = 0; zpos < num_cells.z + 2; ++zpos) {
+        int curr = this->voxelGrid[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)];
         if (curr == 0){
-          this->voxelOrientations[xpos + num_cells.x * (ypos + num_cells.y * zpos)] = Vector3D(0,0,0);
+          this->voxelOrientations[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)] = Vector3D(0,0,0);
         }
         else{
           Vector3D up = Vector3D(0,0,0);
@@ -228,35 +228,35 @@ void Fluid::build_voxel_grid(int frameNum) {
           Vector3D further = Vector3D(0,0,0);
 
           if (xpos > 0) {
-            if (this->voxelGrid[xpos-1 + num_cells.x * (ypos + num_cells.y * zpos)]){
+            if (this->voxelGrid[xpos-1 + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)]){
               left = Vector3D(1, 0, 0);
             }
           }
           if (xpos < num_cells.x-1) {
-            if (this->voxelGrid[xpos+1 + num_cells.x * (ypos + num_cells.y * zpos)]){
+            if (this->voxelGrid[xpos+1 + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)]){
               right = Vector3D(-1, 0, 0);
             }
           }
 
           if (ypos > 0) {
-            if (this->voxelGrid[xpos + num_cells.x * (ypos-1 + num_cells.y * zpos)]){
+            if (this->voxelGrid[xpos + (num_cells.x+2) * (ypos-1 + (num_cells.y+2) * zpos)]){
               down = Vector3D(0, 1, 0);
             }
           }
           if (ypos < num_cells.y-1) {
-            if (this->voxelGrid[xpos + num_cells.x * (ypos+1 + num_cells.y * zpos)]){
+            if (this->voxelGrid[xpos + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * zpos)]){
               up = Vector3D(0, -1, 0);
             }
           }
 
           if (zpos > 0) {
-            if (this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * (zpos - 1))]){
+            if (this->voxelGrid[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * (zpos - 1))]){
               closer = Vector3D(0,0,1);
             }
           }
 
           if (zpos < num_cells.z-1) {
-            if (this->voxelGrid[xpos + num_cells.x * (ypos + num_cells.y * (zpos + 1))]){
+            if (this->voxelGrid[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * (zpos + 1))]){
               further = Vector3D(0,0,-1);
             }
           }
@@ -265,18 +265,19 @@ void Fluid::build_voxel_grid(int frameNum) {
           if (currentVector.norm() != 0){
             currentVector.normalize();
           }
-          this->voxelOrientations[xpos + num_cells.x * (ypos + num_cells.y * zpos)] = currentVector;
+          this->voxelOrientations[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)] = currentVector;
         }
       }
     }
   }
   
-  convertVoxelToFaces(min, sizeCell);
-  if (firstFile){
+  
+  if (frameNum == 10){
+    std::cout << "YEAP" << std::endl;
     //saveVoxelsToMitsuba("../mitsuba/input/mitsubaVoxel" + std::to_string(frameNum) + ".vol", min, max, false);
     //saveVoxelsToMitsuba("../mitsuba/input/mitsubaOrientation" + std::to_string(frameNum) + ".vol", min, max, true);
     firstFile = false;
-    
+    convertVoxelToFaces(min, sizeCell);
     saveFacesToObjs("../mitsuba/input/face" + std::to_string(frameNum) + ".obj");
   }
 }
@@ -286,7 +287,7 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
 	//		double step_x, double step_y, double step_z);
   //cube * test = new cube();
   
-  triangles = vector<vector<Vector3D>>();
+  triangles = vector<vector<vertex>>();
   // DO ORIENTATION STUFF
   
   //std::cout << "KKK" << std::endl;
@@ -305,17 +306,17 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
           grid.push_back(this->voxelGrid[xpos+1 + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * (zpos+1))]);
           grid.push_back(this->voxelGrid[xpos + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * (zpos+1))]);
           
-          vector<Vector3D> positions = vector<Vector3D>();
-          positions.push_back(Vector3D(xpos,ypos,zpos));
-          positions.push_back(Vector3D(xpos+1,ypos,zpos));
-          positions.push_back(Vector3D(xpos+1,ypos,zpos+1));
-          positions.push_back(Vector3D(xpos,ypos,zpos+1));
-          positions.push_back(Vector3D(xpos,ypos+1,zpos));
-          positions.push_back(Vector3D(xpos+1,ypos+1,zpos));
-          positions.push_back(Vector3D(xpos+1,ypos+1,zpos+1));
-          positions.push_back(Vector3D(xpos,ypos+1,zpos+1));
+          vector<vertex> positions = vector<vertex>();
+          positions.push_back(vertex(Vector3D(xpos,ypos,zpos), this->voxelOrientations[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)]));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos), this->voxelOrientations[xpos+1 + (num_cells.x+2) * (ypos + (num_cells.y+2) * zpos)]));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos+1), this->voxelOrientations[xpos+1 + (num_cells.x+2) * (ypos + (num_cells.y+2) * (zpos+1))]));
+          positions.push_back(vertex(Vector3D(xpos,ypos,zpos+1), this->voxelOrientations[xpos + (num_cells.x+2) * (ypos + (num_cells.y+2) * (zpos+1))]));
+          positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos), this->voxelOrientations[xpos + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * zpos)]));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos), this->voxelOrientations[xpos+1 + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * zpos)]));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos+1), this->voxelOrientations[xpos+1 + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * (zpos+1))]));
+          positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos+1), this->voxelOrientations[xpos + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * (zpos+1))]));
           
-          vector<vector<Vector3D>> currTriangles = Polygonise(grid,0.5, positions);
+          vector<vector<vertex>> currTriangles = Polygonise(grid,0.5, positions);
           
           triangles.insert(std::end(triangles), std::begin(currTriangles), std::end(currTriangles));
         }
@@ -324,13 +325,14 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
   }
   
   // Convert triangles to correct coordinates:
-  for (vector<Vector3D> &triangle : triangles){
-    for (Vector3D &point : triangle){
-       point.x *= sizeCell.x;
-       point.y *= sizeCell.y;
-       point.z *= sizeCell.z;
+  for (vector<vertex> &triangle : triangles){
+    for (vertex &point : triangle){
+       point.n.normalize();
+       point.p.x *= sizeCell.x;
+       point.p.y *= sizeCell.y;
+       point.p.z *= sizeCell.z;
        
-       point += min;
+       point.p += min;
     }
   }
   
@@ -365,14 +367,24 @@ void Fluid::saveFacesToObjs(std::string fileName){
   ofstream myfile;
   myfile.open (fileName);
   
+  std::unordered_map<std::string,int> mymap;
   
-  int numVertex = 0;
-  for (vector<Vector3D> face : triangles){
-    for (Vector3D point : face){
-      myfile << "v " + std::to_string(point.x) + " " + std::to_string(point.y) + " " + std::to_string(point.z) + "\n";
-      numVertex++;
+  
+  int numVertex = 1;
+  for (vector<vertex> face : triangles){
+    vector<int> indicedVertices = vector<int>();
+    for (vertex point : face){
+      if (mymap.find(std::to_string(point.p.x) + "/" + std::to_string(point.p.y) + "/" +  std::to_string(point.p.z)) == mymap.end()){
+        myfile << "v " + std::to_string(point.p.x) + " " + std::to_string(point.p.y) + " " + std::to_string(point.p.z) + "\n";
+        myfile << "vn " + std::to_string(point.n.x) + " " + std::to_string(point.n.y) + " " + std::to_string(point.n.z) + "\n";
+        
+        mymap[std::to_string(point.p.x) + "/" + std::to_string(point.p.y) + "/" +  std::to_string(point.p.z)] = numVertex;
+        numVertex++;
+      }
+      indicedVertices.push_back(mymap[std::to_string(point.p.x) + "/" + std::to_string(point.p.y) + "/" +  std::to_string(point.p.z)]);
     }
-    myfile << "f " + std::to_string(numVertex-2) + " " + std::to_string(numVertex-1) + " " + std::to_string(numVertex) + "\n";
+    myfile << "f " + std::to_string(indicedVertices[2]) + "//"  + std::to_string(indicedVertices[2]) + " " + std::to_string(indicedVertices[1]) + "//"  + std::to_string(indicedVertices[1]) + " " + std::to_string(indicedVertices[0])+ "//"  + std::to_string(indicedVertices[0])  + "\n";
+    indicedVertices.clear();
   }
 
 
@@ -505,7 +517,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
                      vector<Vector3D> external_accelerations,
                       vector<CollisionObject *> *collision_objects) {
   build_voxel_grid(0);
-  /*double delta_t = 1.0f / fps / simulation_steps;
+  double delta_t = 1.0f / fps / simulation_steps;
   for (auto &p: particles) {
     p.last_origin = p.origin;
     for (auto ea: external_accelerations){
@@ -555,7 +567,7 @@ for (Particle &p: this->particles) {
   // int nidx = (int) rand()*1000.0/RAND_MAX;
   // for(int k = 0; k < neighborArray[nidx].size(); k++) neighborArray[nidx][k]->color = Vector3D( 1, 1, 1);
   // cout << nidx << endl;
-  */
+  
 }
 
 ///////////////////////////////////////////////////////

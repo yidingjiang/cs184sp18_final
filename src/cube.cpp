@@ -4,10 +4,10 @@
    Linearly interpolate the position where an isosurface cuts
    an edge between two vertices, each with their own scalar value
 */
-Vector3D VertexInterp(double isolevel,Vector3D p1,Vector3D p2,double valp1,double valp2)
+vertex VertexInterp(double isolevel,vertex p1,vertex p2,double valp1,double valp2)
 {
    double mu;
-   Vector3D p;
+   vertex p = vertex();
 
    if (abs(isolevel-valp1) < 0.00001)
       return(p1);
@@ -16,16 +16,16 @@ Vector3D VertexInterp(double isolevel,Vector3D p1,Vector3D p2,double valp1,doubl
    if (abs(valp1-valp2) < 0.00001)
       return(p1);
    mu = (isolevel - valp1) / (valp2 - valp1);
-   p.x = p1.x + mu * (p2.x - p1.x);
-   p.y = p1.y + mu * (p2.y - p1.y);
-   p.z = p1.z + mu * (p2.z - p1.z);
+   p.p.x = p1.p.x + mu * (p2.p.x - p1.p.x);
+   p.p.y = p1.p.y + mu * (p2.p.y - p1.p.y);
+   p.p.z = p1.p.z + mu * (p2.p.z - p1.p.z);
+   
+   p.n.x = p1.n.x + mu * (p2.n.x - p1.n.x);
+   p.n.y = p1.n.y + mu * (p2.n.y - p1.n.y);
+   p.n.z = p1.n.z + mu * (p2.n.z - p1.n.z);
 
    return(p);
 }
-
-typedef struct {
-   Vector3D p[3];
-} TRIANGLE;
 
 /*
    Given a grid cell and an isolevel, calculate the triangular
@@ -35,13 +35,13 @@ typedef struct {
 	0 will be returned if the grid cell is either totally above
    of totally below the isolevel.
 */
-vector<vector<Vector3D>> Polygonise(vector<double> grid,double isolevel, vector<Vector3D> positions)
+vector<vector<vertex>> Polygonise(vector<double> grid,double isolevel, vector<vertex> positions)
 {
-   vector<vector<Vector3D>> triangles = vector<vector<Vector3D>>();
+   vector<vector<vertex>> triangles = vector<vector<vertex>>();
   
    int i,ntriang;
    int cubeindex;
-   Vector3D vertlist[12];
+   vertex vertlist[12];
 
 int edgeTable[256]={
 0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
@@ -394,7 +394,8 @@ int triTable[256][16] =
    ntriang = 0;
    for (i=0;triTable[cubeindex][i]!=-1;i+=3) {
       //triangle
-      vector<Vector3D> triangle = vector<Vector3D>();
+      vector<vertex> triangle = vector<vertex>();
+      vertex pT = vertex();
       triangle.push_back(vertlist[triTable[cubeindex][i]]);
       triangle.push_back(vertlist[triTable[cubeindex][i+1]]);
       triangle.push_back(vertlist[triTable[cubeindex][i+2]]);
