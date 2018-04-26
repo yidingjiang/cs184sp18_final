@@ -165,7 +165,7 @@ void FluidSimulator::drawContents() {
     vector<Vector3D> external_accelerations = {gravity};
 
     for (int i = 0; i < simulation_steps; i++) {
-      fluid->simulate(frames_per_sec, simulation_steps, fp, external_accelerations, collision_objects);
+      fluid->simulate(frames_per_sec, simulation_steps, fp, external_accelerations, collision_objects, step);
     }
   }
 
@@ -191,7 +191,7 @@ void FluidSimulator::drawContents() {
   g_vertex_buffer_data = fluid->getBuffer();
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
   glDrawArrays(GL_POINTS, 0, fluid->particles.size());
-  write_screenshot();
+  //write_screenshot();
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   free(g_vertex_buffer_data);

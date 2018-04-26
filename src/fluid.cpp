@@ -88,6 +88,7 @@ void Fluid::build_spatial_map() {
 }
 
 void Fluid::build_voxel_grid(int frameNum) {
+  //std::cout << frameNum << std::endl;
   // height, width, length
   vector<double> voxels((num_cells.x+2) * (num_cells.y+2) * (num_cells.z+2), 0);
 
@@ -272,10 +273,8 @@ void Fluid::build_voxel_grid(int frameNum) {
   }
   
   
-  if (frameNum == 10){
-    std::cout << "YEAP" << std::endl;
-    //saveVoxelsToMitsuba("../mitsuba/input/mitsubaVoxel" + std::to_string(frameNum) + ".vol", min, max, false);
-    //saveVoxelsToMitsuba("../mitsuba/input/mitsubaOrientation" + std::to_string(frameNum) + ".vol", min, max, true);
+  if (frameNum == 84){
+    std::cout << "PRINT" << std::endl;
     firstFile = false;
     convertVoxelToFaces(min, sizeCell);
     saveFacesToObjs("../mitsuba/input/face" + std::to_string(frameNum) + ".obj");
@@ -515,7 +514,7 @@ std::vector<Particle *> Fluid::getNeighbors(Vector3D pos){
 
 void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                      vector<Vector3D> external_accelerations,
-                      vector<CollisionObject *> *collision_objects) {
+                      vector<CollisionObject *> *collision_objects, int step) {
   build_voxel_grid(0);
   double delta_t = 1.0f / fps / simulation_steps;
   for (auto &p: particles) {
@@ -527,7 +526,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   }
   int i = 0;
   build_spatial_map();
-  build_voxel_grid(0);
+  build_voxel_grid(step);
   std::vector<std::vector<Particle *>>  neighborArray = build_index();
 
   for(int iter=0; iter<solver_iters; iter++) {

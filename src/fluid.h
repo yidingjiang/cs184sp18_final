@@ -67,7 +67,7 @@ struct Fluid {
   GLfloat* getBuffer();
   void simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                 vector<Vector3D> external_accelerations,
-                vector<CollisionObject *> *collision_objects);
+                vector<CollisionObject *> *collision_objects, int step);
 
   void reset();
   void saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max, bool orientation);
