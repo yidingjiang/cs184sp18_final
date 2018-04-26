@@ -16,6 +16,27 @@ using namespace CGL;
 using namespace std;
 using namespace nanoflann;
 
+struct vertex {
+  Vector3D p;
+  Vector3D n;
+  vertex(Vector3D pos, Vector3D norm){
+    p = pos;
+    n = norm;
+  };
+  vertex(double x, double y, double z){
+    p = Vector3D(x,y,z);
+    n = Vector3D(0,0,0);
+  };
+  vertex(Vector3D pos){
+    p = pos;
+    n = Vector3D(0,0,0);
+  };
+  vertex(){
+    p = Vector3D(0,0,0);
+    n = Vector3D(0,0,0);
+  };
+};
+
 enum e_orientation { HORIZONTAL = 0, VERTICAL = 1 };
 
 struct FluidParameters {
@@ -41,6 +62,7 @@ struct Fluid {
         int num_width_points, int num_length_points);
   ~Fluid();
 
+  void convertVoxelToFaces(Vector3D min, Vector3D sizeCell);
   void buildGrid();
   GLfloat* getBuffer();
   void simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
@@ -86,8 +108,11 @@ struct Fluid {
   unordered_map<string, vector<Particle *> *> map;
   
   // height, width, length
-  std::vector<bool> voxelGrid;
+  std::vector<double> voxelGrid;
   std::vector<Vector3D> voxelOrientations;
+  vector<vector<vertex>> triangles;
+  
+  void saveFacesToObjs(std::string fileName);
 
   void build_spatial_map();
   void build_voxel_grid(int frameNum);
