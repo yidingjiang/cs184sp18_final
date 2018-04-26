@@ -273,8 +273,8 @@ void Fluid::build_voxel_grid(int frameNum) {
   }
   
   
-  if (frameNum == 84){
-    std::cout << "PRINT" << std::endl;
+  if (frameNum == 100){
+    std::cout << "Saving" << std::endl;
     firstFile = false;
     convertVoxelToFaces(min, sizeCell);
     saveFacesToObjs("../mitsuba/input/face" + std::to_string(frameNum) + ".obj");
