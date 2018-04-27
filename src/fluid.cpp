@@ -274,12 +274,12 @@ void Fluid::build_voxel_grid(int frameNum) {
   }
 
 
-  if (frameNum == 84){
-    std::cout << "PRINT" << std::endl;
+  //if (frameNum == 84){
+  //  std::cout << "PRINT" << std::endl;
     firstFile = false;
     convertVoxelToFaces(min, sizeCell);
-    saveFacesToObjs("../mitsuba/input/face" + std::to_string(frameNum) + ".obj");
-  }
+    saveFacesToObjs(std::to_string(frameNum));
+  //}
 }
 
 void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
@@ -363,9 +363,11 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
   std::cout << "BYE" << std::endl;*/
 }
 
+
+
 void Fluid::saveFacesToObjs(std::string fileName){
   ofstream myfile;
-  myfile.open (fileName);
+  myfile.open ("../mitsuba/input/face" + fileName + ".obj");
 
   std::unordered_map<std::string,int> mymap;
 
@@ -766,6 +768,33 @@ std::vector<std::vector<Particle *>> Fluid::build_index(){
     return to_return;
 }
 
+std::vector<std::vector<Particle *>> Fluid::build_nearest_neighbors_index(int numNeighbors){
+    //Finds numNeighbors nearest neighbors for each particle
+    // Populate cloud
+    this->cloud.pts = this->particles;
+
+    kdtree index(3, cloud, KDTreeSingleIndexAdaptorParams(3));
+    index.buildIndex();
+
+    double query_pt[3] = {0.5,0.5,0.5};
+
+    std::vector<std::vector<Particle *>> to_return;
+    for  (int k =0; k < particles.size(); k++){
+      std::vector<Particle *> to_append;
+
+      query_pt[0] = particles[k].x_star.x;
+      query_pt[1] = particles[k].x_star.y;
+      query_pt[2] = particles[k].x_star.z;
+
+      std::vector<size_t> ret_index(numNeighbors);
+      std::vector<double> dist_sq(numNeighbors);
+
+      int num_results = index.knnSearch(&query_pt[0], numNeighbors, &ret_index[0], &dist_sq[0]);
+      for (int i = 0; i < numNeighbors; i++) to_append.emplace_back(&(particles[ret_index[i]]));
+      to_return.emplace_back(to_append);
+    }
+    return to_return;
+}
 // ==================================state saving=======================================
 
 void Fluid::save_state_to_csv() {

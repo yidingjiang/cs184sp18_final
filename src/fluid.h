@@ -140,6 +140,7 @@ struct Fluid {
   PointCloud cloud;
   typedef KDTreeSingleIndexAdaptor< L2_Simple_Adaptor<double, PointCloud> , PointCloud, 3 > kdtree;
   std::vector<std::vector<Particle *>> build_index();
+  std::vector<std::vector<Particle *>> build_nearest_neighbors_index(int numNeighbors);
 
   void save_state_to_csv();
 
