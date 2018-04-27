@@ -800,15 +800,15 @@ void Fluid::save_state_to_csv() {
   ofstream fs;
   std::string filename = "state.csv";
   fs.open(filename);
-
-  std::vector<std::vector<Particle *>>  neighborArray = build_index();
+  int neighborhood_size = 15;
+  std::vector<std::vector<Particle *>> neighborArray = build_nearest_neighbors_index(neighborhood_size);
   for (int i = 0; i < particles.size(); i++) {
     // write self state
     Particle *p = &particles[i];
     fs << p->origin.x << "," << p->origin.y << "," << p->origin.z << ","
        << p->velocity.x << "," << p->velocity.y << "," << p->velocity.z << std::endl;
     std::cout << neighborArray[i].size() << '\n';
-    for (int j = 0; j < 3; j++) {
+    for (int j = 0; j < neighborhood_size; j++) {
       p = neighborArray[i][j];
       fs << p->origin.x << "," << p->origin.y << "," << p->origin.z << ","
          << p->velocity.x << "," << p->velocity.y << "," << p->velocity.z << std::endl;
