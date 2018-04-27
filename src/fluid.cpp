@@ -273,12 +273,12 @@ void Fluid::build_voxel_grid(int frameNum) {
     }
   }
 
-
   //if (frameNum == 84){
-  //  std::cout << "PRINT" << std::endl;
+    //std::cout << "VOXELFACE" << std::endl;
     firstFile = false;
     convertVoxelToFaces(min, sizeCell);
     saveFacesToObjs(std::to_string(frameNum));
+    //std::cout << "DONE" << std::endl;
   //}
 }
 
@@ -464,7 +464,6 @@ void Fluid::saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max
 void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParameters *fp,
                      vector<Vector3D> external_accelerations,
                       vector<CollisionObject *> *collision_objects, int step) {
-  build_voxel_grid(0);
   double delta_t = 1.0f / fps / simulation_steps;
   for (auto &p: particles) {
     p.last_origin = p.origin;
