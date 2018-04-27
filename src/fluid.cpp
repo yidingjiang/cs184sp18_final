@@ -801,7 +801,7 @@ double Fluid::isotropic_kernel(Vector3D pos){
   // find particles in radius R
 
   // sum W(x-x_j)/rho_j
-  return 0;
+  return 0.5 - (pos - Vector3D(0.5,0.5,0.5)).norm(); //threshold this at 0.
 
 }
 
