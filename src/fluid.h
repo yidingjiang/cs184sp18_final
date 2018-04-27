@@ -142,6 +142,8 @@ struct Fluid {
   std::vector<std::vector<Particle *>> build_index();
   std::vector<std::vector<Particle *>> build_nearest_neighbors_index(int numNeighbors);
 
+  double isotropic_kernel(Vector3D pos);
+
   void save_state_to_csv();
 
 };

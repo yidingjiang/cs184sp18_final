@@ -794,6 +794,17 @@ std::vector<std::vector<Particle *>> Fluid::build_nearest_neighbors_index(int nu
     }
     return to_return;
 }
+
+double Fluid::isotropic_kernel(Vector3D pos){
+  // Computes the scalar density field interpolated at a point pos
+ 
+  // find particles in radius R
+
+  // sum W(x-x_j)/rho_j
+  return 0;
+
+}
+
 // ==================================state saving=======================================
 
 void Fluid::save_state_to_csv() {
