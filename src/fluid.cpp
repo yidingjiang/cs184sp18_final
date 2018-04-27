@@ -807,6 +807,7 @@ void Fluid::save_state_to_csv() {
     Particle *p = &particles[i];
     fs << p->origin.x << "," << p->origin.y << "," << p->origin.z << ","
        << p->velocity.x << "," << p->velocity.y << "," << p->velocity.z << std::endl;
+    std::cout << neighborArray[i].size() << '\n';
     for (int j = 0; j < 3; j++) {
       p = neighborArray[i][j];
       fs << p->origin.x << "," << p->origin.y << "," << p->origin.z << ","
