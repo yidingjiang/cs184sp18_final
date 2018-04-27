@@ -1,19 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 
-<scene version="0.5.0">
+<scene version="0.4.0">
 	<integrator type="path">
-		<integer name="maxDepth" value="10"/>
+		<integer name="maxDepth" value="4"/>
 	</integrator>
 
 	<shape type="obj">
-		<string name="filename" value="input/face$frameNum.obj"/>
+		<string name="filename" value="face100.obj"/>
 		<transform name="toWorld">
-			<rotate x="1" angle="90"/>
+			<rotate y="1" angle="90"/>
 		</transform>
-
 		<bsdf type="dielectric" id="water">
-			<string name="intIOR" value="water"/>
-			<string name="extIOR" value="air"/>
+				<string name="intIOR" value="water"/>
+				<string name="extIOR" value="air"/>
 		</bsdf>
 	</shape>
 
@@ -22,7 +21,6 @@
 		<float name="fov" value="37.8664"/>
 		<string name="fovAxis" value="x"/>
 		<transform name="toWorld">
-
 			<lookat target="3.04072, -2.85176, 2.80939" origin="3.69558, -3.46243, 3.25463" up="-0.317366, 0.312466, 0.895346"/>
 		</transform>
 
