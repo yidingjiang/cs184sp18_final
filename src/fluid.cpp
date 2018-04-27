@@ -274,12 +274,12 @@ void Fluid::build_voxel_grid(int frameNum) {
   }
 
 
-  if (frameNum == 84){
-    std::cout << "PRINT" << std::endl;
+  //if (frameNum == 84){
+  //  std::cout << "PRINT" << std::endl;
     firstFile = false;
     convertVoxelToFaces(min, sizeCell);
     saveFacesToObjs(std::to_string(frameNum));
-  }
+  //}
 }
 
 void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
@@ -367,7 +367,7 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
 
 void Fluid::saveFacesToObjs(std::string fileName){
   ofstream myfile;
-  myfile.open ("../mitsuba/input/face" + frameNum + ".obj");
+  myfile.open ("../mitsuba/input/face" + fileName + ".obj");
 
   std::unordered_map<std::string,int> mymap;
 
