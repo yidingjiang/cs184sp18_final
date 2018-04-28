@@ -144,6 +144,8 @@ struct Fluid {
 
   double isotropic_kernel(Vector3D pos);
 
+  kdtree *tree;
+
   void save_state_to_csv();
 
 };

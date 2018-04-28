@@ -760,6 +760,8 @@ std::vector<std::vector<Particle *>> Fluid::build_index(){
     kdtree index(3, cloud, KDTreeSingleIndexAdaptorParams(3));
     index.buildIndex();
 
+    this->tree = &index;
+
     std::vector<std::pair<size_t,double> > ret_matches;
     SearchParams params;
     params.sorted = false;
@@ -819,8 +821,24 @@ double Fluid::isotropic_kernel(Vector3D pos){
   // find particles in radius R
 
   // sum W(x-x_j)/rho_j
+
+
+  std::vector<std::pair<size_t,double> > ret_matches;
+  SearchParams params;
+  params.sorted = false;
+
+  double query_pt[3] = {pos.x,pos.y,pos.z};
+
+  double to_return;
+
+  double nMatches = this->tree->radiusSearch(&query_pt[0], R*R, ret_matches, params);
+  for (auto &pair: ret_matches) {
+    Particle p = this->particles[pair.first];
+    to_return += W(pos-p.x_star)/p.density; //TODO density is from previous time step
+  }
+
   
-  return -(0.3 - (pos - Vector3D(0.5,0.5,0.5)).norm()); //threshold this at 0.
+  return (0.3 - (pos - Vector3D(0.3,0.3,0.3)).norm()); //threshold this at 0.
 
 }
 
