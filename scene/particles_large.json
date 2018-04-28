@@ -4,7 +4,7 @@
     "radius": 0.05,
     "friction": 0.01
   },
-  "plane": [{
+  "boundingBox": [{
               "point": [0, -0.2, 0],
               "normal": [0, 1, 0],
               "friction": 0.0

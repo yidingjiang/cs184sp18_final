@@ -155,6 +155,9 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
   ifstream i(filename);
   json j;
   i >> j;
+  
+  Vector3D minBoundaries = Vector3D(DBL_MAX, DBL_MAX, DBL_MAX);
+  Vector3D maxBoundaries = Vector3D(-DBL_MAX, -DBL_MAX, -DBL_MAX);
 
   // Loop over objects in scene
   for (json::iterator it = j.begin(); it != j.end(); ++it) {
@@ -204,8 +207,6 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       fluid->radius = radius;
       fluid->friction = friction;
     } else if (key == BOUNDINGBOX) { // PLANE
-      Vector3D minBoundaries = Vector3D(DBL_MAX, DBL_MAX, DBL_MAX);
-      Vector3D maxBoundaries = Vector3D(-DBL_MAX, -DBL_MAX, -DBL_MAX);
       for (auto plane : object){
         Vector3D point, normal;
         double friction;
@@ -237,8 +238,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
         if (maxBoundaries.z < point.z){
           maxBoundaries.z = point.z;
         }
-        fluid->maxBoundaries = maxBoundaries;
-        fluid->minBoundaries = minBoundaries;
+        
 
         auto it_normal = plane.find("normal");
         if (it_normal != plane.end()) {
@@ -383,6 +383,9 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       } else {
         incompleteObjectError("vorticity", "r");
       }
+      
+      fluid->maxBoundaries = maxBoundaries;
+      fluid->minBoundaries = minBoundaries;
       
       fluid->R = R;
       fluid->W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
