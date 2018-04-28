@@ -490,12 +490,13 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     }
     p.x_star = p.origin + delta_t*p.velocity;
   }
-
-  // for surfacing only
-  build_spatial_map();
-  build_voxel_grid(step);
+  
 
   std::vector<std::vector<Particle *>>  neighborArray = build_index();
+  
+  // for surfacing only
+  //build_spatial_map();
+  build_voxel_grid(step);
 
   for(int iter=0; iter<solver_iters; iter++) {
     this->update_lambdas(neighborArray);
@@ -759,7 +760,9 @@ std::vector<std::vector<Particle *>> Fluid::build_index(){
 
     // kdtree index(3, cloud, KDTreeSingleIndexAdaptorParams(3));
     // index.buildIndex();
-    free(this->tree);
+    if (this->tree != NULL){
+      free(this->tree);
+    }
     this->tree =  new kdtree(3, cloud, KDTreeSingleIndexAdaptorParams(3));
 
     std::vector<std::pair<size_t,double> > ret_matches;
@@ -777,6 +780,7 @@ std::vector<std::vector<Particle *>> Fluid::build_index(){
       query_pt[2] = particles[k].x_star.z;
 
       double nMatches = this->tree->radiusSearch(&query_pt[0], R*R, ret_matches, params); //TODO should be R or squared?
+
       for (auto &pair: ret_matches) {
         to_append.emplace_back(&(this->particles[pair.first]));
       }
