@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <scene version="0.5.0">
-	<integrator type="path">
-		<integer name="maxDepth" value="10"/>
+	<integrator type="irrcache">
+		<integrator type="photonmapper">
+			<integer name="directSamples" value="64"/>
+		</integrator>
 	</integrator>
 
 	<shape type="obj">
