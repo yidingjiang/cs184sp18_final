@@ -643,7 +643,8 @@ double Fluid::isotropic_kernel(Vector3D pos){
   }
 
   
-  return (0.4 - (pos - Vector3D(0.0,0.0,0.0)).norm()); //threshold this at 0.
+  //return (0.4 - (pos - Vector3D(0.0,0.0,0.0)).norm()); //threshold this at 0.
+  return to_return;
 
 }
 
