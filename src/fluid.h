@@ -114,8 +114,6 @@ struct Fluid {
   vector<vector<vertex>> triangles;
 
   void saveFacesToObjs(std::string fileName);
-
-  void build_spatial_map();
   void build_voxel_grid(int frameNum);
   string hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
   std::vector<std::vector<Particle *>> generateNeighborArray();
