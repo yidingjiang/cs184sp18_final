@@ -40,12 +40,14 @@ void Fluid::buildGrid() {
   double l_offset = length / ((double) num_length_points);
   double h_offset = height / ((double) num_height_points);
 
+  Vector3D center =  (minBoundaries+maxBoundaries)/2;
+  Vector3D zcenter = 0.3;
   for (int i = 0; i < num_width_points; i++) {
     for (int j = 0; j < num_length_points; j++) {
       for (int k = 0; k < num_height_points; k++) {
-        Vector3D pos = Vector3D((i- (num_width_points/2.0)) * w_offset,
+        Vector3D pos = Vector3D(center[0] + (i- (num_width_points/2.0)) * w_offset,
                                 j * l_offset,
-                                (k - (num_height_points/2.0)) * h_offset);
+                                (center[2] + (k - (num_height_points/2.0)) * h_offset));
         Particle p = Particle(pos, radius, friction);
         particles.emplace_back(p);
       }
@@ -78,10 +80,10 @@ void Fluid::build_voxel_grid(int frameNum) {
   //Vector3D min = Vector3D(-0.7, -0.2, -0.7);
   //Vector3D max = Vector3D(0.7, 2.01, 0.7); //TODO: In future, adjust thee based on scene params
 
-  Vector3D sizeGrid = Vector3D(maxBoundaries.x - minBoundaries.x, maxBoundaries.y - minBoundaries.y, maxBoundaries.z - minBoundaries.z);
+  Vector3D sizeGrid = Vector3D(0.2 + maxBoundaries.x - minBoundaries.x, 0.2 + maxBoundaries.y - minBoundaries.y, 0.2 + maxBoundaries.z - minBoundaries.z);
   Vector3D sizeCell = Vector3D(sizeGrid.x / num_cells.x, sizeGrid.y / num_cells.y, sizeGrid.z / num_cells.z);
   
-  convertVoxelToFaces(minBoundaries, sizeCell);
+  convertVoxelToFaces(minBoundaries-0.201, sizeCell);
   saveFacesToObjs(std::to_string(frameNum));
 }
 
@@ -108,82 +110,31 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
     for (int ypos = 0; ypos < num_cells.y-1; ++ypos) {
       for (int zpos = 0; zpos < num_cells.z-1; ++zpos) { 
         vector<double> grid = vector<double>();
-        grid.push_back(isotropic_kernel(Vector3D(xpos, ypos, zpos)*sizeCell));
-        grid.push_back(isotropic_kernel(Vector3D(xpos+1, ypos, zpos)*sizeCell));
-        grid.push_back(isotropic_kernel(Vector3D(xpos+1, ypos, zpos+1)*sizeCell));
-        grid.push_back(isotropic_kernel(Vector3D(xpos, ypos, zpos+1)*sizeCell));
-        grid.push_back(isotropic_kernel(Vector3D(xpos, ypos+1, zpos)*sizeCell));
-        grid.push_back(isotropic_kernel(Vector3D(xpos+1, ypos+1, zpos)*sizeCell));
-        grid.push_back(isotropic_kernel(Vector3D(xpos+1, ypos+1, zpos+1)*sizeCell));
-        grid.push_back(isotropic_kernel(Vector3D(xpos, ypos+1, zpos+1)*sizeCell));
+        grid.push_back(isotropic_kernel(Vector3D(xpos, ypos, zpos)*sizeCell + min));
+        grid.push_back(isotropic_kernel(Vector3D(xpos+1, ypos, zpos)*sizeCell+ min));
+        grid.push_back(isotropic_kernel(Vector3D(xpos+1, ypos, zpos+1)*sizeCell+ min));
+        grid.push_back(isotropic_kernel(Vector3D(xpos, ypos, zpos+1)*sizeCell+ min));
+        grid.push_back(isotropic_kernel(Vector3D(xpos, ypos+1, zpos)*sizeCell+ min));
+        grid.push_back(isotropic_kernel(Vector3D(xpos+1, ypos+1, zpos)*sizeCell+ min));
+        grid.push_back(isotropic_kernel(Vector3D(xpos+1, ypos+1, zpos+1)*sizeCell+ min));
+        grid.push_back(isotropic_kernel(Vector3D(xpos, ypos+1, zpos+1)*sizeCell+ min));
 
         vector<vertex> positions = vector<vertex>();
-        positions.push_back(vertex(Vector3D(xpos,ypos,zpos), -gradientNormal(Vector3D(xpos,ypos,zpos))));
-        positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos), -gradientNormal(Vector3D(xpos+1,ypos,zpos))));
-        positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos+1), -gradientNormal(Vector3D(xpos+1,ypos,zpos+1))));
-        positions.push_back(vertex(Vector3D(xpos,ypos,zpos+1), -gradientNormal(Vector3D(xpos,ypos,zpos+1))));
-        positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos), -gradientNormal(Vector3D(xpos,ypos+1,zpos))));
-        positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos), -gradientNormal(Vector3D(xpos+1,ypos+1,zpos))));
-        positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos+1), -gradientNormal(Vector3D(xpos+1,ypos+1,zpos+1))));
-        positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos+1), -gradientNormal(Vector3D(xpos,ypos+1,zpos+1))));
+        positions.push_back(vertex(Vector3D(xpos,ypos,zpos)*sizeCell + min, -gradientNormal(Vector3D(xpos,ypos,zpos)*sizeCell + min)));
+        positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos)*sizeCell + min, -gradientNormal(Vector3D(xpos+1,ypos,zpos)*sizeCell + min)));
+        positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos+1)*sizeCell + min, -gradientNormal(Vector3D(xpos+1,ypos,zpos+1)*sizeCell + min)));
+        positions.push_back(vertex(Vector3D(xpos,ypos,zpos+1)*sizeCell + min, -gradientNormal(Vector3D(xpos,ypos,zpos+1)*sizeCell + min)));
+        positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos)*sizeCell + min, -gradientNormal(Vector3D(xpos,ypos+1,zpos)*sizeCell + min)));
+        positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos)*sizeCell + min, -gradientNormal(Vector3D(xpos+1,ypos+1,zpos)*sizeCell + min)));
+        positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos+1)*sizeCell + min, -gradientNormal(Vector3D(xpos+1,ypos+1,zpos+1)*sizeCell + min)));
+        positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos+1)*sizeCell + min, -gradientNormal(Vector3D(xpos,ypos+1,zpos+1)*sizeCell + min)));
 
-        vector<vector<vertex>> currTriangles = Polygonise(grid,0.01, positions);
-        
-        for (vector<vertex> &triangle : currTriangles){
-          for (vertex &point : triangle){
-              
-              point.p.x *= sizeCell.x;
-              point.p.y *= sizeCell.y;
-              point.p.z *= sizeCell.z;
-
-              point.p += min;
-              
-              //point.n = gradientNormal(point.p);
-          }
-        }
-
+        double isolevel = 10;
+        vector<vector<vertex>> currTriangles = Polygonise(grid,isolevel, positions);
         triangles.insert(std::end(triangles), std::begin(currTriangles), std::end(currTriangles));
       }
     }
   }
-
-  // Convert triangles to correct coordinates:
-  /*for (vector<vertex> &triangle : triangles){
-    for (vertex &point : triangle){
-       point.n.normalize();
-       point.p.x *= sizeCell.x;
-       point.p.y *= sizeCell.y;
-       point.p.z *= sizeCell.z;
-
-       point.p += min;
-    }
-  }*/
-
-  //std::cout << triangles.size() << std::endl;
-  /*
-  vector<double> grid = vector<double>();
-  grid.push_back(1);
-  grid.push_back(1);
-  grid.push_back(0);
-  grid.push_back(0);
-  grid.push_back(0);
-  grid.push_back(0);
-  grid.push_back(0);
-  grid.push_back(0);
-
-  vector<Vector3D> positions = vector<Vector3D>();
-  positions.push_back(Vector3D(0,0,0));
-  positions.push_back(Vector3D(1,0,0));
-  positions.push_back(Vector3D(1,0,1));
-  positions.push_back(Vector3D(0,0,1));
-  positions.push_back(Vector3D(0,1,0));
-  positions.push_back(Vector3D(1,1,0));
-  positions.push_back(Vector3D(1,1,1));
-  positions.push_back(Vector3D(0,1,1));
-  std::cout << "HELLO" << std::endl;
-  std::cout << Polygonise(grid,0.5, positions).size() << std::endl;
-
-  std::cout << "BYE" << std::endl;*/
 }
 
 
@@ -634,16 +585,16 @@ double Fluid::isotropic_kernel(Vector3D pos){
 
   double query_pt[3] = {pos.x,pos.y,pos.z};
 
-  double to_return;
+  double to_return=0;
 
   double nMatches = this->tree->radiusSearch(&query_pt[0], R*R, ret_matches, params);
   for (auto &pair: ret_matches) {
     Particle p = this->particles[pair.first];
-    to_return += W(pos-p.x_star)/p.density; //TODO density is from previous time step
+    to_return += W(pos-p.x_star);///p.density; //TODO density is from previous time step
   }
-
+  // cout << to_return << endl;
   
-  //return (0.4 - (pos - Vector3D(0.0,0.0,0.0)).norm()); //threshold this at 0.
+  // return (0.4 - (pos - Vector3D(1.0,1.0,1.0)).norm()); //threshold this at 0.
   return to_return;
 
 }
