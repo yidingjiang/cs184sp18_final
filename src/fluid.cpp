@@ -95,6 +95,27 @@ void Fluid::build_voxel_grid(int frameNum) {
   Vector3D min = Vector3D(-2, -2, -2);
   Vector3D max = Vector3D(2, 2, 2); //TODO: In future, adjust thee based on scene params
 
+  /*for (Particle &particle : this->particles){
+    if (min.x > particle.origin.x){
+      min.x = particle.origin.x;
+    }
+    if (min.y > particle.origin.y){
+      min.y = particle.origin.y;
+    }
+    if (min.z > particle.origin.z){
+      min.z = particle.origin.z;
+    }
+
+    if (max.x < particle.origin.x){
+      max.x = particle.origin.x;
+    }
+    if (max.y < particle.origin.y){
+      max.y = particle.origin.y;
+    }
+    if (max.z < particle.origin.z){
+      max.z = particle.origin.z;
+    }
+  }*/
 
   Vector3D sizeGrid = Vector3D(max.x - min.x, max.y - min.y, max.z - min.z);
   Vector3D sizeCell = Vector3D(sizeGrid.x / num_cells.x, sizeGrid.y / num_cells.y, sizeGrid.z / num_cells.z);
