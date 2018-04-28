@@ -193,7 +193,7 @@ void FluidSimulator::drawContents() {
   glDrawArrays(GL_POINTS, 0, fluid->particles.size());
 
   //write_screenshot();
-  // fluid->save_state_to_csv();
+  fluid->save_state_to_csv();
 
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
