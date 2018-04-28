@@ -116,7 +116,7 @@ void Fluid::build_voxel_grid(int frameNum) {
     this->voxelGrid[cellNum.x + (num_cells.x) * (cellNum.y + (num_cells.y) * (cellNum.z))] = isotropic_kernel(particle.origin) > 0;
     
   }
-
+  
   convertVoxelToFaces(min, sizeCell);
   saveFacesToObjs(std::to_string(frameNum));
 }
@@ -146,14 +146,14 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
           grid.push_back(this->voxelGrid[xpos + (num_cells.x) * (ypos+1 + (num_cells.y) * (zpos+1))]);
 
           vector<vertex> positions = vector<vertex>();
-          positions.push_back(vertex(Vector3D(xpos,ypos,zpos), this->voxelOrientations[xpos + (num_cells.x) * (ypos + (num_cells.y) * zpos)]));
-          positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos), this->voxelOrientations[xpos+1 + (num_cells.x) * (ypos + (num_cells.y) * zpos)]));
-          positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos+1), this->voxelOrientations[xpos+1 + (num_cells.x) * (ypos + (num_cells.y) * (zpos+1))]));
-          positions.push_back(vertex(Vector3D(xpos,ypos,zpos+1), this->voxelOrientations[xpos + (num_cells.x) * (ypos + (num_cells.y) * (zpos+1))]));
-          positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos), this->voxelOrientations[xpos + (num_cells.x) * (ypos+1 + (num_cells.y) * zpos)]));
-          positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos), this->voxelOrientations[xpos+1 + (num_cells.x) * (ypos+1 + (num_cells.y) * zpos)]));
-          positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos+1), this->voxelOrientations[xpos+1 + (num_cells.x) * (ypos+1 + (num_cells.y) * (zpos+1))]));
-          positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos+1), this->voxelOrientations[xpos + (num_cells.x) * (ypos+1 + (num_cells.y) * (zpos+1))]));
+          positions.push_back(vertex(Vector3D(xpos,ypos,zpos)));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos)));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos+1)));
+          positions.push_back(vertex(Vector3D(xpos,ypos,zpos+1)));
+          positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos)));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos)));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos+1)));
+          positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos+1)));
 
           vector<vector<vertex>> currTriangles = Polygonise(grid,0.5, positions);
           
@@ -166,7 +166,7 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
 
                point.p += min;
                
-               point.n = -Vector3D(isotropic_kernel(Vector3D(point.p.x + 1, point.p.y, point.p.z)) - isotropic_kernel(Vector3D(point.p.x - 1, point.p.y, point.p.z)), 
+               point.n = Vector3D(isotropic_kernel(Vector3D(point.p.x + 1, point.p.y, point.p.z)) - isotropic_kernel(Vector3D(point.p.x - 1, point.p.y, point.p.z)), 
                                   isotropic_kernel(Vector3D(point.p.x, point.p.y + 1, point.p.z)) - isotropic_kernel(Vector3D(point.p.x, point.p.y - 1, point.p.z)), 
                                   isotropic_kernel(Vector3D(point.p.x, point.p.y, point.p.z + 1)) - isotropic_kernel(Vector3D(point.p.x, point.p.y, point.p.z - 1))
                                  );
