@@ -758,12 +758,9 @@ std::vector<std::vector<Particle *>> Fluid::build_index(){
     // Populate cloud
     this->cloud.pts = this->particles;
 
-    // kdtree index(3, cloud, KDTreeSingleIndexAdaptorParams(3));
-    // index.buildIndex();
-    if (this->tree != NULL){
-      free(this->tree);
-    }
+    if (this->tree != NULL) free(this->tree);
     this->tree =  new kdtree(3, cloud, KDTreeSingleIndexAdaptorParams(3));
+    this->tree->buildIndex();
 
     std::vector<std::pair<size_t,double> > ret_matches;
     SearchParams params;
