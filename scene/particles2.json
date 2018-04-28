@@ -46,8 +46,8 @@
     "sf": 1.0,
     "viscosity": 0.00025,
     "vorticity": 0.005,
-    "num_width_voxels": 50,
-    "num_height_voxels": 50,
-    "num_length_voxels": 50
+    "num_width_voxels": 45,
+    "num_height_voxels": 45,
+    "num_length_voxels": 45
   }
 }
