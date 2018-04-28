@@ -75,13 +75,13 @@ GLfloat* Fluid::getBuffer() {
 
 
 void Fluid::build_voxel_grid(int frameNum) {
-  Vector3D min = Vector3D(-0.7, -0.2, -0.7);
-  Vector3D max = Vector3D(0.7, 2.01, 0.7); //TODO: In future, adjust thee based on scene params
+  //Vector3D min = Vector3D(-0.7, -0.2, -0.7);
+  //Vector3D max = Vector3D(0.7, 2.01, 0.7); //TODO: In future, adjust thee based on scene params
 
-  Vector3D sizeGrid = Vector3D(max.x - min.x, max.y - min.y, max.z - min.z);
+  Vector3D sizeGrid = Vector3D(maxBoundaries.x - minBoundaries.x, maxBoundaries.y - minBoundaries.y, maxBoundaries.z - minBoundaries.z);
   Vector3D sizeCell = Vector3D(sizeGrid.x / num_cells.x, sizeGrid.y / num_cells.y, sizeGrid.z / num_cells.z);
   
-  convertVoxelToFaces(min, sizeCell);
+  convertVoxelToFaces(minBoundaries, sizeCell);
   saveFacesToObjs(std::to_string(frameNum));
 }
 

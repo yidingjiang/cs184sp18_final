@@ -101,6 +101,9 @@ struct Fluid {
   double R=0.15;
   double W_CONSTANT =  315.0/(64.0*M_PI*R*R*R*R*R*R*R*R*R);
   double W_DEL_CONSTANT = 45.0/(M_PI*pow(R,6.0)); //TODO this maybe negated
+  
+  Vector3D maxBoundaries;
+  Vector3D minBoundaries;
 
   // Fluid components
   vector<Particle> particles;
