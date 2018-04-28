@@ -153,9 +153,10 @@ void Fluid::build_voxel_grid(int frameNum) {
 
     Vector3D cellNum = Vector3D(positionArrayX, positionArrayY, positionArrayZ);
 
-
-
-    this->voxelGrid[cellNum.x + 1 + (num_cells.x+2) * (cellNum.y+1 + (num_cells.y+2) * (cellNum.z+1))] = 1;
+    //std::cout << isotropic_kernel(particle.origin) << std::endl;
+    
+    this->voxelGrid[cellNum.x + 1 + (num_cells.x+2) * (cellNum.y+1 + (num_cells.y+2) * (cellNum.z+1))] = isotropic_kernel(particle.origin);
+    
   }
   /*if (firstFile){
     for (int xpos = 0; xpos < num_cells.x+2; ++xpos) {
@@ -818,7 +819,8 @@ double Fluid::isotropic_kernel(Vector3D pos){
   // find particles in radius R
 
   // sum W(x-x_j)/rho_j
-  return 0.5 - (pos - Vector3D(0.5,0.5,0.5)).norm(); //threshold this at 0.
+  
+  return -(0.3 - (pos - Vector3D(0.5,0.5,0.5)).norm()); //threshold this at 0.
 
 }
 
