@@ -113,12 +113,21 @@ void Fluid::build_voxel_grid(int frameNum) {
 
     Vector3D cellNum = Vector3D(positionArrayX, positionArrayY, positionArrayZ);
 
-    this->voxelGrid[cellNum.x + (num_cells.x) * (cellNum.y + (num_cells.y) * (cellNum.z))] = isotropic_kernel(particle.origin) > 0;
+    this->voxelGrid[cellNum.x + (num_cells.x) * (cellNum.y + (num_cells.y) * (cellNum.z))] = isotropic_kernel(particle.origin);
     
   }
   
   convertVoxelToFaces(min, sizeCell);
   saveFacesToObjs(std::to_string(frameNum));
+}
+
+Vector3D Fluid::gradientNormal(Vector3D pos){
+  Vector3D normal = Vector3D(isotropic_kernel(Vector3D(pos.x + 1, pos.y, pos.z)) - isotropic_kernel(Vector3D(pos.x - 1, pos.y, pos.z)), 
+                     isotropic_kernel(Vector3D(pos.x, pos.y + 1, pos.z)) - isotropic_kernel(Vector3D(pos.x, pos.y - 1, pos.z)), 
+                     isotropic_kernel(Vector3D(pos.x, pos.y, pos.z + 1)) - isotropic_kernel(Vector3D(pos.x, pos.y, pos.z - 1))
+                   );
+  normal.normalize();
+  return normal;
 }
 
 void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
@@ -146,30 +155,27 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
           grid.push_back(this->voxelGrid[xpos + (num_cells.x) * (ypos+1 + (num_cells.y) * (zpos+1))]);
 
           vector<vertex> positions = vector<vertex>();
-          positions.push_back(vertex(Vector3D(xpos,ypos,zpos)));
-          positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos)));
-          positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos+1)));
-          positions.push_back(vertex(Vector3D(xpos,ypos,zpos+1)));
-          positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos)));
-          positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos)));
-          positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos+1)));
-          positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos+1)));
+          positions.push_back(vertex(Vector3D(xpos,ypos,zpos), -gradientNormal(Vector3D(xpos,ypos,zpos))));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos), -gradientNormal(Vector3D(xpos+1,ypos,zpos))));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos,zpos+1), -gradientNormal(Vector3D(xpos+1,ypos,zpos+1))));
+          positions.push_back(vertex(Vector3D(xpos,ypos,zpos+1), -gradientNormal(Vector3D(xpos,ypos,zpos+1))));
+          positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos), -gradientNormal(Vector3D(xpos,ypos+1,zpos))));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos), -gradientNormal(Vector3D(xpos+1,ypos+1,zpos))));
+          positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos+1), -gradientNormal(Vector3D(xpos+1,ypos+1,zpos+1))));
+          positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos+1), -gradientNormal(Vector3D(xpos,ypos+1,zpos+1))));
 
-          vector<vector<vertex>> currTriangles = Polygonise(grid,0.5, positions);
+          vector<vector<vertex>> currTriangles = Polygonise(grid,0.1, positions);
           
           for (vector<vertex> &triangle : currTriangles){
             for (vertex &point : triangle){
-               point.n.normalize();
+               
                point.p.x *= sizeCell.x;
                point.p.y *= sizeCell.y;
                point.p.z *= sizeCell.z;
 
                point.p += min;
                
-               point.n = Vector3D(isotropic_kernel(Vector3D(point.p.x + 1, point.p.y, point.p.z)) - isotropic_kernel(Vector3D(point.p.x - 1, point.p.y, point.p.z)), 
-                                  isotropic_kernel(Vector3D(point.p.x, point.p.y + 1, point.p.z)) - isotropic_kernel(Vector3D(point.p.x, point.p.y - 1, point.p.z)), 
-                                  isotropic_kernel(Vector3D(point.p.x, point.p.y, point.p.z + 1)) - isotropic_kernel(Vector3D(point.p.x, point.p.y, point.p.z - 1))
-                                 );
+               //point.n = gradientNormal(point.p);
             }
           }
 

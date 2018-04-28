@@ -71,6 +71,7 @@ struct Fluid {
 
   void reset();
   void saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max, bool orientation);
+  Vector3D gradientNormal(Vector3D pos);
 
   // Fluid properties
   double width;
