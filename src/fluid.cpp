@@ -214,6 +214,7 @@ void Fluid::build_voxel_grid(int frameNum) {
   vector<Vector3D> voxelsOrient((num_cells.x+2) * (num_cells.y+2) * (num_cells.z+2), Vector3D(0,0,0));
   this->voxelOrientations = voxelsOrient;
   // DO ORIENTATION STUFF
+  
   for (int xpos = 0; xpos < num_cells.x + 2; ++xpos) {
     for (int ypos = 0; ypos < num_cells.y + 2; ++ypos) {
       for (int zpos = 0; zpos < num_cells.z + 2; ++zpos) {
@@ -317,6 +318,22 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
           positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos+1), this->voxelOrientations[xpos + (num_cells.x+2) * (ypos+1 + (num_cells.y+2) * (zpos+1))]));
 
           vector<vector<vertex>> currTriangles = Polygonise(grid,0.5, positions);
+          
+          for (vector<vertex> &triangle : currTriangles){
+            for (vertex &point : triangle){
+               point.n.normalize();
+               point.p.x *= sizeCell.x;
+               point.p.y *= sizeCell.y;
+               point.p.z *= sizeCell.z;
+
+               point.p += min;
+               
+               point.n = -Vector3D(isotropic_kernel(Vector3D(point.p.x + 1, point.p.y, point.p.z)) - isotropic_kernel(Vector3D(point.p.x - 1, point.p.y, point.p.z)), 
+                                  isotropic_kernel(Vector3D(point.p.x, point.p.y + 1, point.p.z)) - isotropic_kernel(Vector3D(point.p.x, point.p.y - 1, point.p.z)), 
+                                  isotropic_kernel(Vector3D(point.p.x, point.p.y, point.p.z + 1)) - isotropic_kernel(Vector3D(point.p.x, point.p.y, point.p.z - 1))
+                                 );
+            }
+          }
 
           triangles.insert(std::end(triangles), std::begin(currTriangles), std::end(currTriangles));
         }
@@ -325,7 +342,7 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
   }
 
   // Convert triangles to correct coordinates:
-  for (vector<vertex> &triangle : triangles){
+  /*for (vector<vertex> &triangle : triangles){
     for (vertex &point : triangle){
        point.n.normalize();
        point.p.x *= sizeCell.x;
@@ -334,7 +351,7 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
 
        point.p += min;
     }
-  }
+  }*/
 
   //std::cout << triangles.size() << std::endl;
   /*
