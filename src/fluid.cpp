@@ -757,10 +757,10 @@ std::vector<std::vector<Particle *>> Fluid::build_index(){
     // Populate cloud
     this->cloud.pts = this->particles;
 
-    kdtree index(3, cloud, KDTreeSingleIndexAdaptorParams(3));
-    index.buildIndex();
-
-    this->tree = &index;
+    // kdtree index(3, cloud, KDTreeSingleIndexAdaptorParams(3));
+    // index.buildIndex();
+    free(this->tree);
+    this->tree =  new kdtree(3, cloud, KDTreeSingleIndexAdaptorParams(3));
 
     std::vector<std::pair<size_t,double> > ret_matches;
     SearchParams params;
@@ -776,7 +776,7 @@ std::vector<std::vector<Particle *>> Fluid::build_index(){
       query_pt[1] = particles[k].x_star.y;
       query_pt[2] = particles[k].x_star.z;
 
-      double nMatches = index.radiusSearch(&query_pt[0], R*R, ret_matches, params); //TODO should be R or squared?
+      double nMatches = this->tree->radiusSearch(&query_pt[0], R*R, ret_matches, params); //TODO should be R or squared?
       for (auto &pair: ret_matches) {
         to_append.emplace_back(&(this->particles[pair.first]));
       }
