@@ -2,7 +2,9 @@
 
 <scene version="0.5.0">
 	<integrator type="irrcache">
-		<integrator type="photonmapper"/> 
+		<integrator type="photonmapper">
+			<integer name="directSamples" value="64"/>
+		</integrator> 
 	</integrator>
 
 	<shape type="obj">
