@@ -1,33 +1,36 @@
-2018-04-28 16:09:21 INFO  main [mitsuba.cpp:256] Mitsuba version 0.5.0 (Windows, 64 bit), Copyright (c) 2014 Wenzel Jakob
-2018-04-28 16:09:21 INFO  main [mitsuba.cpp:356] Parsing scene description from "water.xml" ..
-2018-04-28 16:09:21 INFO  main [PluginManager] Loading plugin "plugins\path.dll" ..
-2018-04-28 16:09:21 INFO  main [PluginManager] Loading plugin "plugins\dielectric.dll" ..
-2018-04-28 16:09:21 INFO  main [PluginManager] Loading plugin "plugins\obj.dll" ..
-2018-04-28 16:09:21 INFO  main [WavefrontOBJ] Loading geometry from "face0.obj" ..
-2018-04-28 16:09:21 INFO  main [WavefrontOBJ] face0: 7612 triangles, 3808 vertices (merged 19028 vertices).
-2018-04-28 16:09:21 INFO  main [WavefrontOBJ] Done with "face0.obj" (took 402 ms)
-2018-04-28 16:09:21 INFO  main [PluginManager] Loading plugin "plugins\halton.dll" ..
-2018-04-28 16:09:22 INFO  main [PluginManager] Loading plugin "plugins\gaussian.dll" ..
-2018-04-28 16:09:22 INFO  main [PluginManager] Loading plugin "plugins\hdrfilm.dll" ..
-2018-04-28 16:09:22 INFO  main [PluginManager] Loading plugin "plugins\perspective.dll" ..
-2018-04-28 16:09:22 INFO  main [PluginManager] Loading plugin "plugins\envmap.dll" ..
-2018-04-28 16:09:22 INFO  main [EnvironmentMap] Loading environment map "envmap.exr"
-2018-04-28 16:09:22 INFO  main [PluginManager] Loading plugin "plugins\lanczos.dll" ..
-2018-04-28 16:09:22 INFO  main [EnvironmentMap] Precomputing data structures for environment map sampling (515.0 KiB)
-2018-04-28 16:09:22 INFO  main [EnvironmentMap] Done (took 3 ms)
-2018-04-28 16:09:22 INFO  main [PluginManager] Loading plugin "plugins\diffuse.dll" ..
-2018-04-28 16:09:22 INFO  main [PluginManager] Loading plugin "plugins\checkerboard.dll" ..
-2018-04-28 16:09:22 INFO  main [PluginManager] Loading plugin "plugins\serialized.dll" ..
-2018-04-28 16:09:22 INFO  main [SerializedMesh] Loading shape 0 from "meshes.serialized" ..
-2018-04-28 16:09:22 INFO  ren0 [KDTreeBase] Constructing a SAH kd-tree (8124 primitives) ..
-2018-04-28 16:09:22 INFO  ren0 [KDTreeBase] Finished -- took 44 ms.
-2018-04-28 16:09:22 INFO  ren0 [PluginManager] Loading plugin "plugins\sphere.dll" ..
-2018-04-28 16:09:22 INFO  ren0 [SamplingIntegrator] Starting render job (683x512, 64 samples, 8 cores, SSE2 enabled) ..
-2018-04-28 16:09:40 INFO  ren0 [RenderJob] Render time: 18.2840s
-2018-04-28 16:09:40 INFO  ren0 [HDRFilm] Writing image to "water_0.exr" ..
-2018-04-28 16:09:40 INFO  main [statistics.cpp:142] Statistics:
+2018-04-28 17:37:00 INFO  main [mitsuba.cpp:256] Mitsuba version 0.5.0 (Windows, 64 bit), Copyright (c) 2014 Wenzel Jakob
+2018-04-28 17:37:00 INFO  main [mitsuba.cpp:356] Parsing scene description from "water.xml" ..
+2018-04-28 17:37:00 INFO  main [PluginManager] Loading plugin "plugins\bdpt.dll" ..
+2018-04-28 17:37:00 INFO  main [PluginManager] Loading plugin "plugins\dielectric.dll" ..
+2018-04-28 17:37:00 INFO  main [PluginManager] Loading plugin "plugins\homogeneous.dll" ..
+2018-04-28 17:37:00 INFO  main [PluginManager] Loading plugin "plugins\isotropic.dll" ..
+2018-04-28 17:37:00 INFO  main [PluginManager] Loading plugin "plugins\obj.dll" ..
+2018-04-28 17:37:00 INFO  main [WavefrontOBJ] Loading geometry from "face0.obj" ..
+2018-04-28 17:37:00 INFO  main [WavefrontOBJ] face0: 7612 triangles, 3808 vertices (merged 19028 vertices).
+2018-04-28 17:37:00 INFO  main [WavefrontOBJ] Done with "face0.obj" (took 405 ms)
+2018-04-28 17:37:00 INFO  main [PluginManager] Loading plugin "plugins\halton.dll" ..
+2018-04-28 17:37:00 INFO  main [PluginManager] Loading plugin "plugins\gaussian.dll" ..
+2018-04-28 17:37:00 INFO  main [PluginManager] Loading plugin "plugins\hdrfilm.dll" ..
+2018-04-28 17:37:00 INFO  main [PluginManager] Loading plugin "plugins\perspective.dll" ..
+2018-04-28 17:37:00 INFO  main [PluginManager] Loading plugin "plugins\envmap.dll" ..
+2018-04-28 17:37:00 INFO  main [EnvironmentMap] Loading environment map "envmap.exr"
+2018-04-28 17:37:00 INFO  main [PluginManager] Loading plugin "plugins\lanczos.dll" ..
+2018-04-28 17:37:01 INFO  main [EnvironmentMap] Precomputing data structures for environment map sampling (515.0 KiB)
+2018-04-28 17:37:01 INFO  main [EnvironmentMap] Done (took 3 ms)
+2018-04-28 17:37:01 INFO  main [PluginManager] Loading plugin "plugins\diffuse.dll" ..
+2018-04-28 17:37:01 INFO  main [PluginManager] Loading plugin "plugins\checkerboard.dll" ..
+2018-04-28 17:37:01 INFO  main [PluginManager] Loading plugin "plugins\serialized.dll" ..
+2018-04-28 17:37:01 INFO  main [SerializedMesh] Loading shape 0 from "meshes.serialized" ..
+2018-04-28 17:37:01 INFO  ren0 [KDTreeBase] Constructing a SAH kd-tree (8124 primitives) ..
+2018-04-28 17:37:01 INFO  ren0 [KDTreeBase] Finished -- took 44 ms.
+2018-04-28 17:37:01 INFO  ren0 [PluginManager] Loading plugin "plugins\sphere.dll" ..
+2018-04-28 17:37:01 INFO  ren0 [BDPTIntegrator] Starting render job (683x512, 256 samples, 8 cores, SSE2 enabled) ..
+2018-04-28 17:39:59 INFO  ren0 [RenderJob] Render time: 2.9781m
+2018-04-28 17:39:59 INFO  ren0 [HDRFilm] Writing image to "water_0.exr" ..
+2018-04-28 17:39:59 INFO  main [statistics.cpp:142] Statistics:
 ------------------------------------------------------------
  * Loaded plugins :
+    -  plugins\bdpt.dll [Bidirectional path tracer]
     -  plugins\checkerboard.dll [Checkerboard texture]
     -  plugins\dielectric.dll [Smooth dielectric BSDF]
     -  plugins\diffuse.dll [Smooth diffuse BRDF]
@@ -35,22 +38,22 @@
     -  plugins\gaussian.dll [Gaussian reconstruction filter]
     -  plugins\halton.dll [Halton QMC sampler]
     -  plugins\hdrfilm.dll [High dynamic range film]
+    -  plugins\homogeneous.dll [Homogeneous medium]
+    -  plugins\isotropic.dll [Isotropic phase function]
     -  plugins\lanczos.dll [Lanczos Sinc filter]
     -  plugins\obj.dll [OBJ triangle mesh loader]
-    -  plugins\path.dll [MI path tracer]
     -  plugins\perspective.dll [Perspective camera]
     -  plugins\serialized.dll [Serialized mesh loader]
     -  plugins\sphere.dll [Sphere intersection primitive]
 
-  * General :
-    -  Normal rays traced : 57.366 M
-    -  Shadow rays traced : 27.158 M
+  * Bidirectional layer :
+    -  Medium inconsistencies in connect() : 275
+    -  Medium inconsistencies in sampleNext() : 1.011 K
 
-  * Path tracer :
-    -  Average path length : 1.60 (35.81 M / 22.38 M)
+  * General :
+    -  Normal rays traced : 386.850 M
 
   * Texture system :
     -  Cumulative MIP map memory allocations : 1 MiB
-    -  Filtered texture lookups : 0.00 % (6.00 of 68.24 M)
-    -  Lookups with clamped anisotropy : 0.00 % (0.00 of 6.00)
+    -  Filtered texture lookups : 0.00 % (0.00 of 623.67 M)
 ------------------------------------------------------------
