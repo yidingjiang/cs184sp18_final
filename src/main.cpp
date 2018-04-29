@@ -159,7 +159,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
   ifstream i(filename);
   json j;
   i >> j;
-  
+
   Vector3D minBoundaries = Vector3D(DBL_MAX, DBL_MAX, DBL_MAX);
   Vector3D maxBoundaries = Vector3D(-DBL_MAX, -DBL_MAX, -DBL_MAX);
 
@@ -294,7 +294,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
         } else {
           incompleteObjectError("plane", "point");
         }
-        
+
         if (minBoundaries.x > point.x){
           minBoundaries.x = point.x;
         }
@@ -314,7 +314,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
         if (maxBoundaries.z < point.z){
           maxBoundaries.z = point.z;
         }
-        
+
 
         auto it_normal = plane.find("normal");
         if (it_normal != plane.end()) {
@@ -395,28 +395,28 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       } else {
         incompleteObjectError("fluid", "r");
       }
-      
+
       auto it_num_width_voxels = object.find("num_width_voxels");
       if (it_num_width_voxels != object.end()) {
         num_width_voxels = *it_num_width_voxels;
       } else {
         incompleteObjectError("fluid", "num_width_voxels");
       }
-      
+
       auto it_num_height_voxels = object.find("num_height_voxels");
       if (it_num_height_voxels != object.end()) {
         num_height_voxels = *it_num_height_voxels;
       } else {
         incompleteObjectError("fluid", "num_height_voxels");
       }
-      
+
       auto it_num_length_voxels = object.find("num_length_voxels");
       if (it_num_length_voxels != object.end()) {
         num_length_voxels = *it_num_length_voxels;
       } else {
         incompleteObjectError("fluid", "num_length_voxels");
       }
-      
+
 
       auto it_rho = object.find("rho_o");
       if (it_rho != object.end()) {
@@ -459,12 +459,12 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       } else {
         incompleteObjectError("vorticity", "r");
       }
-      
+
       fluid->maxBoundaries = maxBoundaries + 1.0;
       fluid->minBoundaries = minBoundaries - 1.0;
-      
-      
-      
+
+
+
       fluid->R = R;
       fluid->W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
       fluid->W_DEL_CONSTANT = 45.0/(PI*pow(R,6)); //TODO this maybe negated
@@ -477,7 +477,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       fluid->width = width;
       fluid->height = height;
       fluid->length = length;
-      
+
       fluid->num_cells = Vector3D(num_width_voxels, num_height_voxels, num_length_voxels);
 
       fluid->mass = fluid->RHO_O*width*height*length/(num_height_points*num_width_points*num_length_points);
