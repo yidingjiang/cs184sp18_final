@@ -10,11 +10,13 @@
 
 #include "CGL/CGL.h"
 #include "collision/plane.h"
+#include "collision/triangle.h"
 #include "collision/sphere.h"
 #include "fluid.h"
 #include "fluidSimulator.h"
 #include "json.hpp"
 #include "shader.hpp"
+#include "OBJ_Loader.h"
 
 
 typedef uint32_t gid_t;
@@ -29,10 +31,12 @@ using json = nlohmann::json;
 const string SPHERE = "sphere";
 const string PLANE = "plane";
 const string PARTICLE = "particle";
+const string TRIANGLE = "triangle";
+const string OBJECT = "object";
 const string FLUID = "fluid";
 const string BOUNDINGBOX = "boundingBox";
 
-const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, PARTICLE, FLUID, BOUNDINGBOX};
+const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, PARTICLE, TRIANGLE, FLUID, OBJECT, BOUNDINGBOX};
 
 FluidSimulator *app = nullptr;
 GLFWwindow *window = nullptr;
@@ -206,6 +210,78 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
 
       fluid->radius = radius;
       fluid->friction = friction;
+    } else if (key == TRIANGLE) {
+        Vector3D a,b,c;
+        double friction;
+        auto it_a = object.find("a");
+        auto it_b = object.find("b");
+        auto it_c = object.find("c");
+        if (it_a != object.end()) {
+          vector<double> vec_a = *it_a;
+          a = Vector3D(vec_a[0], vec_a[1], vec_a[2]);
+        } else {
+          incompleteObjectError("Triangle", "Vertex a");
+        }
+        if (it_b != object.end()) {
+          vector<double> vec_b = *it_b;
+          b = Vector3D(vec_b[0], vec_b[1], vec_b[2]);
+        } else {
+          incompleteObjectError("Triangle", "Vertex b");
+        }
+        if (it_a != object.end()) {
+          vector<double> vec_c = *it_c;
+          c = Vector3D(vec_c[0], vec_c[1], vec_c[2]);
+        } else {
+          incompleteObjectError("Triangle", "Vertex c");
+        }
+        auto it_friction = object.find("friction");
+        if (it_friction != object.end()) {
+          friction = *it_friction;
+        } else {
+          incompleteObjectError("particle", "friction");
+        }
+        Triangle* tri = new Triangle(a,b,c,friction);
+        objects->push_back(tri);
+    } else if (key == OBJECT) {
+      // COLLADA objects
+      double object_friction = 0.0;
+      auto fric = object.find("friction");
+      if (fric != object.end()) object_friction = *fric;
+      
+      Vector3D ob_origin;
+      auto ob_it_origin = object.find("origin");
+      if (ob_it_origin != object.end()) {
+        vector<double> vec_origin = *ob_it_origin;
+        ob_origin = Vector3D(vec_origin[0], vec_origin[1], vec_origin[2]);
+      }
+
+      auto object_file_name = object.find("file");
+      if (object_file_name != object.end()) {
+        std::vector<Vector3D *> vertices;
+        std::vector<Triangle *> tris;
+        std::string objfilename = object_file_name->get<std::string>();;
+        
+        objl::Loader loader;
+        loader.LoadFile(objfilename);
+
+        objl::Mesh mesh = loader.LoadedMeshes[0];
+        for (auto vertex: mesh.Vertices) {
+          Vector3D *new_v = new Vector3D(vertex.Position.X, vertex.Position.Y, vertex.Position.Z);
+          *new_v = *new_v + ob_origin;
+          vertices.emplace_back(new_v);
+        }
+        for (int j = 0; j < mesh.Indices.size(); j+=3) {
+          Triangle *new_t = new Triangle(*vertices[j],*vertices[j+1],*vertices[j+2],  object_friction);
+          objects->push_back(new_t);
+        }
+      } else {
+        incompleteObjectError("Object", "File");
+      }
+      //load collada into a list of traingles
+      
+      // insert trinagles into objects
+
+
     } else if (key == BOUNDINGBOX) { // PLANE
       for (auto plane : object){
         Vector3D point, normal;
