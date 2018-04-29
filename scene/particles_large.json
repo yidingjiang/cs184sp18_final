@@ -29,6 +29,11 @@
               "point": [-2.5, 0, 0],
               "normal": [1, 0, 0],
               "friction": 0.0
+            },
+            {
+              "point": [0, 3.51, 0],
+              "normal": [0, 1, 0],
+              "friction": 0.0
             }
           ],
   "fluid": {

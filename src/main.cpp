@@ -384,8 +384,10 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
         incompleteObjectError("vorticity", "r");
       }
       
-      fluid->maxBoundaries = maxBoundaries;
-      fluid->minBoundaries = minBoundaries;
+      fluid->maxBoundaries = maxBoundaries + 1.0;
+      fluid->minBoundaries = minBoundaries - 1.0;
+      
+      
       
       fluid->R = R;
       fluid->W_CONSTANT =  315.0/(64.0*PI*pow(R,9));
