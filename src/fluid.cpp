@@ -89,7 +89,7 @@ void Fluid::build_voxel_grid(int frameNum) {
 
 
 Vector3D Fluid::gradientNormal(Vector3D pos){
-  double step_size = 0.1;
+  double step_size = 0.1*(maxBoundaries.x-minBoundaries.x)/num_cells.x;
   Vector3D normal = Vector3D(isotropic_kernel(Vector3D(pos.x + step_size, pos.y, pos.z)) - isotropic_kernel(Vector3D(pos.x - step_size, pos.y, pos.z)), 
                      isotropic_kernel(Vector3D(pos.x, pos.y + step_size, pos.z)) - isotropic_kernel(Vector3D(pos.x, pos.y - step_size, pos.z)), 
                      isotropic_kernel(Vector3D(pos.x, pos.y, pos.z + step_size)) - isotropic_kernel(Vector3D(pos.x, pos.y, pos.z - step_size))
