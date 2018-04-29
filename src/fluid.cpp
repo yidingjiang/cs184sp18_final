@@ -82,7 +82,7 @@ void Fluid::build_voxel_grid(int frameNum) {
 
   Vector3D sizeGrid = Vector3D(0.2 + maxBoundaries.x - minBoundaries.x, 0.2 + maxBoundaries.y - minBoundaries.y, 0.2 + maxBoundaries.z - minBoundaries.z);
   Vector3D sizeCell = Vector3D(sizeGrid.x / num_cells.x, sizeGrid.y / num_cells.y, sizeGrid.z / num_cells.z);
-  
+
   convertVoxelToFaces(minBoundaries-0.201, sizeCell);
   saveFacesToObjs(std::to_string(frameNum));
 }
@@ -90,8 +90,8 @@ void Fluid::build_voxel_grid(int frameNum) {
 
 Vector3D Fluid::gradientNormal(Vector3D pos){
   double step_size = 0.1*(maxBoundaries.x-minBoundaries.x)/num_cells.x;
-  Vector3D normal = Vector3D(isotropic_kernel(Vector3D(pos.x + step_size, pos.y, pos.z)) - isotropic_kernel(Vector3D(pos.x - step_size, pos.y, pos.z)), 
-                     isotropic_kernel(Vector3D(pos.x, pos.y + step_size, pos.z)) - isotropic_kernel(Vector3D(pos.x, pos.y - step_size, pos.z)), 
+  Vector3D normal = Vector3D(isotropic_kernel(Vector3D(pos.x + step_size, pos.y, pos.z)) - isotropic_kernel(Vector3D(pos.x - step_size, pos.y, pos.z)),
+                     isotropic_kernel(Vector3D(pos.x, pos.y + step_size, pos.z)) - isotropic_kernel(Vector3D(pos.x, pos.y - step_size, pos.z)),
                      isotropic_kernel(Vector3D(pos.x, pos.y, pos.z + step_size)) - isotropic_kernel(Vector3D(pos.x, pos.y, pos.z - step_size))
                    );
   if (normal.norm() > 1e-9) normal.normalize();
@@ -108,7 +108,7 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
 
   for (int xpos = 0; xpos < num_cells.x-1; ++xpos) {
     for (int ypos = 0; ypos < num_cells.y-1; ++ypos) {
-      for (int zpos = 0; zpos < num_cells.z-1; ++zpos) { 
+      for (int zpos = 0; zpos < num_cells.z-1; ++zpos) {
         vector<double> grid = vector<double>();
         grid.push_back(isotropic_kernel(Vector3D(xpos, ypos, zpos)*sizeCell + min));
         grid.push_back(isotropic_kernel(Vector3D(xpos+1, ypos, zpos)*sizeCell+ min));
@@ -137,7 +137,27 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
   }
 }
 
-
+void Fluid::saveVoxelToCSV(std::string fileName, Vector3D min, Vector3D sizeCell) {
+  ofstream fs;
+  fs.open(fileName, std::ios_base::app);
+  for (int xpos = 0; xpos < num_cells.x-1; ++xpos) {
+    for (int ypos = 0; ypos < num_cells.y-1; ++ypos) {
+      for (int zpos = 0; zpos < num_cells.z-1; ++zpos) {
+        fs << xpos << ypos << zpos;
+        fs << isotropic_kernel(Vector3D(xpos, ypos, zpos)*sizeCell + min);
+        // fs << isotropic_kernel(Vector3D(xpos+1, ypos, zpos)*sizeCell+ min);
+        // fs << isotropic_kernel(Vector3D(xpos+1, ypos, zpos+1)*sizeCell+ min);
+        // fs << isotropic_kernel(Vector3D(xpos, ypos, zpos+1)*sizeCell+ min);
+        // fs << isotropic_kernel(Vector3D(xpos, ypos+1, zpos)*sizeCell+ min);
+        // fs << isotropic_kernel(Vector3D(xpos+1, ypos+1, zpos)*sizeCell+ min);
+        // fs << isotropic_kernel(Vector3D(xpos+1, ypos+1, zpos+1)*sizeCell+ min);
+        // fs << isotropic_kernel(Vector3D(xpos, ypos+1, zpos+1)*sizeCell+ min);
+        fs << std::endl;
+      }
+    }
+  }
+  fs.close();
+}
 
 void Fluid::saveFacesToObjs(std::string fileName){
   ofstream myfile;
@@ -246,10 +266,10 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
     }
     p.x_star = p.origin + delta_t*p.velocity;
   }
-  
+
 
   std::vector<std::vector<Particle *>>  neighborArray = build_index();
-  
+
   // for surfacing only
   build_voxel_grid(step);
 
@@ -573,7 +593,7 @@ std::vector<std::vector<Particle *>> Fluid::build_nearest_neighbors_index(int nu
 
 double Fluid::isotropic_kernel(Vector3D pos){
   // Computes the scalar density field interpolated at a point pos
- 
+
   // find particles in radius R
 
   // sum W(x-x_j)/rho_j
@@ -593,7 +613,7 @@ double Fluid::isotropic_kernel(Vector3D pos){
     to_return += W(pos-p.x_star);///p.density; //TODO density is from previous time step
   }
   // cout << to_return << endl;
-  
+
   // return (0.4 - (pos - Vector3D(1.0,1.0,1.0)).norm()); //threshold this at 0.
   return to_return;
 

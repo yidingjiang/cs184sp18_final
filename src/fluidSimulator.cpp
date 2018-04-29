@@ -169,37 +169,38 @@ void FluidSimulator::drawContents() {
     }
   }
 
-  GLShader shader = shaders[activeShader];
-  shader.bind();
-
-  Matrix4f model;
-  model.setIdentity();
-
-  Matrix4f view = getViewMatrix();
-  Matrix4f projection = getProjectionMatrix();
-
-  Matrix4f viewProjection = projection * view;
-
-  shader.setUniform("model", model);
-  shader.setUniform("viewProjection", viewProjection);
-  shader.setUniform("light", Vector3f(0.5, 2, 2));
-  shader.setUniform("in_color", color);
-  shader.setUniform("particle_size", 80./camera.r);
-
-  glBindVertexArray(positionsVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
-  g_vertex_buffer_data = fluid->getBuffer();
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
-  glDrawArrays(GL_POINTS, 0, fluid->particles.size());
-
-  //write_screenshot();
-  fluid->save_state_to_csv();
-
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  free(g_vertex_buffer_data);
+  // GLShader shader = shaders[activeShader];
+  // shader.bind();
+  //
+  // Matrix4f model;
+  // model.setIdentity();
+  //
+  // Matrix4f view = getViewMatrix();
+  // Matrix4f projection = getProjectionMatrix();
+  //
+  // Matrix4f viewProjection = projection * view;
+  //
+  // shader.setUniform("model", model);
+  // shader.setUniform("viewProjection", viewProjection);
+  // shader.setUniform("light", Vector3f(0.5, 2, 2));
+  // shader.setUniform("in_color", color);
+  // shader.setUniform("particle_size", 80./camera.r);
+  //
+  // glBindVertexArray(positionsVAO);
+  // glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
+  // g_vertex_buffer_data = fluid->getBuffer();
+  // glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
+  // glDrawArrays(GL_POINTS, 0, fluid->particles.size());
+  //
+  // //write_screenshot();
+  // // fluid->save_state_to_csv();
+  //
+  // glBindVertexArray(0);
+  // glBindBuffer(GL_ARRAY_BUFFER, 0);
+  // free(g_vertex_buffer_data);
 
   step += 1;
+  if (step % 10 == 0) std::cout << step << '\n';
   // is_paused = true;
 }
 
