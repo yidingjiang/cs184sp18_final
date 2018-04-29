@@ -81,6 +81,11 @@ class Vector3D {
     return Vector3D( rc * x, rc * y, rc * z );
   }
 
+  // hadamard product
+  inline Vector3D operator*( const Vector3D& v ) const {
+    return Vector3D( v.x * x, v.y * y, v.z * z );
+  }
+
   // addition / assignment
   inline void operator+=( const Vector3D& v ) {
     x += v.x; y += v.y; z += v.z;
@@ -89,6 +94,11 @@ class Vector3D {
   // subtraction / assignment
   inline void operator-=( const Vector3D& v ) {
     x -= v.x; y -= v.y; z -= v.z;
+  }
+
+    // multiplication * assignment
+  inline void operator*=( const Vector3D& v ) {
+    x *= v.x; y *= v.y; z *= v.z;
   }
 
   // scalar multiplication / assignment

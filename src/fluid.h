@@ -71,6 +71,7 @@ struct Fluid {
 
   void reset();
   void saveVoxelsToMitsuba(std::string fileName, Vector3D min, Vector3D max, bool orientation);
+  Vector3D gradientNormal(Vector3D pos);
 
   // Fluid properties
   double width;
@@ -100,6 +101,9 @@ struct Fluid {
   double R=0.15;
   double W_CONSTANT =  315.0/(64.0*M_PI*R*R*R*R*R*R*R*R*R);
   double W_DEL_CONSTANT = 45.0/(M_PI*pow(R,6.0)); //TODO this maybe negated
+  
+  Vector3D maxBoundaries;
+  Vector3D minBoundaries;
 
   // Fluid components
   vector<Particle> particles;
@@ -113,8 +117,6 @@ struct Fluid {
   vector<vector<vertex>> triangles;
 
   void saveFacesToObjs(std::string fileName);
-
-  void build_spatial_map();
   void build_voxel_grid(int frameNum);
   string hash_position(Vector3D pos, int xOffset=0, int yOffset=0, int zOffset=0);
   std::vector<std::vector<Particle *>> generateNeighborArray();
@@ -141,6 +143,10 @@ struct Fluid {
   typedef KDTreeSingleIndexAdaptor< L2_Simple_Adaptor<double, PointCloud> , PointCloud, 3 > kdtree;
   std::vector<std::vector<Particle *>> build_index();
   std::vector<std::vector<Particle *>> build_nearest_neighbors_index(int numNeighbors);
+
+  double isotropic_kernel(Vector3D pos);
+
+  kdtree *tree = NULL;
 
   void save_state_to_csv();
 

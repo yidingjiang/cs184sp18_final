@@ -1,6 +1,6 @@
 #!/bin/bash
-for number in {44..213}
+for number in {0..0}
 do
-/Applications/Mitsuba.app/Contents/MacOS/mitsuba -DframeNum=$number -o water_$number.exr water.xml
+C:\\Users\\cs199-btx\\Desktop\\Mitsuba0.5.0\\mitsuba -DframeNum=$number -o water_$number.exr water.xml
 done
 exit 0

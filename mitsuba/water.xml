@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <scene version="0.5.0">
-	<integrator type="path">
-		<integer name="maxDepth" value="10"/>
+	<integrator type="bdpt">
 	</integrator>
 
 	<shape type="obj">
@@ -11,13 +10,19 @@
 			<rotate x="1" angle="90"/>
 			<scale x="0.4" y="0.4" z="0.4"/>
 		</transform>
-		
-		
+
+
 
 		<bsdf type="dielectric" id="water">
 			<string name="intIOR" value="water"/>
 			<string name="extIOR" value="air"/>
 		</bsdf>
+
+
+		<medium type="homogeneous" name="interior">
+			<rgb name="sigmaS" value="0, 0, 0"/>
+			<rgb name="sigmaA" value="6, 2.5, 1"/>
+		</medium>
 	</shape>
 
 	<sensor type="perspective">
@@ -30,7 +35,7 @@
 		</transform>
 
 		<sampler type="halton">
-			<integer name="sampleCount" value="64"/>
+			<integer name="sampleCount" value="256"/>
 		</sampler>
 
 		<film type="hdrfilm">

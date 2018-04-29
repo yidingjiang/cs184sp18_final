@@ -1,3 +1,4 @@
+#include <cfloat>
 #include <getopt.h>
 #include <iostream>
 #include <fstream>
@@ -15,6 +16,7 @@
 #include "json.hpp"
 #include "shader.hpp"
 
+
 typedef uint32_t gid_t;
 
 using namespace std;
@@ -28,8 +30,9 @@ const string SPHERE = "sphere";
 const string PLANE = "plane";
 const string PARTICLE = "particle";
 const string FLUID = "fluid";
+const string BOUNDINGBOX = "boundingBox";
 
-const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, PARTICLE, FLUID};
+const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, PARTICLE, FLUID, BOUNDINGBOX};
 
 FluidSimulator *app = nullptr;
 GLFWwindow *window = nullptr;
@@ -152,6 +155,9 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
   ifstream i(filename);
   json j;
   i >> j;
+  
+  Vector3D minBoundaries = Vector3D(DBL_MAX, DBL_MAX, DBL_MAX);
+  Vector3D maxBoundaries = Vector3D(-DBL_MAX, -DBL_MAX, -DBL_MAX);
 
   // Loop over objects in scene
   for (json::iterator it = j.begin(); it != j.end(); ++it) {
@@ -200,7 +206,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
 
       fluid->radius = radius;
       fluid->friction = friction;
-    } else if (key == PLANE) { // PLANE
+    } else if (key == BOUNDINGBOX) { // PLANE
       for (auto plane : object){
         Vector3D point, normal;
         double friction;
@@ -212,6 +218,27 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
         } else {
           incompleteObjectError("plane", "point");
         }
+        
+        if (minBoundaries.x > point.x){
+          minBoundaries.x = point.x;
+        }
+        if (minBoundaries.y > point.y){
+          minBoundaries.y = point.y;
+        }
+        if (minBoundaries.z > point.z){
+          minBoundaries.z = point.z;
+        }
+
+        if (maxBoundaries.x < point.x){
+          maxBoundaries.x = point.x;
+        }
+        if (maxBoundaries.y < point.y){
+          maxBoundaries.y = point.y;
+        }
+        if (maxBoundaries.z < point.z){
+          maxBoundaries.z = point.z;
+        }
+        
 
         auto it_normal = plane.find("normal");
         if (it_normal != plane.end()) {
@@ -356,6 +383,11 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       } else {
         incompleteObjectError("vorticity", "r");
       }
+      
+      fluid->maxBoundaries = maxBoundaries + 1.0;
+      fluid->minBoundaries = minBoundaries - 1.0;
+      
+      
       
       fluid->R = R;
       fluid->W_CONSTANT =  315.0/(64.0*PI*pow(R,9));

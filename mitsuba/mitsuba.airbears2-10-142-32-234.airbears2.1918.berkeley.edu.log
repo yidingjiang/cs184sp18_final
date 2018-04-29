@@ -1,0 +1,25 @@
+2018-04-28 16:11:39 INFO  main [mitsuba.cpp:256] Mitsuba version 0.5.0 (Mac OS, 64 bit), Copyright (c) 2014 Wenzel Jakob
+2018-04-28 16:11:39 INFO  main [mitsuba.cpp:356] Parsing scene description from "water.xml" ..
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/photonmapper.dylib" ..
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/irrcache.dylib" ..
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/dielectric.dylib" ..
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/obj.dylib" ..
+2018-04-28 16:11:39 INFO  main [WavefrontOBJ] Loading geometry from "face0.obj" ..
+2018-04-28 16:11:39 INFO  main [WavefrontOBJ] face0: 7612 triangles, 3808 vertices (merged 19028 vertices).
+2018-04-28 16:11:39 INFO  main [WavefrontOBJ] Done with "face0.obj" (took 82 ms)
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/halton.dylib" ..
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/gaussian.dylib" ..
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/hdrfilm.dylib" ..
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/perspective.dylib" ..
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/envmap.dylib" ..
+2018-04-28 16:11:39 INFO  main [EnvironmentMap] Loading environment map "envmap.exr"
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/lanczos.dylib" ..
+2018-04-28 16:11:39 INFO  main [EnvironmentMap] Precomputing data structures for environment map sampling (515.0 KiB)
+2018-04-28 16:11:39 INFO  main [EnvironmentMap] Done (took 1 ms)
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/diffuse.dylib" ..
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/checkerboard.dylib" ..
+2018-04-28 16:11:39 INFO  main [PluginManager] Loading plugin "plugins/serialized.dylib" ..
+2018-04-28 16:11:39 INFO  main [SerializedMesh] Loading shape 0 from "meshes.serialized" ..
+2018-04-28 16:11:39 INFO  ren0 [KDTreeBase] Constructing a SAH kd-tree (8124 primitives) ..
+2018-04-28 16:11:39 INFO  ren0 [KDTreeBase] Finished -- took 23 ms.
+2018-04-28 16:11:39 INFO  ren0 [PluginManager] Loading plugin "plugins/sphere.dylib" ..

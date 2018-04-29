@@ -4,30 +4,35 @@
     "radius": 0.05,
     "friction": 0.01
   },
-  "plane": [{
-              "point": [0, -0.2, 0],
+  "boundingBox": [{
+              "point": [0, -0.1, 0],
               "normal": [0, 1, 0],
               "friction": 0.0
             },
             {
-              "point": [0, 0, 2.0],
+              "point": [0, 0, 3.0],
               "normal": [0, 0, -1],
               "friction": 0.0
             },
             {
-              "point": [0, 0, -2.0],
+              "point": [0, 0, -3.0],
               "normal": [0, 0, 1],
               "friction": 0.0
             },
             {
-              "point": [2.0, 0, 0],
+              "point": [3.0, 0, 0],
               "normal": [-1, 0, 0],
               "friction": 0.0
             }
             ,
             {
-              "point": [-2.0, 0, 0],
+              "point": [-3.0, 0, 0],
               "normal": [1, 0, 0],
+              "friction": 0.0
+            },
+            {
+              "point": [0, 3.01, 0],
+              "normal": [0, 1, 0],
               "friction": 0.0
             }
           ],
@@ -46,8 +51,8 @@
     "sf": 1.0,
     "viscosity": 0.00025,
     "vorticity": 0.005,
-    "num_width_voxels": 20,
-    "num_height_voxels": 10,
-    "num_length_voxels": 20
+    "num_width_voxels": 45,
+    "num_height_voxels": 45,
+    "num_length_voxels": 45
   }
 }
