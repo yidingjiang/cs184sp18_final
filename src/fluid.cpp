@@ -36,23 +36,67 @@ Fluid::~Fluid() {
 
 void Fluid::buildGrid() {
   // TODO (Part 1.1): Build a grid of masses.
-  double w_offset = width / ((double) num_width_points);
-  double l_offset = length / ((double) num_length_points);
-  double h_offset = height / ((double) num_height_points);
+  if (numberCube == 2){
+    double w_offset = width / ((double) num_width_points);
+    double l_offset = length / ((double) num_length_points);
+    double h_offset = height / ((double) num_height_points);
 
-  Vector3D center =  (minBoundaries+maxBoundaries)/2;
-  Vector3D zcenter = 0.3;
-  for (int i = 0; i < num_width_points; i++) {
-    for (int j = 0; j < num_length_points; j++) {
-      for (int k = 0; k < num_height_points; k++) {
-        Vector3D pos = Vector3D(center[0] + (i- (num_width_points/2.0)) * w_offset,
-                                j * l_offset,
-                                (center[2] + (k - (num_height_points/2.0)) * h_offset));
-        Particle p = Particle(pos, radius, friction);
-        particles.emplace_back(p);
+    Vector3D center =  (minBoundaries) + Vector3D(width/2, length/2, height/2);
+    Vector3D zcenter = 0.3;
+    
+    for (int i = 0; i < num_width_points; i++) {
+      for (int j = 0; j < num_length_points; j++) {
+        for (int k = 0; k < num_height_points; k++) {
+          Vector3D pos = Vector3D(center[0] + (i- (num_width_points/2.0)) * w_offset,
+                                  j * l_offset,
+                                  (center[2] + (k - (num_height_points/2.0)) * h_offset));
+          Particle p = Particle(pos, radius, friction);
+          particles.emplace_back(p);
+        }
+      }
+    }
+    Vector3D secondCube = minBoundaries ;
+    secondCube.x += maxBoundaries.x - minBoundaries.x;
+    secondCube.y += maxBoundaries.y - minBoundaries.y;
+    secondCube.z += maxBoundaries.z - minBoundaries.z;
+    
+    Vector3D center2 =  (secondCube) + Vector3D(-width/2, -length/2, -height/2);
+    
+    for (int i = 0; i < num_width_points; i++) {
+      for (int j = 0; j < num_length_points; j++) {
+        for (int k = 0; k < num_height_points; k++) {
+          Vector3D pos = Vector3D(center2[0] + (i- (num_width_points/2.0)) * w_offset,
+                                  j * l_offset,
+                                  (center2[2] + (k - (num_height_points/2.0)) * h_offset));
+          Particle p = Particle(pos, radius, friction);
+          particles.emplace_back(p);
+        }
+      }
+    }
+  } else {
+    double w_offset = width / ((double) num_width_points);
+    double l_offset = length / ((double) num_length_points);
+    double h_offset = height / ((double) num_height_points);
+
+    Vector3D center =  (minBoundaries+maxBoundaries)/2;
+    Vector3D zcenter = 0.3;
+    for (int i = 0; i < num_width_points; i++) {
+      for (int j = 0; j < num_length_points; j++) {
+        for (int k = 0; k < num_height_points; k++) {
+          Vector3D pos = Vector3D(center[0] + (i- (num_width_points/2.0)) * w_offset,
+                                  j * l_offset,
+                                  (center[2] + (k - (num_height_points/2.0)) * h_offset));
+          Particle p = Particle(pos, radius, friction);
+          particles.emplace_back(p);
+        }
       }
     }
   }
+<<<<<<< HEAD
+=======
+  
+
+>>>>>>> f5bb83c91a782e4c90d2bfc801c5784ab9efa245
 }
 
 GLfloat* Fluid::getBuffer() {

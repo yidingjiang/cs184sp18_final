@@ -36,13 +36,14 @@
             }
           ],
   "fluid": {
-    "num_width_points": 1,
-    "num_height_points": 1,
-    "num_length_points": 1,
+    "num_width_points": 5,
+    "num_height_points": 5,
+    "num_length_points": 5,
     "neighborhood_particle": 11,
     "width": 0.6,
     "height": 0.6,
-    "length": 4,
+    "length": 0.6,
+    "numberCube": 2,
     "r": 0.15,
     "rho_o": 1000,
     "solver_iter": 5,
