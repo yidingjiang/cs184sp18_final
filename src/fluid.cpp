@@ -92,8 +92,6 @@ void Fluid::buildGrid() {
       }
     }
   }
-  
-
 }
 
 GLfloat* Fluid::getBuffer() {
@@ -123,13 +121,15 @@ void Fluid::build_voxel_grid(int frameNum) {
   Vector3D sizeGrid = Vector3D(0.2 + maxBoundaries.x - minBoundaries.x, 0.2 + maxBoundaries.y - minBoundaries.y, 0.2 + maxBoundaries.z - minBoundaries.z);
   Vector3D sizeCell = Vector3D(sizeGrid.x / num_cells.x, sizeGrid.y / num_cells.y, sizeGrid.z / num_cells.z);
 
-  convertVoxelToFaces(minBoundaries-0.201, sizeCell);
-  //saveFacesToObjs(std::to_string(frameNum));
+  // convertVoxelToFaces(minBoundaries-0.201, sizeCell);
+  // saveFacesToObjs(std::to_string(frameNum));
+
+  saveVoxelToCSV(std::to_string(frameNum), minBoundaries-0.201, sizeCell);
 }
 
 
 Vector3D Fluid::gradientNormal(Vector3D pos){
-  double step_size = 0.1*(maxBoundaries.x-minBoundaries.x)/num_cells.x;
+  double step_size = 0.01*(maxBoundaries.x-minBoundaries.x)/num_cells.x;
   Vector3D normal = Vector3D(isotropic_kernel(Vector3D(pos.x + step_size, pos.y, pos.z)) - isotropic_kernel(Vector3D(pos.x - step_size, pos.y, pos.z)),
                      isotropic_kernel(Vector3D(pos.x, pos.y + step_size, pos.z)) - isotropic_kernel(Vector3D(pos.x, pos.y - step_size, pos.z)),
                      isotropic_kernel(Vector3D(pos.x, pos.y, pos.z + step_size)) - isotropic_kernel(Vector3D(pos.x, pos.y, pos.z - step_size))
@@ -169,7 +169,7 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
         positions.push_back(vertex(Vector3D(xpos+1,ypos+1,zpos+1)*sizeCell + min, -gradientNormal(Vector3D(xpos+1,ypos+1,zpos+1)*sizeCell + min)));
         positions.push_back(vertex(Vector3D(xpos,ypos+1,zpos+1)*sizeCell + min, -gradientNormal(Vector3D(xpos,ypos+1,zpos+1)*sizeCell + min)));
 
-        double isolevel = 10;
+        double isolevel = 800;
         vector<vector<vertex>> currTriangles = Polygonise(grid,isolevel, positions);
         triangles.insert(std::end(triangles), std::begin(currTriangles), std::end(currTriangles));
       }
@@ -177,14 +177,15 @@ void Fluid::convertVoxelToFaces(Vector3D min, Vector3D sizeCell){
   }
 }
 
-void Fluid::saveVoxelToCSV(std::string fileName, Vector3D min, Vector3D sizeCell) {
+void Fluid::saveVoxelToCSV(std::string frameNum, Vector3D min, Vector3D sizeCell) {
   ofstream fs;
-  fs.open(fileName, std::ios_base::app);
-  for (int xpos = 0; xpos < num_cells.x-1; ++xpos) {
-    for (int ypos = 0; ypos < num_cells.y-1; ++ypos) {
-      for (int zpos = 0; zpos < num_cells.z-1; ++zpos) {
-        fs << xpos << ypos << zpos;
-        fs << isotropic_kernel(Vector3D(xpos, ypos, zpos)*sizeCell + min);
+  fs.open("../mitsuba/input/csv" + frameNum + ".csv", std::ios_base::app);
+  for (int xpos = 0; xpos < num_cells.x; ++xpos) {
+    for (int ypos = 0; ypos < num_cells.y; ++ypos) {
+      for (int zpos = 0; zpos < num_cells.z; ++zpos) {
+        // fs << xpos << " " << ypos <<" " << zpos/
+        fs << isotropic_kernel(Vector3D(xpos, ypos, zpos)*sizeCell + min) << std::endl;
+        fs << gradientNormal(Vector3D(xpos, ypos, zpos)*sizeCell + min) << std::endl;
         // fs << isotropic_kernel(Vector3D(xpos+1, ypos, zpos)*sizeCell+ min);
         // fs << isotropic_kernel(Vector3D(xpos+1, ypos, zpos+1)*sizeCell+ min);
         // fs << isotropic_kernel(Vector3D(xpos, ypos, zpos+1)*sizeCell+ min);
@@ -192,7 +193,7 @@ void Fluid::saveVoxelToCSV(std::string fileName, Vector3D min, Vector3D sizeCell
         // fs << isotropic_kernel(Vector3D(xpos+1, ypos+1, zpos)*sizeCell+ min);
         // fs << isotropic_kernel(Vector3D(xpos+1, ypos+1, zpos+1)*sizeCell+ min);
         // fs << isotropic_kernel(Vector3D(xpos, ypos+1, zpos+1)*sizeCell+ min);
-        fs << std::endl;
+        // fs << std::endl;
       }
     }
   }
@@ -340,6 +341,8 @@ for (Particle &p: this->particles) {
     p.color = Vector3D(0.05,5*(p.origin.y+0.2)*(p.origin.y+0.2), 1.0);
     // i++;
   }
+
+  cout << "Frame" << endl;
   // int nidx = (int) rand()*1000.0/RAND_MAX;
   // for(int k = 0; k < neighborArray[nidx].size(); k++) neighborArray[nidx][k]->color = Vector3D( 1, 1, 1);
   // cout << nidx << endl;
