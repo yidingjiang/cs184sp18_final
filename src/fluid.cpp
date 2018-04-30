@@ -92,11 +92,6 @@ void Fluid::buildGrid() {
       }
     }
   }
-<<<<<<< HEAD
-=======
-  
-
->>>>>>> f5bb83c91a782e4c90d2bfc801c5784ab9efa245
 }
 
 GLfloat* Fluid::getBuffer() {
