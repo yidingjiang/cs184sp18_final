@@ -384,6 +384,13 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
         incompleteObjectError("vorticity", "r");
       }
       
+      auto it_numberCube = object.find("numberCube");
+      if (it_numberCube != object.end()) {
+        fluid->numberCube = *it_numberCube;
+      } else {
+        incompleteObjectError("numberCube", "r");
+      }
+      
       fluid->maxBoundaries = maxBoundaries + 1.0;
       fluid->minBoundaries = minBoundaries - 1.0;
       

@@ -97,6 +97,8 @@ struct Fluid {
   double mass = 1;
   int fps = 60;
   double sf = 1.0;
+  
+  int numberCube;
 
   double R=0.15;
   double W_CONSTANT =  315.0/(64.0*M_PI*R*R*R*R*R*R*R*R*R);
