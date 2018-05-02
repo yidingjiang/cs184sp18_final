@@ -315,7 +315,6 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
           maxBoundaries.z = point.z;
         }
 
-
         auto it_normal = plane.find("normal");
         if (it_normal != plane.end()) {
           vector<double> vec_normal = *it_normal;

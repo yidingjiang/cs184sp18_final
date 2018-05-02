@@ -12,7 +12,7 @@ bpy.ops.object.delete()
 
 
 face_num = 10
-for face_num in range(0, 330):
+for face_num in range(0, 234):
 	#import obj
 	face_str = 'face'+str(face_num)
 	file_loc =  "/home/utkarsh/proj/pbf/cpp/cs184sp18_final/mitsuba/input/" + face_str + ".obj"

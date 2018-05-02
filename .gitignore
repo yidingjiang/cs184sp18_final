@@ -34,6 +34,9 @@
 # images
 *.png
 *.exr
+*.mp4
 
 build/
 .vscode/
+mitsuba/input*
+.ipynb_checkpoints

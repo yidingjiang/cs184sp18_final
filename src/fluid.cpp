@@ -35,48 +35,44 @@ Fluid::~Fluid() {
 }
 
 void Fluid::buildGrid() {
+  double w_offset = 0.1;
+  double l_offset = 0.1;
+  double h_offset = 0.1;
+  width = 0.1 * num_width_points;
+  height = 0.1 * num_height_points;
+  length = 0.1 * num_length_points;
   // TODO (Part 1.1): Build a grid of masses.
   if (numberCube == 2){
-    double w_offset = width / ((double) num_width_points);
-    double l_offset = length / ((double) num_length_points);
-    double h_offset = height / ((double) num_height_points);
+    double zcenter = 0.2;
+    cout << "min" << minBoundaries << endl;
+    cout << "max" << maxBoundaries << endl;
 
-    Vector3D center =  (minBoundaries) + Vector3D(width/2, length/2, height/2);
-    Vector3D zcenter = 0.3;
-    
     for (int i = 0; i < num_width_points; i++) {
       for (int j = 0; j < num_length_points; j++) {
         for (int k = 0; k < num_height_points; k++) {
-          Vector3D pos = Vector3D(center[0] + (i- (num_width_points/2.0)) * w_offset,
-                                  j * l_offset,
-                                  (center[2] + (k - (num_height_points/2.0)) * h_offset));
+          Vector3D pos = Vector3D(minBoundaries[0]+1 + (i * w_offset + 0.01),
+                                  zcenter + (j * l_offset),
+                                  minBoundaries[2]+1 + (k * h_offset + 0.01));
+          cout << pos << endl;
           Particle p = Particle(pos, radius, friction);
+          particles.emplace_back(p);
+
+          pos = Vector3D(maxBoundaries[0]-1 - (i * w_offset + 0.01),
+                        zcenter + (j * l_offset),
+                        maxBoundaries[2]-1 - (k * h_offset + 0.01));
+          cout << pos << endl;
+          p = Particle(pos, radius, friction);
           particles.emplace_back(p);
         }
       }
     }
-    Vector3D secondCube = minBoundaries ;
-    secondCube.x += maxBoundaries.x - minBoundaries.x;
-    secondCube.y += maxBoundaries.y - minBoundaries.y;
-    secondCube.z += maxBoundaries.z - minBoundaries.z;
-    
-    Vector3D center2 =  (secondCube) + Vector3D(-width/2, -length/2, -height/2);
-    
-    for (int i = 0; i < num_width_points; i++) {
-      for (int j = 0; j < num_length_points; j++) {
-        for (int k = 0; k < num_height_points; k++) {
-          Vector3D pos = Vector3D(center2[0] + (i- (num_width_points/2.0)) * w_offset,
-                                  j * l_offset,
-                                  (center2[2] + (k - (num_height_points/2.0)) * h_offset));
-          Particle p = Particle(pos, radius, friction);
-          particles.emplace_back(p);
-        }
-      }
-    }
+
+
+
   } else {
-    double w_offset = width / ((double) num_width_points);
-    double l_offset = length / ((double) num_length_points);
-    double h_offset = height / ((double) num_height_points);
+    // double w_offset = width / ((double) num_width_points);
+    // double l_offset = length / ((double) num_length_points);
+    // double h_offset = height / ((double) num_height_points);
 
     Vector3D center =  (minBoundaries+maxBoundaries)/2;
     Vector3D zcenter = 0.3;
@@ -87,6 +83,7 @@ void Fluid::buildGrid() {
                                   j * l_offset,
                                   (center[2] + (k - (num_height_points/2.0)) * h_offset));
           Particle p = Particle(pos, radius, friction);
+          p.velocity = Vector3D(0,-5,0);
           particles.emplace_back(p);
         }
       }
@@ -185,7 +182,7 @@ void Fluid::saveVoxelToCSV(std::string frameNum, Vector3D min, Vector3D sizeCell
       for (int zpos = 0; zpos < num_cells.z; ++zpos) {
         // fs << xpos << " " << ypos <<" " << zpos/
         fs << isotropic_kernel(Vector3D(xpos, ypos, zpos)*sizeCell + min) << std::endl;
-        fs << gradientNormal(Vector3D(xpos, ypos, zpos)*sizeCell + min) << std::endl;
+        // fs << gradientNormal(Vector3D(xpos, ypos, zpos)*sizeCell + min) << std::endl;
         // fs << isotropic_kernel(Vector3D(xpos+1, ypos, zpos)*sizeCell+ min);
         // fs << isotropic_kernel(Vector3D(xpos+1, ypos, zpos+1)*sizeCell+ min);
         // fs << isotropic_kernel(Vector3D(xpos, ypos, zpos+1)*sizeCell+ min);
@@ -312,7 +309,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   std::vector<std::vector<Particle *>>  neighborArray = build_index();
 
   // for surfacing only
-  build_voxel_grid(step);
+  // build_voxel_grid(step);
 
   for(int iter=0; iter<solver_iters; iter++) {
     this->update_lambdas(neighborArray);
@@ -333,16 +330,22 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   this->apply_vorticity(neighborArray);
   this->apply_viscosity(neighborArray);
 
+double max_vort = -1;
+for (Particle &p: this->particles) max_vort = max(max_vort, p.omega.norm());
+
 for (Particle &p: this->particles) {
     p.origin = p.x_star;
     //update color
     // p.color = Vector3D( neighborArray[i].size()/10 , 1, 1);
     // p.color = Vector3D( p.density/RHO_O ,0,(int)(p.origin.y <= -0.19));
-    p.color = Vector3D(0.05,5*(p.origin.y+0.2)*(p.origin.y+0.2), 1.0);
+
+    // p.color = Vector3D(0.05,5*(p.origin.y+0.2)*(p.origin.y+0.2), 1.0);
+    // cout << 0.001*p.omega.norm()/(1+abs(p.omega.norm())) << endl;
+    p.color = Vector3D(0.05, p.omega.norm()/max_vort , 1.0);
     // i++;
   }
 
-  cout << "Frame" << endl;
+  // cout << "Frame" << endl;
   // int nidx = (int) rand()*1000.0/RAND_MAX;
   // for(int k = 0; k < neighborArray[nidx].size(); k++) neighborArray[nidx][k]->color = Vector3D( 1, 1, 1);
   // cout << nidx << endl;
@@ -421,6 +424,7 @@ Vector3D Fluid::del_ci_i(Particle i, std::vector<Particle *> neighbors) {
 
 void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) {
   int i = 0;
+  //#pragma omp parallel for
   for (Particle &p: this-> particles) {
 
     std::vector<Particle *> neighbors  = neighborArray[i];
@@ -450,6 +454,7 @@ void Fluid::update_lambdas(std::vector<std::vector<Particle *>>  neighborArray) 
 
 void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
   int i = 0;
+  //#pragma omp parallel for
   for (Particle &p: this->particles) {
     Vector3D p_pred = p.x_star;
     std::vector<Particle *> neighbors = neighborArray[i];
@@ -466,6 +471,7 @@ void Fluid::update_delta_p(std::vector<std::vector<Particle *>> neighborArray){
 }
 
 void Fluid::apply_vorticity(std::vector<std::vector<Particle *>> neighborArray){
+  //#pragma omp parallel for
   for (int i = 0; i < particles.size(); i++){
     Particle &p = particles[i];
     Vector3D N;
@@ -487,6 +493,7 @@ void Fluid::apply_vorticity(std::vector<std::vector<Particle *>> neighborArray){
 }
 
 void Fluid::update_omega(std::vector<std::vector<Particle *>> neighborArray){
+  //#pragma omp parallel for
   for (int i = 0; i < particles.size(); i++){
     Particle &p = particles[i];
     std::vector<Particle *> neighbors = neighborArray[i];
@@ -502,6 +509,7 @@ void Fluid::update_omega(std::vector<std::vector<Particle *>> neighborArray){
 }
 
 void Fluid::apply_viscosity(std::vector<std::vector<Particle *>> neighborArray) {
+  //#pragma omp parallel for
   for (int i = 0; i < particles.size(); i++){
     Particle &p = particles[i];
     std::vector<Particle *> neighbors = neighborArray[i];
@@ -675,7 +683,7 @@ void Fluid::save_state_to_csv() {
     Particle *p = &particles[i];
     fs << p->origin.x << "," << p->origin.y << "," << p->origin.z << ","
        << p->velocity.x << "," << p->velocity.y << "," << p->velocity.z << std::endl;
-    std::cout << neighborArray[i].size() << '\n';
+    // std::cout << neighborArray[i].size() << '\n';
     for (int j = 0; j < neighborhood_size; j++) {
       p = neighborArray[i][j];
       fs << p->origin.x << "," << p->origin.y << "," << p->origin.z << ","
