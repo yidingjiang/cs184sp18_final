@@ -41,6 +41,7 @@
     "num_height_points": 20,
     "num_length_points": 20,
     "neighborhood_particle": 11,
+    "numberCube":1,
     "width": 2,
     "height": 2,
     "length": 2,
