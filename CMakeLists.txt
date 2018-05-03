@@ -155,8 +155,8 @@ set(NANOGUI_USE_GLAD      ON  CACHE BOOL " " FORCE)
 add_subdirectory(ext/nanogui)
 include_directories(ext/nanogui/include)
 
-add_subdirectory(ext/glm-0.9.7.1)
-include_directories(ext/glm-0.9.7.1/glm)
+# add_subdirectory(ext/glm-0.9.7.1)
+# include_directories(ext/glm-0.9.7.1/glm)
 
 #add_subdirectory(ext/glew-1.13.0)
 #set_property(TARGET glew APPEND_STRING PROPERTY COMPILE_FLAGS -w)

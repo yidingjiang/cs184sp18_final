@@ -16,9 +16,9 @@
 #include <sstream>
 #include "CGL/lodepng.h"
 
-#include <glm/glm.hpp>
+// #include <glm/glm.hpp>
 
-using namespace glm;
+// using namespace glm;
 using namespace nanogui;
 using namespace std;
 
@@ -122,7 +122,7 @@ void FluidSimulator::init() {
   }
 
   avg_p_position /= fluid->particles.size();
-  std::cout << fluid->width << std::endl;
+  //std::cout << fluid->width << std::endl;
   // CGL::Vector3D target(avg_p_position.x, avg_p_position.y / 2,
   //                      avg_p_position.z);
   CGL::Vector3D target(0.5, 0.2, 0.5);
@@ -151,12 +151,12 @@ void FluidSimulator::init() {
 
 bool FluidSimulator::isAlive() { return is_alive; }
 
-mat4 convertToMat4(Matrix4f m) {
-  return mat4(vec4(m(0,0), m(0,1), m(0,2), m(0,3)),
-              vec4(m(1,0), m(1,1), m(1,2), m(1,3)),
-              vec4(m(2,0), m(2,1), m(2,2), m(2,3)),
-              vec4(m(3,0), m(3,1), m(3,2), m(3,3)));
-}
+// mat4 convertToMat4(Matrix4f m) {
+//   return mat4(vec4(m(0,0), m(0,1), m(0,2), m(0,3)),
+//               vec4(m(1,0), m(1,1), m(1,2), m(1,3)),
+//               vec4(m(2,0), m(2,1), m(2,2), m(2,3)),
+//               vec4(m(3,0), m(3,1), m(3,2), m(3,3)));
+// }
 
 void FluidSimulator::drawContents() {
   glEnable(GL_DEPTH_TEST);

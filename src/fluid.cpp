@@ -44,24 +44,30 @@ void Fluid::buildGrid() {
   // TODO (Part 1.1): Build a grid of masses.
   if (numberCube == 2){
     double zcenter = 0.2;
-    cout << "min" << minBoundaries << endl;
-    cout << "max" << maxBoundaries << endl;
+    // cout << "min" << minBoundaries << endl;
+    // cout << "max" << maxBoundaries << endl;
 
-    for (int i = 0; i < num_width_points; i++) {
-      for (int j = 0; j < num_length_points; j++) {
-        for (int k = 0; k < num_height_points; k++) {
+    for (int i = 0; i < num_width_points * 0.6; i++) {
+      for (int j = 0; j < num_length_points * 0.6; j++) {
+        for (int k = 0; k < num_height_points * 0.6; k++) {
           Vector3D pos = Vector3D(minBoundaries[0]+1 + (i * w_offset + 0.01),
                                   zcenter + (j * l_offset),
                                   minBoundaries[2]+1 + (k * h_offset + 0.01));
-          cout << pos << endl;
+          // cout << pos << endl;
           Particle p = Particle(pos, radius, friction);
           particles.emplace_back(p);
+        }
+      }
+    }
 
-          pos = Vector3D(maxBoundaries[0]-1 - (i * w_offset + 0.01),
+    for (int i = 0; i < num_width_points; i++) {
+      for (int j = 0; j < num_length_points; j++) {
+        for (int k = 0; k < num_height_points ; k++) {
+          Vector3D pos = Vector3D(maxBoundaries[0]-1 - (i * w_offset + 0.01),
                         zcenter + (j * l_offset),
                         maxBoundaries[2]-1 - (k * h_offset + 0.01));
-          cout << pos << endl;
-          p = Particle(pos, radius, friction);
+          // cout << pos << endl;
+          Particle p = Particle(pos, radius, friction);
           particles.emplace_back(p);
         }
       }
@@ -309,7 +315,7 @@ void Fluid::simulate(double frames_per_sec, double simulation_steps, FluidParame
   std::vector<std::vector<Particle *>>  neighborArray = build_index();
 
   // for surfacing only
-  // build_voxel_grid(step);
+  build_voxel_grid(step);
 
   for(int iter=0; iter<solver_iters; iter++) {
     this->update_lambdas(neighborArray);
