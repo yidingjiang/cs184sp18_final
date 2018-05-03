@@ -27,21 +27,21 @@ FluidSimulator::FluidSimulator(Screen *screen) {
 
   // Initialize OpenGL buffers and shaders
 
-  phongShader.initFromFiles("Phong", "../shaders/camera.vert",
-                            "../shaders/phong.frag");
-  // particleShader.initFromFiles("Particle", "../shaders/SimpleVertexShader.vertexshader")
-
-  shaders.push_back(phongShader);
-  // shaders.push_back(particleShader);
-
-  glEnable(GL_PROGRAM_POINT_SIZE);
-  glEnable(GL_DEPTH_TEST);
+  // phongShader.initFromFiles("Phong", "../shaders/camera.vert",
+  //                           "../shaders/phong.frag");
+  // // particleShader.initFromFiles("Particle", "../shaders/SimpleVertexShader.vertexshader")
+  //
+  // shaders.push_back(phongShader);
+  // // shaders.push_back(particleShader);
+  //
+  // glEnable(GL_PROGRAM_POINT_SIZE);
+  // glEnable(GL_DEPTH_TEST);
 }
 
 FluidSimulator::~FluidSimulator() {
-  for (auto shader : shaders) {
-    shader.free();
-  }
+  // for (auto shader : shaders) {
+  //   shader.free();
+  // }
 
   if (fluid) delete fluid;
   if (fp) delete fp;
@@ -51,45 +51,45 @@ FluidSimulator::~FluidSimulator() {
 void FluidSimulator::loadFluid(Fluid *fluid) {
   this->fluid = fluid;
 
-  g_vertex_buffer_data = fluid->getBuffer();
-
-  glGenVertexArrays(1, &positionsVAO);
-  glGenBuffers(1, &positionsVBO);
-
-  glBindVertexArray(positionsVAO);
-  // Get a handle (ID) to the vertex buffer object (VBO), a buffer that holds the data that will be transferred to the GPU.
-  // We bind the VBO to the global GL_ARRAY_BUFFER, and store our particles into the buffer. GL_STREAM_DRAW is selected
-  // since we expect to update the vertex positions every frame.
-  glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
-
-  // Enable gl_PointSize in the vertex shader to specify the size of a point
-  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+  // g_vertex_buffer_data = fluid->getBuffer();
+  //
+  // glGenVertexArrays(1, &positionsVAO);
+  // glGenBuffers(1, &positionsVBO);
+  //
+  // glBindVertexArray(positionsVAO);
+  // // Get a handle (ID) to the vertex buffer object (VBO), a buffer that holds the data that will be transferred to the GPU.
+  // // We bind the VBO to the global GL_ARRAY_BUFFER, and store our particles into the buffer. GL_STREAM_DRAW is selected
+  // // since we expect to update the vertex positions every frame.
+  // glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
+  // glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
+  //
+  // // Enable gl_PointSize in the vertex shader to specify the size of a point
   // glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-  glEnable(GL_BLEND);
-  glVertexAttribPointer(
-    0,                  // vertex positions attribute specified at location 0 in the vertex shader.
-    3,                  // position is a vec3
-    GL_FLOAT,           // type
-    GL_FALSE,           // do not normalize
-    7 * sizeof(GLfloat),// Position is 3 floats, then color is 4 floats
-    (GLvoid*)0          // first vector value starts at index 0 -> offset = 0
-  );
-  glEnableVertexAttribArray(0);
+  // // glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+  // glEnable(GL_BLEND);
+  // glVertexAttribPointer(
+  //   0,                  // vertex positions attribute specified at location 0 in the vertex shader.
+  //   3,                  // position is a vec3
+  //   GL_FLOAT,           // type
+  //   GL_FALSE,           // do not normalize
+  //   7 * sizeof(GLfloat),// Position is 3 floats, then color is 4 floats
+  //   (GLvoid*)0          // first vector value starts at index 0 -> offset = 0
+  // );
+  // glEnableVertexAttribArray(0);
 
-  glVertexAttribPointer(
-    1,
-    4,
-    GL_FLOAT,
-    GL_FALSE,
-    7 * sizeof(GLfloat),
-    (GLvoid*)(3* sizeof(GLfloat))
-  );
-  glEnableVertexAttribArray(1);
-
-  // Unbind the VAO
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  // glVertexAttribPointer(
+  //   1,
+  //   4,
+  //   GL_FLOAT,
+  //   GL_FALSE,
+  //   7 * sizeof(GLfloat),
+  //   (GLvoid*)(3* sizeof(GLfloat))
+  // );
+  // glEnableVertexAttribArray(1);
+  //
+  // // Unbind the VAO
+  // glBindVertexArray(0);
+  // glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void FluidSimulator::loadFluidParameters(FluidParameters *fp) { this->fp = fp; }
@@ -102,16 +102,16 @@ void FluidSimulator::loadCollisionObjects(vector<CollisionObject *> *objects) { 
  */
 void FluidSimulator::init() {
   // Initialize GUI
-  initGUI(screen);
-  screen->setSize(default_window_size);
+  // initGUI(screen);
+  // screen->setSize(default_window_size);
 
   // Initialize camera
 
-  CGL::Collada::CameraInfo camera_info;
-  camera_info.hFov = 50;
-  camera_info.vFov = 35;
-  camera_info.nClip = 0.01;
-  camera_info.fClip = 10000;
+  // CGL::Collada::CameraInfo camera_info;
+  // camera_info.hFov = 50;
+  // camera_info.vFov = 35;
+  // camera_info.nClip = 0.01;
+  // camera_info.fClip = 10000;
 
   // Try to intelligently figure out the camera target
 
@@ -137,16 +137,16 @@ void FluidSimulator::init() {
 
   // canonicalCamera is a copy used for view resets
 
-  camera.place(target, acos(c_dir.y), atan2(c_dir.x, c_dir.z), view_distance,
-               min_view_distance, max_view_distance);
-  canonicalCamera.place(target, acos(c_dir.y), atan2(c_dir.x, c_dir.z),
-                        view_distance, min_view_distance, max_view_distance);
-
-  screen_w = default_window_size(0);
-  screen_h = default_window_size(1);
-
-  camera.configure(camera_info, screen_w, screen_h);
-  canonicalCamera.configure(camera_info, screen_w, screen_h);
+  // camera.place(target, acos(c_dir.y), atan2(c_dir.x, c_dir.z), view_distance,
+  //              min_view_distance, max_view_distance);
+  // canonicalCamera.place(target, acos(c_dir.y), atan2(c_dir.x, c_dir.z),
+  //                       view_distance, min_view_distance, max_view_distance);
+  //
+  // screen_w = default_window_size(0);
+  // screen_h = default_window_size(1);
+  //
+  // camera.configure(camera_info, screen_w, screen_h);
+  // canonicalCamera.configure(camera_info, screen_w, screen_h);
 }
 
 bool FluidSimulator::isAlive() { return is_alive; }
@@ -159,7 +159,7 @@ bool FluidSimulator::isAlive() { return is_alive; }
 // }
 
 void FluidSimulator::drawContents() {
-  glEnable(GL_DEPTH_TEST);
+  // glEnable(GL_DEPTH_TEST);
 
   if (!is_paused) {
     vector<Vector3D> external_accelerations = {gravity};
@@ -169,35 +169,35 @@ void FluidSimulator::drawContents() {
     }
   }
 
-  GLShader shader = shaders[activeShader];
-  shader.bind();
-  
-  Matrix4f model;
-  model.setIdentity();
-  
-  Matrix4f view = getViewMatrix();
-  Matrix4f projection = getProjectionMatrix();
-  
-  Matrix4f viewProjection = projection * view;
-  
-  shader.setUniform("model", model);
-  shader.setUniform("viewProjection", viewProjection);
-  shader.setUniform("light", Vector3f(0.5, 2, 2));
-  shader.setUniform("in_color", color);
-  shader.setUniform("particle_size", 80./camera.r);
-  
-  glBindVertexArray(positionsVAO);
-  glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
-  g_vertex_buffer_data = fluid->getBuffer();
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
-  glDrawArrays(GL_POINTS, 0, fluid->particles.size());
-  
+  // GLShader shader = shaders[activeShader];
+  // shader.bind();
+  //
+  // Matrix4f model;
+  // model.setIdentity();
+  //
+  // Matrix4f view = getViewMatrix();
+  // Matrix4f projection = getProjectionMatrix();
+  //
+  // Matrix4f viewProjection = projection * view;
+  //
+  // shader.setUniform("model", model);
+  // shader.setUniform("viewProjection", viewProjection);
+  // shader.setUniform("light", Vector3f(0.5, 2, 2));
+  // shader.setUniform("in_color", color);
+  // shader.setUniform("particle_size", 80./camera.r);
+  //
+  // glBindVertexArray(positionsVAO);
+  // glBindBuffer(GL_ARRAY_BUFFER, positionsVBO);
+  // g_vertex_buffer_data = fluid->getBuffer();
+  // glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * fluid->particles.size() * 7, g_vertex_buffer_data, GL_STREAM_DRAW);
+  // glDrawArrays(GL_POINTS, 0, fluid->particles.size());
+
   //write_screenshot();
   // fluid->save_state_to_csv();
-  
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  free(g_vertex_buffer_data);
+
+  // glBindVertexArray(0);
+  // glBindBuffer(GL_ARRAY_BUFFER, 0);
+  // free(g_vertex_buffer_data);
 
   step += 1;
   // if (step % 10 == 0) std::cout << step << '\n';

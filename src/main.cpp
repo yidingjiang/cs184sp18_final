@@ -247,7 +247,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       double object_friction = 0.0;
       auto fric = object.find("friction");
       if (fric != object.end()) object_friction = *fric;
-      
+
       Vector3D ob_origin;
       auto ob_it_origin = object.find("origin");
       if (ob_it_origin != object.end()) {
@@ -260,7 +260,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
         std::vector<Vector3D *> vertices;
         std::vector<Triangle *> tris;
         std::string objfilename = object_file_name->get<std::string>();;
-        
+
         objl::Loader loader;
         loader.LoadFile(objfilename);
 
@@ -278,7 +278,7 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
         incompleteObjectError("Object", "File");
       }
       //load collada into a list of traingles
-      
+
       // insert trinagles into objects
 
 
@@ -458,14 +458,14 @@ void loadObjectsFromFile(string filename, Fluid *fluid, FluidParameters *cp, vec
       } else {
         incompleteObjectError("vorticity", "r");
       }
-      
+
       auto it_numberCube = object.find("numberCube");
       if (it_numberCube != object.end()) {
         fluid->numberCube = *it_numberCube;
       } else {
         incompleteObjectError("numberCube", "r");
       }
-      
+
       fluid->maxBoundaries = maxBoundaries + 1.0;
       fluid->minBoundaries = minBoundaries - 1.0;
 
@@ -521,13 +521,13 @@ int main(int argc, char **argv) {
 
   glfwSetErrorCallback(error_callback);
 
-  createGLContexts();
+  // createGLContexts();
 
   // Initialize the Fluid object
   fluid.buildGrid();
 
   // Initialize the FluidSimulator object
-  app = new FluidSimulator(screen);
+  app = new FluidSimulator(nullptr);
   app->loadFluid(&fluid);
   app->loadFluidParameters(&fp);
   app->loadCollisionObjects(&objects);
@@ -535,30 +535,30 @@ int main(int argc, char **argv) {
 
   // Call this after all the widgets have been defined
 
-  screen->setVisible(true);
-  screen->performLayout();
+  // screen->setVisible(true);
+  // screen->performLayout();
 
   // Attach callbacks to the GLFW window
 
   setGLFWCallbacks();
 
   while (!glfwWindowShouldClose(window)) {
-    glfwPollEvents();
-
-    glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glfwPollEvents();
+    //
+    // glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     app->drawContents();
 
     // Draw nanogui
-    screen->drawContents();
-    screen->drawWidgets();
+    // screen->drawContents();
+    // screen->drawWidgets();
 
-    glfwSwapBuffers(window);
-
-    if (!app->isAlive()) {
-      glfwSetWindowShouldClose(window, 1);
-    }
+    // glfwSwapBuffers(window);
+    //
+    // if (!app->isAlive()) {
+    //   glfwSetWindowShouldClose(window, 1);
+    // }
   }
 
   return 0;
