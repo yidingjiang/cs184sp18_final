@@ -9,7 +9,7 @@
 
 <center> <iframe width="560" height="315" src="https://www.youtube.com/embed/srIHLMpww1I?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></center>
 
-<center> <a href="<https://drive.google.com/drive/folders/12_noDACiIxFVr_rQaQvokfxu8xE5oaHe?usp=sharing">portal to 284A report </a> </center>
+<center> <a href="https://drive.google.com/drive/folders/12_noDACiIxFVr_rQaQvokfxu8xE5oaHe">portal to 284A report </a> </center>
 
 ### **Abstract**
 
