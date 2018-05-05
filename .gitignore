@@ -34,7 +34,7 @@
 # images
 #*.png
 *.exr
-*.mp4
+#*.mp4
 
 build/
 .vscode/
