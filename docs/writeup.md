@@ -79,7 +79,7 @@ In the cube marching algorithm, an isolevel constant is required to specify how 
 
 
 
-##### Rendering
+##### Ren-Deri-Ng
 
 For the rendering, initially we wanted to use the Volume Rendering Plugin from Mitsuba to render water by providing the list of populated voxels in a binary format.  We have written a script that converts particles to voxels, but we found the results unsatisfactory. Instead of passing in the voxels to Mitsuba, we decided to create the faces in our C++ program using cube marching.  By rendering the mesh with the BSDF of water in Mitsuba we obtained the following video:
 
@@ -87,7 +87,7 @@ For the rendering, initially we wanted to use the Volume Rendering Plugin from M
 
 The color of running the meshes on Mitsuba were is satisfactory. However,  Mitsuba  is  a  renderer  that  is  based  on  the  CPU  of  the computer. We ran into efficiency issues with Mitsuba, as each frame took about 3 minutes to render, and a video often had around 300 frames.  We also had to use much coarser mesh reolution. We  decided  to  shift  to  a  GPU  based  renderer.   Blender is one of the renderers available on the market supporting CUDA. We decided to shift our rendering to using Blender and each frame took  about  1  minute  to  render.   Using  Blender  a  video  will  take approximately 5 hours to render. One of the frames can be seen below:
 
-<center><iframe width="560" height="315" src="https://www.youtube.com/embed/FCN_KKQEj-8?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><iframe width="560" height="315" src="https://www.youtube.com/embed/FCN_KKQEj-8?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> </center>
+<center><iframe width="560" height="315" src="https://www.youtube.com/embed/w2ly7rOPg-0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><iframe width="560" height="315" src="https://www.youtube.com/embed/FCN_KKQEj-8?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> </center>
 
 We were not able to reproduce the exact BSDF from Mitsuba, as in Mitsuba we used a dielectric medium library that was automatically generated. Through this library, Mitsuba sets several parameters of the  medium  that  are  hiddent  from  the  user.   In  Blender,  we  had to create our own BSDF using the Blender node editor.  We used the principled BSDF node to generate the texture of the water. The Mitsuba BSDF of water looks more realistic but is much less efficient to render. Given the time constraint that we had with the project, we decided to render all of our videos using a GPU with Blender.  We parallelized our simulation and rendering over several of the Hive machines to obtain each frame relatively quickly.
 
@@ -105,11 +105,25 @@ In addition, we introduced an additional imcompressibility loss to provide addit
 
 Although that the neural network can reach very ideal training and validation error (i.e. on the order of 1e-5), we found that the neural network performs poorly when we try to use it to do the actual simulation. While it exhibits some understanding of incompressibility and gravity, its behavior drifts drastically from the ground truth after some time steps.
 
-<video controls    src="img/bc.mp4"    width="620">Sorry, your browser doesn't support embedded videos </video>
+<center><video controls    src="img/bc.mp4"    width="620">Sorry, your browser doesn't support embedded videos </video></center>
 
 This problem is commonly known as **covariate shift** which is a well-known challenge where the states encountered during training differ from the states encountered during testing, reducing robustness. The difference between the training and testing states can result from many things but in our specific application, such difference is the result of the small prediction error building up over time and results in states that the neural network has never seen before. This problem can be solved by using DAgger which take the states predicted by the neural network. However, we experienced some technical difficulties when trying to integrate TensorFlow to our project. As the result, we were not able to verify the effectiveness of DAgger in this setting. Further, collecting much more data or building a full openAI gym like environment are not feasible within the time frame. That being said, we do believe this approach has interesting potentials.
 
 ### **Results**
+
+|                     Double Dam Breaking                      |
+| :----------------------------------------------------------: |
+| <iframe width="560" height="315" src="https://www.youtube.com/embed/c4DuUyR7NPY?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> |
+|                      **Asymmetric 0G**                       |
+| <iframe width="560" height="315" src="https://www.youtube.com/embed/p9FfvvvY_UI?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> |
+|                       **Symmetric 0G**                       |
+| <iframe width="560" height="315" src="https://www.youtube.com/embed/ooxK60PyI6c" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> |
+|                        **Crown?...**                         |
+| <iframe width="560" height="315" src="https://www.youtube.com/embed/Jw9CZlRpO4E" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> |
+|                           **Cube**                           |
+| <iframe width="560" height="315" src="https://www.youtube.com/embed/w2ly7rOPg-0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> |
+
+
 
 **References**
 
